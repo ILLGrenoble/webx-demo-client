@@ -1,0 +1,33 @@
+{
+  "name": "webx-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.prod.js",
+    "start": "webpack-dev-server -d --config webpack.dev.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://code.ill.fr/panosc/data-analysis-services/webx-web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "devDependencies": {
+    "css-loader": "^2.1.1",
+    "glob": "^7.1.3",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.5.0",
+    "postcss-loader": "^3.0.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0",
+    "webpack-concat-plugin": "^3.0.0",
+    "webpack-dev-server": "^3.2.1",
+    "webpack-merge": "^4.2.1"
+  },
+  "dependencies": {
+    "query-string": "^6.2.0",
+    "three": "^0.103.0"
+  }
+}

@@ -29,6 +29,7 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
+    "@types/three": "^0.93.30",
     "query-string": "^6.2.0",
     "three": "^0.103.0"
   }

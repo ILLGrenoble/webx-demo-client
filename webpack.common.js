@@ -7,8 +7,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 module.exports = {
     context: resolve(__dirname, 'src'),
     entry: {
-        app: ['./index.js']
+        app: ['./index.ts']
     },
+    devtool: 'inline-source-map',
     output: {
         publicPath: '/',
         filename: '[hash].bundle.js',
@@ -24,27 +25,35 @@ module.exports = {
         }
     },
     module: {
-        rules: [{
-            test: /\.css$/,
-            use: [
-                {
-                    loader: MiniCssExtractPlugin.loader
-                }, {
-                    loader: "css-loader",
-                    options: {
-                        sourceMap: true,
-                        modules: true,
-                        localIdentName: "[local]___[hash:base64:5]"
+        rules: [
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/
+            }, {
+                test: /\.css$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader
+                    }, {
+                        loader: "css-loader",
+                        options: {
+                            sourceMap: true,
+                            modules: true,
+                            localIdentName: "[local]___[hash:base64:5]"
+                        }
                     }
-                }
-            ]
-        }
+                ]
+            }
         ]
+    },
+    resolve: {
+        extensions: ['.tsx', '.ts', '.js']
     },
     plugins: [
         new MiniCssExtractPlugin(
             {
-                filename: "[name].css",
+                filename: "[hash].css",
                 chunkFilename: "[id].css"
             }),
         new HtmlWebpackPlugin({

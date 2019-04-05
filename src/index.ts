@@ -1,29 +1,27 @@
 import "./styles.css";
 import * as THREE from 'three';
+import {WebXDisplay} from './display/WebXDisplay';
+import {WebXWindow} from './display/WebXWindow';
 
 document.addEventListener("DOMContentLoaded", function (event) {
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+    const display: WebXDisplay = new WebXDisplay(1024, 768);
+    document.body.appendChild(display.renderer.domElement);
 
-    var renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
+    const window: WebXWindow = new WebXWindow({
+        id: 0, 
+        x: 100, 
+        y: 100, 
+        width: 400, 
+        height: 200});
+    display.addWindow(window);
 
-    var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    var cube = new THREE.Mesh( geometry, material );
-    scene.add( cube );
+    const window2: WebXWindow = new WebXWindow({
+        id: 1, 
+        x: 300, 
+        y: 250, 
+        width: 300, 
+        height: 300});
+    display.addWindow(window2);
 
-    camera.position.z = 6;
-
-    var animate = function () {
-        requestAnimationFrame( animate );
-
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-
-        renderer.render( scene, camera );
-    };
-
-    animate();
+    display.animate();
 });

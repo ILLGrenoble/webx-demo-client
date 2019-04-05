@@ -36,6 +36,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
             mouse.handleMouseDown = mouse.handleMouseUp = mouse.handleMouseMove = (mouseState => {
                 console.log('Mouse event', mouseState);
+                // just as a reminder
+                // get the current mouse state and scale of the display
+                // calculate the scaled state
+                // send it to the client client.sendMouseState(scaledState)
             });
 
         } else {

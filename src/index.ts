@@ -1,15 +1,16 @@
 import "./styles.css";
 import * as THREE from 'three';
 import { WebXDisplay } from './display/WebXDisplay';
-import { WebXWindow } from './display/WebXWindow';
-import { WebXClient } from "./display/WebXClient";
-import { WebXWebSocketTunnel } from "./tunnel";
-import { WebXCommand } from "./command/WebXCommand";
-import { WebXCommandType } from "./command/WebXCommandType";
+import { WebXClient } from "./WebXClient";
+import { WebXWebSocketTunnel } from './tunnel';
+import { WebXCommand, WebXCommandType } from './command';
+import { WebXMouse } from "./input";
 
 document.addEventListener("DOMContentLoaded", function (event) {
 
-    const tunnel = new WebXWebSocketTunnel('ws://cauntbookw.ill.fr:8080');
+    const tunnel = new WebXWebSocketTunnel('ws://localhost:8080', {
+        id: 123
+    });
     const client = new WebXClient(tunnel);
 
     let display: WebXDisplay;
@@ -22,13 +23,20 @@ document.addEventListener("DOMContentLoaded", function (event) {
     client.onMessage = (message) => {
         if (message.type === 'Connection') {
             const { width, height } = message.screenSize;
-            
+
             display = new WebXDisplay(width, height);
             display.animate();
             client.sendCommand(new WebXCommand(WebXCommandType.WINDOWS));
             const container = document.getElementById('canvas-frame');
             container.appendChild(display.renderer.domElement);
             container.style.maxWidth = display.screenWidth + 'px';
+
+            // Attach a mouse to the canvas container
+            const mouse = new WebXMouse(container);
+
+            mouse.handleMouseDown = mouse.handleMouseUp = mouse.handleMouseMove = (mouseState => {
+                console.log('Mouse event', mouseState);
+            });
 
         } else {
             display.updateWindows(message.windows.map((window: { id: number; rectangle: { x: number; y: number; width: number; height: number; }; }) => {
@@ -42,8 +50,5 @@ document.addEventListener("DOMContentLoaded", function (event) {
             }));
         }
     }
-
-
-
 
 });

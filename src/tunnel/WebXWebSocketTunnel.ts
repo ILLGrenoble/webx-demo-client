@@ -3,10 +3,13 @@ import { WebXTunnel } from "./WebXTunnel";
 export class WebXWebSocketTunnel implements WebXTunnel {
 
     private socket: WebSocket;
+    private url: string;
 
-    constructor(private url: string) {
-
+    constructor(url: string, options: any = {}) {
+        const parameters = new URLSearchParams(options);
+        this.url = `${url}?${parameters}`
     }
+
 
     connect(): Promise<Event> {
         const url = this.url;

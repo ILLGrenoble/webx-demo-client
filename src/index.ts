@@ -22,10 +22,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
     client.onMessage = (message) => {
         if (message.type === 'Connection') {
             const { width, height } = message.screenSize;
+            
             display = new WebXDisplay(width, height);
             display.animate();
             client.sendCommand(new WebXCommand(WebXCommandType.WINDOWS));
-            document.body.appendChild(display.renderer.domElement);
+            const container = document.getElementById('canvas-frame');
+            container.appendChild(display.renderer.domElement);
+            container.style.maxWidth = display.screenWidth + 'px';
+
         } else {
             display.updateWindows(message.windows.map((window: { id: number; rectangle: { x: number; y: number; width: number; height: number; }; }) => {
                 return {

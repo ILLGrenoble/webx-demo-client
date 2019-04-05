@@ -8,7 +8,11 @@ canvas {
     height: 100%;
 }
 
-
-.hello-world {
-    color: red;
+.canvas-container-outer {
+    background-color: #000044;
 }
+
+.canvas-container {
+    margin: auto;
+}
+

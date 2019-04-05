@@ -7,13 +7,27 @@ export class WebXDisplay {
     private _camera: THREE.OrthographicCamera;
     private _renderer: THREE.WebGLRenderer;
 
+    private _screenWidth = 10;
+    private _screenHeight = 10;
+
     private _windows: WebXWindow[] = [];
 
     public get renderer(): THREE.WebGLRenderer {
         return this._renderer;
     }
 
+    public get screenWidth(): number {
+        return this._screenWidth;
+    }
+
+    public get screenHeight(): number {
+        return this._screenHeight;
+    }
+
     constructor(screenWidth: number, screenHeight: number) {
+        this._screenWidth = screenWidth;
+        this._screenHeight = screenHeight;
+
         this._scene = new THREE.Scene();
         // this._camera = new THREE.OrthographicCamera(0, screenWidth, 0, screenHeight, 0.1, 100);
         this._camera = new THREE.OrthographicCamera(0, screenWidth, 0, screenHeight, 0.1, 10000);
@@ -21,7 +35,7 @@ export class WebXDisplay {
         this._camera.lookAt(new Vector3(0, 0 ,0));
 
         this._renderer = new THREE.WebGLRenderer();
-        this._renderer.setSize(screenWidth, screenHeight);
+        this._renderer.setSize(screenWidth, screenHeight, false);
     }
 
     animate(): void {

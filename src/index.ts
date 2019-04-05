@@ -5,7 +5,11 @@ import {WebXWindow} from './display/WebXWindow';
 
 document.addEventListener("DOMContentLoaded", function (event) {
     const display: WebXDisplay = new WebXDisplay(1024, 768);
-    document.body.appendChild(display.renderer.domElement);
+
+    const container = document.getElementById('canvas-frame');
+    container.appendChild(display.renderer.domElement);
+    container.style.maxWidth = display.screenWidth + 'px';
+
 
     display.updateWindows([{
         id: 0, 

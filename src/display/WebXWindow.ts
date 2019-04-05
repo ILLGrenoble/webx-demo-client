@@ -24,6 +24,7 @@ export class WebXWindow {
 
     private _x: number;
     private _y: number;
+    private _z: number;
     private _width: number = 1;
     private _height: number = 1;
 
@@ -45,6 +46,11 @@ export class WebXWindow {
         this.updatePosition();
     }
 
+    public set z(value: number) {
+        this._z = value;
+        this.updatePosition();
+    }
+
     public set width(value: number) {
         this._width = value;
         this.updateScale();
@@ -59,35 +65,37 @@ export class WebXWindow {
 
     private static PLANE_GEOMETRY: THREE.Geometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
 
-    constructor(configuration: {id: number, x: number, y: number, width: number, height: number}) {
+    constructor(configuration: {id: number, x: number, y: number, width: number, z: number, height: number}) {
         this._colorIndex = WebXWindow.COLOR_INDEX++;
         if (this._colorIndex == WebXWindow._colorArray.length) {
             WebXWindow.COLOR_INDEX = 0;
         }
 
         this._material = new THREE.MeshBasicMaterial( { color: WebXWindow._colorArray[this._colorIndex] } );
+        this._material.side = THREE.BackSide;
 
-        const {id, x, y, width, height} = configuration;
+        const {id, x, y, z, width, height} = configuration;
         this._id = id;
         this._mesh = new THREE.Mesh(WebXWindow.PLANE_GEOMETRY, this._material);
-        this._mesh.rotateY(Math.PI);
 
         this._x = x;
         this._y = y;
+        this._z = z;
         this._width = width;
         this._height = height;
         this.updateScale();
         this.updatePosition();
     }
 
-    public setRectangle(x: number, y: number, width: number, height: number): void {
+    public setRectangle(x: number, y: number, z: number, width: number, height: number): void {
         this._x = x;
         this._y = y;
+        this._z = z;
         this._width = width;
         this._height = height;
         
         this.updateScale();
-        this.updatePosition;
+        this.updatePosition();
     }
 
     private updateScale(): void {
@@ -95,6 +103,6 @@ export class WebXWindow {
     }
 
     private updatePosition(): void {
-        this._mesh.position.set(this._x + 0.5 * this._width, this._y + 0.5* this._height, 0);
+        this._mesh.position.set(this._x + 0.5 * this._width, this._y + 0.5* this._height, this._z);
     }
 }

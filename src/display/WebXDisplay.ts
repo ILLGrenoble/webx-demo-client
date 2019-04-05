@@ -7,8 +7,6 @@ export class WebXDisplay {
     private _camera: THREE.OrthographicCamera;
     private _renderer: THREE.WebGLRenderer;
 
-    private _windowGeometry: THREE.Geometry;
-
     private _windows: WebXWindow[] = [];
 
     public get renderer(): THREE.WebGLRenderer {
@@ -22,8 +20,6 @@ export class WebXDisplay {
         this._camera.position.z = 10;
         this._camera.lookAt(new Vector3(0, 0 ,0));
 
-        this._windowGeometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
-
         this._renderer = new THREE.WebGLRenderer();
         this._renderer.setSize(screenWidth, screenHeight);
     }
@@ -35,6 +31,7 @@ export class WebXDisplay {
 
     addWindow(window: WebXWindow): void {
         if (this._windows.find(existingWindow => existingWindow.id === window.id) == null) {
+            // console.log("Adding window ", window.id)
             this._windows.push(window);
             this._scene.add(window.mesh);
         }
@@ -42,32 +39,39 @@ export class WebXDisplay {
 
     removeWindow(window: WebXWindow): void {
         if (this._windows.find(existingWindow => existingWindow.id === window.id) != null) {
+            // console.log("Removing window ", window.id)
             this._windows = this._windows.filter(existingWindow => existingWindow.id !== window.id);
             this._scene.remove(window.mesh);
         }
     }
 
-    updateWindows(windows: [{id: number, x: number, y: number, width: number, height: number}]): void {
-        windows.forEach(window => {
+    updateWindows(windows: Array<{id: number, x: number, y: number, width: number, height: number}>): void {
+        // Get windows to remove
+        const deadWindows = this._windows.filter(existingWindow => windows.find(window => window.id === existingWindow.id) == null);
+
+        // Remove windows that no longer exist
+        deadWindows.forEach(deadWindow => this.removeWindow(deadWindow));
+
+        // Update and add windows
+        windows.forEach((window, index) => {
             let webXWindow = this.getWindow(window.id);
             if (webXWindow == null) {
-               webXWindow = new WebXWindow({
-                id: window.id, 
-                x: window.x, 
-                y: window.y, 
-                width: window.width, 
-                height: window.height}); 
+                // Add a new window
+                webXWindow = new WebXWindow({
+                    id: window.id, 
+                    x: window.x, 
+                    y: window.y,
+                    z: index,
+                    width: window.width, 
+                    height: window.height}); 
 
                 this.addWindow(webXWindow);
 
             } else {
-                webXWindow.setRectangle(window.x, window.y, window.width, window.height);
+                // Update window
+                webXWindow.setRectangle(window.x, window.y, index, window.width, window.height);
             }
         });
-
-        // TODO the order of windows changes
-
-        // TODO Delete any windows that no longer exist
     }
 
     getWindow(id: number): WebXWindow {

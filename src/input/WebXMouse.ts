@@ -1,6 +1,21 @@
-// @TODO Implement a mouse state and touchmove, touch start etc
-// Perhaps use rxjs with subscriptions?
+import { WebXMouseState } from './WebXMouseState';
+
 export class WebXMouse {
+
+    /**
+     * The current mouse state. The properties of this state are updated when
+     * mouse events fire. This state object is also passed in as a parameter to
+     * the handler of any mouse events.
+     */
+    private currentMouseState = new WebXMouseState({
+        x: 0,
+        y: 0,
+        left: false,
+        middle: false,
+        right: false,
+        up: false,
+        down: false
+    });
 
     /**
      * Provides cross-browser mouse events for a given element
@@ -9,43 +24,117 @@ export class WebXMouse {
     constructor(private element: HTMLElement) {
         this.bindListeners();
     }
+
+    /**
+     * Cancel a mouse event
+     * @param event the event to cancel
+     */
+    private cancelEvent(event: Event): void {
+        event.stopPropagation();
+        if (event.preventDefault) {
+            event.preventDefault();
+        }
+        event.returnValue = false;
+    }
+
     /**
      * Bind the mouse listeners to the given element
      */
     private bindListeners(): void {
         const element = this.element;
 
-        element.addEventListener('mousemove', (event: MouseEvent) => {
-            // do logic here
-            this.handleMouseMove(event);
-        });
-        element.addEventListener('mousedown', (event: MouseEvent) => {
-            // do logic here
-            this.handleMouseDown(event);
-        });
-        element.addEventListener('mouseup', (event: MouseEvent) => {
-            // do logic here
-            this.handleMouseUp(event);
-        });
-
-        element.addEventListener('mouseout', (event: MouseEvent) => {
-            // do logic here
-
-        });
-
+        element.addEventListener("contextmenu", this.processContextMenu.bind(this), false);
+        element.addEventListener('mousemove', this.processMouseMove.bind(this));
+        element.addEventListener('mousedown', this.processMouseDown.bind(this));
+        element.addEventListener('mouseup', this.processMouseUp.bind(this));
+        element.addEventListener('mouseout', this.processMouseOut.bind(this));
         ['DOMMouseScroll', 'mousewheel', 'wheel'].forEach(listener => {
-            element.addEventListener(listener, (event: MouseEvent) => {
-                // do logic here
-
-            });
+            element.addEventListener(listener, this.processMouseWheel.bind(this));
         });
+    }
+
+    /**
+     * Process mouse up event
+     * @param event the mouse event
+     */
+    private processMouseUp(event: MouseEvent): void {
+        const currentMouseState = this.currentMouseState;
+        switch (event.button) {
+            case 0:
+                currentMouseState.left = false;
+                break;
+            case 1:
+                currentMouseState.middle = false;
+                break;
+            case 2:
+                currentMouseState.right = false;
+                break;
+        }
+        this.handleMouseUp(currentMouseState);
+    }
+
+
+    /**
+     * Process mouse down event
+     * @param event the mouse event
+     */
+    private processMouseDown(event: MouseEvent): void {
+        const currentMouseState = this.currentMouseState;
+        switch (event.button) {
+            case 0:
+                currentMouseState.left = true;
+                break;
+            case 1:
+                currentMouseState.middle = true;
+                break;
+            case 2:
+                currentMouseState.right = true;
+                break;
+        }
+        this.handleMouseDown(currentMouseState);
+    }
+
+
+    /**
+     * Process mouse wheel event
+     * @param event the mouse event
+     */
+    private processMouseWheel(event: MouseEvent): void {
+
+    }
+
+
+    /**
+     * Process mouse out event
+     * @param event the mouse event
+     */
+    private processMouseOut(event: MouseEvent): void {
+
+    }
+
+    /**
+     * Process the mouse move event
+     * @param event the mouse event
+     */
+    private processMouseMove(event: Event): void {
+
+    }
+
+
+    /**
+     * Process the context menu event
+     * Block context menu so right-click gets sent properly
+     * @param event the mouse event
+     */
+    private processContextMenu(event: MouseEvent): void {
+        this.cancelEvent(event);
     }
 
     /**
      * Fired whenever the user moves the mouse
      * @param mouseState the current mouse state
      */
-    handleMouseMove(mouseState: any): void {
+    handleMouseMove(mouseState: WebXMouseState): void {
         throw new Error('Handler not implemented');
     }
 
@@ -57,11 +146,9 @@ export class WebXMouse {
      * 
      * @param mouseState the current mouse state
      */
-    handleMouseDown(mouseState: any): void {
+    handleMouseDown(mouseState: WebXMouseState): void {
         throw new Error('Handler not implemented');
-
     }
-
 
     /**
      * Fired whenever a mouse button is effectively released. This can happen
@@ -70,7 +157,7 @@ export class WebXMouse {
      * gesture initiated by dragging two fingers up or down, etc.
      * @param mouseState the current mouse state
      */
-    handleMouseUp(mouseState: any): void {
+    handleMouseUp(mouseState: WebXMouseState): void {
         throw new Error('Handler not implemented');
     }
 

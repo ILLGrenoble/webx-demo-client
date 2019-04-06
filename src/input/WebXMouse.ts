@@ -33,10 +33,15 @@ export class WebXMouse {
     /**
      * The number of pixels to scroll per page.
      */
-    private _pixelsPerPage: number;
+    private _pixelsPerPage: number = this._pixelsPerLine * 16;
+
 
     public get scrollThreshold(): number {
         return this._scrollThreshold;
+    }
+
+    public set scrollThreshold(scrollThreshold: number) {
+        this._scrollThreshold = scrollThreshold;
     }
 
     public get pixelsPerLine(): number {
@@ -45,15 +50,15 @@ export class WebXMouse {
 
     public set pixelsPerLine(value: number) {
         this._pixelsPerLine = value;
+        this._pixelsPerPage = value * 16;
     }
-
 
     /**
      * Provides cross-browser mouse events for a given element
      * @param element The element to use to provide mouse events
      */
     constructor(private element: HTMLElement, config?: { pixelsPerLine?: number, scrollThreshold?: number }) {
-        if(config) {
+        if (config) {
             this.setConfiguration(config);
         }
         this.bindListeners();
@@ -65,8 +70,9 @@ export class WebXMouse {
      */
     private setConfiguration(config: { pixelsPerLine?: number, scrollThreshold?: number }): void {
         const { pixelsPerLine, scrollThreshold } = config;
-        this._pixelsPerLine = pixelsPerLine || this._pixelsPerLine;
-        this._scrollThreshold = scrollThreshold || this._scrollThreshold;
+        this.pixelsPerLine = pixelsPerLine || this._pixelsPerLine;
+        this.scrollThreshold = scrollThreshold || this._scrollThreshold;
+        this._pixelsPerPage = this.pixelsPerLine * 16;
     }
 
     /**

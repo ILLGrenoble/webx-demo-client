@@ -17,12 +17,56 @@ export class WebXMouse {
         down: false
     });
 
+
+    /**
+     * The minimum amount of pixels scrolled required for a single scroll button
+     * click.
+     */
+    private _scrollThreshold: number = 53;
+
+    /**
+     * The number of pixels to scroll per line.
+     */
+
+    private _pixelsPerLine: number = 18;
+
+    /**
+     * The number of pixels to scroll per page.
+     */
+    private _pixelsPerPage: number;
+
+    public get scrollThreshold(): number {
+        return this._scrollThreshold;
+    }
+
+    public get pixelsPerLine(): number {
+        return this._pixelsPerLine;
+    }
+
+    public set pixelsPerLine(value: number) {
+        this._pixelsPerLine = value;
+    }
+
+
     /**
      * Provides cross-browser mouse events for a given element
      * @param element The element to use to provide mouse events
      */
-    constructor(private element: HTMLElement) {
+    constructor(private element: HTMLElement, config?: { pixelsPerLine?: number, scrollThreshold?: number }) {
+        if(config) {
+            this.setConfiguration(config);
+        }
         this.bindListeners();
+    }
+
+    /**
+     * Set the mouse configuration
+     * @param config the configuration
+     */
+    private setConfiguration(config: { pixelsPerLine?: number, scrollThreshold?: number }): void {
+        const { pixelsPerLine, scrollThreshold } = config;
+        this._pixelsPerLine = pixelsPerLine || this._pixelsPerLine;
+        this._scrollThreshold = scrollThreshold || this._scrollThreshold;
     }
 
     /**

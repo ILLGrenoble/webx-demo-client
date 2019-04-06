@@ -1,9 +1,12 @@
 import { WebXTunnel } from "./WebXTunnel";
+import { WebXCommand, WebXCommandResponse } from "../command";
 
 export class WebXWebSocketTunnel implements WebXTunnel {
 
     private socket: WebSocket;
     private url: string;
+
+    private requests: Map<number, WebXCommandResponse<any>> = new Map<number, WebXCommandResponse<any>>();
 
     constructor(url: string, options: any = {}) {
         const parameters = new URLSearchParams(options);
@@ -18,8 +21,23 @@ export class WebXWebSocketTunnel implements WebXTunnel {
             this.socket.onopen = (event: Event) => resolve(event);
             this.socket.onerror = (event: Event) => reject(event);
             this.socket.onclose = this.handleClose.bind(this);
-            this.socket.onmessage = (message: any) => this.handleMessage(message.data);
+            this.socket.onmessage = (message: any) => this.onMessage(message.data);
         });
+    }
+
+    onMessage(data: any): void {
+        const message = JSON.parse(data);
+
+        // Handle any blocking requests
+        if (message.commandId != null && this.requests.get(message.commandId) != null) {
+            const request = this.requests.get(message.commandId);
+            this.requests.delete(message.commandId);
+            request.resolve(message)
+
+        } else {
+            // Send async message
+            this.handleMessage(message);
+        }
     }
 
     handleMessage(message: any): void {
@@ -38,8 +56,22 @@ export class WebXWebSocketTunnel implements WebXTunnel {
         throw new Error("Method not implemented.");
     }
 
-    sendCommand(command: any): void {
-        this.socket.send(command);
+    sendCommand(command: WebXCommand): void {
+        const json = command.toJson();
+        this.socket.send(json);
+    }
+    
+    sendRequest(command: WebXCommand): Promise<any> {
+        const response = new WebXCommandResponse<any>(command);
+        this.requests.set(command.id, response);
+        return new Promise((resolve, reject) => {
+            const json = command.toJson();
+            this.socket.send(json);
+
+            response.then(message => {
+                resolve(message);
+            });
+        });
     }
 
 }

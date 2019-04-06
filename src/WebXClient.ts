@@ -1,5 +1,5 @@
 import { WebXTunnel } from "./tunnel";
-import { WebXCommand } from "./command/WebXCommand";
+import { WebXCommand, WebXCommandResponse, WebXCommandType } from "./command";
 
 export class WebXClient {
 
@@ -8,22 +8,32 @@ export class WebXClient {
         tunnel.handleMessage = this.handleMessage.bind(this);
     }
 
-    connect(): Promise<Event> {
-        return this.tunnel.connect();
+    connect(): Promise<any> {
+        return this.tunnel.connect()
+            .then(data => {
+                // When connect get configuration from server
+                return this.sendRequest(new WebXCommand(WebXCommandType.CONNECT));
+            });
     }
 
     sendCommand(command: WebXCommand): void {
         console.log(`Sending command: `, command);
-        const json = command.toJson();
-        this.tunnel.sendCommand(json);
+        this.tunnel.sendCommand(command);
     }
 
-    handleMessage(data: any) {
-        this.onMessage(JSON.parse(data));
-
+    sendRequest(command: WebXCommand): Promise<any> {
+        console.log(`Sending request: `, command);
+        return this.tunnel.sendRequest(command);
     }
 
-    onMessage(data: any) {
+    handleMessage(message: any) {
+        if (message.type === 'Windows') {
+            const windows = message.windows;
+            this.onWindows(windows);
+        }
+    }
+
+    onWindows(windows: Array<{id: number, x: number, y: number, width: number, height: number}>):void {
         throw new Error('Method not implemented');
     }
 

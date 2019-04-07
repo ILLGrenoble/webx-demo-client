@@ -9,14 +9,18 @@ export class WebXCommand {
         return this._id;
     }
 
-    constructor(private type: WebXCommandType) {
+    public get type(): WebXCommandType {
+        return this._type;
+    }
+
+    constructor(private _type: WebXCommandType) {
         this._id = WebXCommand.COMMAND_COUNTER++;
     }
 
     toJson() {
         return JSON.stringify({
             id: this._id,
-            type: this.type
+            type: this._type
         });
     }
 }

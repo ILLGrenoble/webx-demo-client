@@ -1,4 +1,5 @@
 import { WebXCommand } from "../command";
+import { WebXMessage } from "../message";
 
 export interface WebXTunnel {
 
@@ -10,7 +11,7 @@ export interface WebXTunnel {
     
     sendRequest(command: WebXCommand): Promise<any>;
 
-    handleMessage(message: any): void;
+    handleMessage(message: WebXMessage): void;
 
     isConnected(): boolean;
 }

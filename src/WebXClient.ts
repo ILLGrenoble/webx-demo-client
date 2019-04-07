@@ -1,5 +1,6 @@
 import { WebXTunnel } from "./tunnel";
 import { WebXCommand, WebXCommandResponse, WebXCommandType } from "./command";
+import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXConnectionMessage } from "./message";
 
 export class WebXClient {
 
@@ -8,11 +9,11 @@ export class WebXClient {
         tunnel.handleMessage = this.handleMessage.bind(this);
     }
 
-    connect(): Promise<any> {
+    connect(): Promise<WebXConnectionMessage> {
         return this.tunnel.connect()
             .then(data => {
                 // When connect get configuration from server
-                return this.sendRequest(new WebXCommand(WebXCommandType.CONNECT));
+                return this.sendRequest(new WebXCommand(WebXCommandType.CONNECT)) as Promise<WebXConnectionMessage>;
             });
     }
 
@@ -21,14 +22,14 @@ export class WebXClient {
         this.tunnel.sendCommand(command);
     }
 
-    sendRequest(command: WebXCommand): Promise<any> {
+    sendRequest(command: WebXCommand): Promise<WebXMessage> {
         console.log(`Sending request: `, command);
         return this.tunnel.sendRequest(command);
     }
 
-    handleMessage(message: any) {
-        if (message.type === 'Windows') {
-            const windows = message.windows;
+    handleMessage(message: WebXMessage) {
+        if (message.type === WebXMessageType.WINDOWS) {
+            const windows = (message as WebXWindowsMessage).windows;
             this.onWindows(windows);
         }
     }

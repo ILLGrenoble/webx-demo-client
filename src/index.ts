@@ -5,6 +5,7 @@ import { WebXClient } from "./WebXClient";
 import { WebXWebSocketTunnel } from './tunnel';
 import { WebXCommand, WebXCommandType } from './command';
 import { WebXMouse } from "./input";
+import { WebXConnectionMessage, WebXWindowsMessage } from "./message";
 
 document.addEventListener("DOMContentLoaded", function (event) {
 
@@ -14,8 +15,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     const client = new WebXClient(tunnel);
 
     let display: WebXDisplay;
-    client.connect().then(configuration => {
-        const {width, height} = configuration.screenSize;
+    client.connect().then(connectionMessage => {
+        const {width, height} = connectionMessage.screenSize;
 
         display = new WebXDisplay(width, height);
         display.animate();
@@ -26,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
         client.sendRequest(new WebXCommand(WebXCommandType.WINDOWS))
             .then(response => {
-                display.updateWindows(response.windows);
+                display.updateWindows((response as WebXWindowsMessage).windows);
             });
 
         // Attach a mouse to the canvas container
@@ -39,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             // calculate the scaled state
             // send it to the client client.sendMouseState(scaledState)
         });
-    })
+    }).catch(err => console.error(err));
 
     client.onWindows = (windows) => {
         display.updateWindows(windows);

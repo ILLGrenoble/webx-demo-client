@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {WebXWindow} from './WebXWindow';
 import { Vector3 } from 'three';
+import { WebXWindowProperties } from './WebXWindowProperties';
 
 export class WebXDisplay {
     private _scene: THREE.Scene;
@@ -59,7 +60,7 @@ export class WebXDisplay {
         }
     }
 
-    updateWindows(windows: Array<{id: number, x: number, y: number, width: number, height: number}>): void {
+    updateWindows(windows: Array<WebXWindowProperties>): void {
         // Get windows to remove
         const deadWindows = this._windows.filter(existingWindow => windows.find(window => window.id === existingWindow.id) == null);
 

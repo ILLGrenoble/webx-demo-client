@@ -1,6 +1,7 @@
 import { WebXTunnel } from "./tunnel";
 import { WebXCommand, WebXCommandResponse, WebXCommandType } from "./command";
 import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXConnectionMessage } from "./message";
+import { WebXWindowProperties } from "./display";
 
 export class WebXClient {
 
@@ -34,7 +35,7 @@ export class WebXClient {
         }
     }
 
-    onWindows(windows: Array<{id: number, x: number, y: number, width: number, height: number}>):void {
+    onWindows(windows: Array<WebXWindowProperties>):void {
         throw new Error('Method not implemented');
     }
 

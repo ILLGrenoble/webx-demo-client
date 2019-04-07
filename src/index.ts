@@ -1,11 +1,10 @@
 import "./styles.css";
-import * as THREE from 'three';
 import { WebXDisplay } from './display/WebXDisplay';
 import { WebXClient } from "./WebXClient";
 import { WebXWebSocketTunnel } from './tunnel';
 import { WebXCommand, WebXCommandType } from './command';
 import { WebXMouse } from "./input";
-import { WebXConnectionMessage, WebXWindowsMessage } from "./message";
+import { WebXWindowsMessage } from "./message";
 
 document.addEventListener("DOMContentLoaded", function (event) {
 

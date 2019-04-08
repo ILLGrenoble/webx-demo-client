@@ -30,18 +30,18 @@ export class WebXWebSocketTunnel implements WebXTunnel {
     }
 
     onMessage(data: any): void {
-        const message: WebXMessage = this.serializer.deserializeMessage(data);
+        this.serializer.deserializeMessage(data).then((message: WebXMessage) => {
+            // Handle any blocking requests
+            if (message.commandId != null && this.commandResponses.get(message.commandId) != null) {
+                const commandResponse = this.commandResponses.get(message.commandId);
+                this.commandResponses.delete(message.commandId);
+                commandResponse.resolve(message)
 
-        // Handle any blocking requests
-        if (message.commandId != null && this.commandResponses.get(message.commandId) != null) {
-            const commandResponse = this.commandResponses.get(message.commandId);
-            this.commandResponses.delete(message.commandId);
-            commandResponse.resolve(message)
-
-        } else {
-            // Send async message
-            this.handleMessage(message);
-        }
+            } else {
+                // Send async message
+                this.handleMessage(message);
+            }
+        });
     }
 
     handleMessage(message: WebXMessage): void {

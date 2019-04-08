@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { WebXTextureFactory } from './WebXTextureFactory';
+import { MeshBasicMaterial } from 'three';
 
 export class WebXWindow {
 
@@ -19,7 +21,7 @@ export class WebXWindow {
     private _id: number;
     private _geometry: THREE.Geometry;
     private _texture: THREE.Texture;
-    private _material: THREE.Material;
+    private _material: THREE.MeshBasicMaterial;
     private _mesh: THREE.Mesh;
 
     private _x: number;
@@ -71,7 +73,8 @@ export class WebXWindow {
             WebXWindow.COLOR_INDEX = 0;
         }
 
-        this._material = new THREE.MeshBasicMaterial( { color: WebXWindow._colorArray[this._colorIndex] } );
+        // this._material = new THREE.MeshBasicMaterial( { color: WebXWindow._colorArray[this._colorIndex] } );
+        this._material = new THREE.MeshBasicMaterial( {transparent: true} );
         this._material.side = THREE.BackSide;
 
         const {id, x, y, z, width, height} = configuration;
@@ -85,6 +88,13 @@ export class WebXWindow {
         this._height = height;
         this.updateScale();
         this.updatePosition();
+
+        WebXTextureFactory.instance().getTexture(this._id).then(texture => {
+            // this._material = new MeshBasicMaterial({map: texture});
+            this._material.map = texture;
+            this._material.needsUpdate = true;
+            this._mesh.material = this._material;
+        });
     }
 
     public setRectangle(x: number, y: number, z: number, width: number, height: number): void {

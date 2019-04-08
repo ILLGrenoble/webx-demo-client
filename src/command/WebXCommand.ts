@@ -13,14 +13,11 @@ export class WebXCommand {
         return this._type;
     }
 
-    constructor(private _type: WebXCommandType) {
-        this._id = WebXCommand.COMMAND_COUNTER++;
+    public get numericPayload(): number {
+        return this._numericPayload;
     }
 
-    toJson() {
-        return JSON.stringify({
-            id: this._id,
-            type: this._type
-        });
+    constructor(private _type: WebXCommandType, private _numericPayload?: number) {
+        this._id = WebXCommand.COMMAND_COUNTER++;
     }
 }

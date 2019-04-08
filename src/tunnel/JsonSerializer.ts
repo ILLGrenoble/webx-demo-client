@@ -1,8 +1,9 @@
 import { Serializer } from "./Serializer";
 import { WebXCommand } from "../command";
-import { WebXWindowsMessage, WebXMessage } from "../message";
+import { WebXWindowsMessage, WebXMessage, WebXImageMessage } from "../message";
 import { WebXConnectionMessage } from "../message/WebXConnectionMessage";
 import { WebXWindowProperties } from "../display";
+import { Texture, LinearFilter } from "three";
 
 export class JsonSerializer implements Serializer {
 
@@ -11,21 +12,43 @@ export class JsonSerializer implements Serializer {
             id: command.id,
             type: command.type
         };
+        if (command.numericPayload) {
+            json.numericPayload = command.numericPayload;
+        }
 
         return JSON.stringify(json);
     }
 
-    deserializeMessage(data: string): WebXMessage {
+    deserializeMessage(data: any): Promise<WebXMessage> {
         const json: any = JSON.parse(data);
 
-        if (json.type === 'Connection') {
-            return new WebXConnectionMessage(json.screenSize, json.commandId)
+        const promise: Promise<WebXMessage> = new Promise<WebXMessage>((resolve, reject) => {
+            if (json.type === 'Connection') {
+                resolve(new WebXConnectionMessage(json.screenSize, json.commandId));
 
-        } else if (json.type === 'Windows') {
-            const windows = json.windows as Array<{id: number, x: number, y: number, width: number, height: number}>;
-            return new WebXWindowsMessage(windows.map(window  => new WebXWindowProperties(window as {id: number, x: number, y: number, width: number, height: number})), json.commandId);
-        }
+            } else if (json.type === 'Windows') {
+                const windows = json.windows as Array<{id: number, x: number, y: number, width: number, height: number}>;
+                resolve(new WebXWindowsMessage(windows.map(window  => new WebXWindowProperties(window as {id: number, x: number, y: number, width: number, height: number})), json.commandId));
+            
+            } else if (json.type === 'Image') {
+                const data = 'data:image/png;base64,' + json.data;
+                const windowId = json.windowId;
+                const image: HTMLImageElement = new Image();
+                const texture: Texture = new Texture(image);
+                image.onload = () => {
+                    texture.needsUpdate = true;
+                    texture.flipY = false;
+                    texture.minFilter = LinearFilter;
+                    
+                    resolve(new WebXImageMessage(windowId, texture, json.commandId));
+                }
+                image.src = data;
 
-        return null;
+            } else {
+                resolve(null);
+            }
+        });
+
+        return promise;
     }
 }

@@ -2,12 +2,14 @@ import { WebXTunnel } from "./tunnel";
 import { WebXCommand, WebXCommandResponse, WebXCommandType } from "./command";
 import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXConnectionMessage } from "./message";
 import { WebXWindowProperties } from "./display";
+import { WebXTextureFactory } from "./display/WebXTextureFactory";
 
 export class WebXClient {
 
 
     constructor(private tunnel: WebXTunnel) {
         tunnel.handleMessage = this.handleMessage.bind(this);
+        WebXTextureFactory.initInstance(tunnel);
     }
 
     connect(): Promise<WebXConnectionMessage> {

@@ -5,5 +5,5 @@ export interface Serializer {
 
     serializeCommand(command: WebXCommand): any;
 
-    deserializeMessage(data: any): WebXMessage;
+    deserializeMessage(data: any): Promise<WebXMessage>;
 }

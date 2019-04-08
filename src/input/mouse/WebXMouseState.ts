@@ -110,4 +110,10 @@ export class WebXMouseState {
         this._down = down;
     }
 
+    public releaseButtons(): void {
+        this._left = false;
+        this._middle = false;
+        this._right = false;
+    }
+
 }

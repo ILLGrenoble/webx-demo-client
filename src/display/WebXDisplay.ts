@@ -93,4 +93,9 @@ export class WebXDisplay {
         return this._windows.find(window => window.id === id);
     }
 
+    getScale(): number {
+        const scale = (1.0 *this._renderer.domElement.offsetWidth) / this._screenWidth;
+        return scale;
+    }
+
 }

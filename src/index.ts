@@ -3,7 +3,7 @@ import { WebXDisplay } from './display/WebXDisplay';
 import { WebXClient } from "./WebXClient";
 import { WebXWebSocketTunnel } from './tunnel';
 import { WebXCommand, WebXCommandType } from './command';
-import { WebXMouse } from "./input";
+import { WebXMouse, WebXKeyboard } from "./input";
 import { WebXWindowsMessage } from "./message";
 
 document.addEventListener("DOMContentLoaded", function (event) {
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     let display: WebXDisplay;
     client.connect().then(connectionMessage => {
-        const {width, height} = connectionMessage.screenSize;
+        const { width, height } = connectionMessage.screenSize;
 
         display = new WebXDisplay(width, height);
         display.animate();
@@ -32,13 +32,19 @@ document.addEventListener("DOMContentLoaded", function (event) {
         // Attach a mouse to the canvas container
         const mouse = new WebXMouse(container);
 
-        mouse.handleMouseDown = mouse.handleMouseUp = mouse.handleMouseMove = (mouseState => {
-            console.log('Mouse event', mouseState);
-            // just as a reminder
-            // get the current mouse state and scale of the display
-            // calculate the scaled state
-            // send it to the client client.sendMouseState(scaledState)
+        mouse.onMouseDown = mouse.onMouseUp = mouse.onMouseMove = mouse.onMouseOut = (mouseState => {
+            const scale = display.getScale();
+            mouseState.x = mouseState.x / scale;
+            mouseState.y = mouseState.y / scale;
+            console.log(JSON.stringify(mouseState));
         });
+
+        // Attach a keyboard to the canvas container
+        const keyboard = new WebXKeyboard(document.body)
+        keyboard.onKeyDown = (key => {
+            console.log('On keydown', JSON.stringify(key));
+        });
+
     }).catch(err => console.error(err));
 
     client.onWindows = (windows) => {

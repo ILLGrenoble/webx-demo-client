@@ -1,5 +1,5 @@
 export enum WebXMessageType {
     CONNECT = 1,
     WINDOWS = 2,
-    IMAGE = 2
+    IMAGE = 3
 }

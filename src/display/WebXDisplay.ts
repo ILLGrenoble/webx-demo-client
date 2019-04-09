@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {WebXWindow} from './WebXWindow';
 import { Vector3 } from 'three';
 import { WebXWindowProperties } from './WebXWindowProperties';
+import { Texture } from 'three';
 
 export class WebXDisplay {
     private _scene: THREE.Scene;
@@ -87,6 +88,11 @@ export class WebXDisplay {
                 webXWindow.setRectangle(window.x, window.y, index, window.width, window.height);
             }
         });
+    }
+
+    updateImage(windowId: number, texture: Texture): void {
+        const window:WebXWindow = this.getWindow(windowId);
+        window.updateTexture(texture);
     }
 
     getWindow(id: number): WebXWindow {

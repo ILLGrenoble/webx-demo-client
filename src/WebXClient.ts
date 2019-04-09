@@ -1,8 +1,9 @@
 import { WebXTunnel } from "./tunnel";
 import { WebXCommand, WebXCommandResponse, WebXCommandType } from "./command";
-import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXConnectionMessage } from "./message";
+import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXConnectionMessage, WebXImageMessage } from "./message";
 import { WebXWindowProperties } from "./display";
 import { WebXTextureFactory } from "./display/WebXTextureFactory";
+import { Texture } from "three";
 
 export class WebXClient {
 
@@ -34,10 +35,18 @@ export class WebXClient {
         if (message.type === WebXMessageType.WINDOWS) {
             const windows = (message as WebXWindowsMessage).windows;
             this.onWindows(windows);
-        }
+        
+        } else if (message.type === WebXMessageType.IMAGE) {
+            const imageMessage = (message as WebXImageMessage);
+            this.onImage(imageMessage.windowId, imageMessage.texture);
+        } 
     }
 
     onWindows(windows: Array<WebXWindowProperties>):void {
+        throw new Error('Method not implemented');
+    }
+
+    onImage(windowId: number, texture: Texture):void {
         throw new Error('Method not implemented');
     }
 

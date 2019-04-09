@@ -51,4 +51,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
         display.updateWindows(windows);
     }
 
+    client.onImage = (windowId, texture) => {
+        display.updateImage(windowId, texture);
+    }
+
 });

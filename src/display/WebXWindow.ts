@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { WebXTextureFactory } from './WebXTextureFactory';
-import { MeshBasicMaterial } from 'three';
+import { MeshBasicMaterial, Texture } from 'three';
 
 export class WebXWindow {
 
@@ -89,12 +89,7 @@ export class WebXWindow {
         this.updateScale();
         this.updatePosition();
 
-        WebXTextureFactory.instance().getTexture(this._id).then(texture => {
-            // this._material = new MeshBasicMaterial({map: texture});
-            this._material.map = texture;
-            this._material.needsUpdate = true;
-            this._mesh.material = this._material;
-        });
+        WebXTextureFactory.instance().getTexture(this._id).then(texture => this.updateTexture(texture));
     }
 
     public setRectangle(x: number, y: number, z: number, width: number, height: number): void {
@@ -106,6 +101,13 @@ export class WebXWindow {
         
         this.updateScale();
         this.updatePosition();
+    }
+
+    public updateTexture(texture: Texture): void {
+        // TODO Dispose of previous texture?
+        this._material.map = texture;
+        this._material.needsUpdate = true;
+        this._mesh.material = this._material;
     }
 
     private updateScale(): void {

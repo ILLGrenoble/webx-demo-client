@@ -41,12 +41,39 @@ export class WebXKeyboard {
       * pressed, the value of pressed for that keysym will be true. If a key
       * is not currently pressed, it will not be defined. 
       */
-    private _pressed = new Map<number, boolean>();
+    private _pressed: Array<number> = [];
 
     /**
      * All modifiers and their states.
      */
     private _modifiers = new WebXKeyboardModifierState();
+
+    /**
+     * Timeout before key repeat starts.
+     * @private
+     */
+    private keyRepeatTimeout: number = null;
+
+    /**
+     * Interval which presses and releases the last key pressed while that
+     * key is still being held down.
+     */
+    private keyRepeatInterval: number = null;
+
+    private static nonRepeatableKeys: Array<number> = [
+        0xFE03, // ISO Level 3 Shift (AltGr)
+        0xFFE1, // Left shift
+        0xFFE2, // Right shift
+        0xFFE3, // Left ctrl 
+        0xFFE4, // Right ctrl 
+        0xFFE5, // Caps Lock
+        0xFFE7, // Left meta 
+        0xFFE8, // Right meta 
+        0xFFE9, // Left alt
+        0xFFEA, // Right alt
+        0xFFEB, // Left hyper
+        0xFFEC  // Right hyper
+    ];
 
     /**
      * Create a new keyboard instance
@@ -112,11 +139,17 @@ export class WebXKeyboard {
         this.onKeyUp(event);
     }
 
+    /**
+     * Create a new keyboard down event
+     */
     private createKeydownEvent(): WebXKeydownEvent {
         return new WebXKeydownEvent();
     }
 
 
+    /**
+     * Create a new key press event
+     */
     private createKeyPressEvent(): WebXKeyPressEvent {
         return new WebXKeyPressEvent();
     }
@@ -142,10 +175,44 @@ export class WebXKeyboard {
     }
 
     /**
+     * Check if a given key is pressed down
+     * @param key the key to check
+     */
+    public isKeyPressed(key: number): boolean {
+        return this._pressed[key] ? true : false;
+    }
+
+
+    /**
+     * Check if a given key symbol is repeatable
+     * @param keySymbol the key to check
+     */
+    public isKeyRepeatable(keySymbol: number): boolean {
+        const nonRepeatableKeys = WebXKeyboard.nonRepeatableKeys;
+        return nonRepeatableKeys[keySymbol] ? false : true;
+    }
+
+
+    /**
+    * Returns true if the given keysym corresponds to a printable character,
+    * false otherwise.
+    *
+    * @param key the key symbol to check
+    *
+    * @returns  true if the given keysym corresponds to a printable character, false otherwise.
+    */
+    private isPrintable(key: number) {
+        // Keysyms with Unicode equivalents are printable
+        return (key >= 0x00 && key <= 0xFF)
+            || (key & 0xFFFF0000) === 0x01000000;
+
+    };
+
+    /**
      * Resets the state of this keyboard
      */
     public reset(): void {
-
+        this._pressed.forEach(this.release.bind(this));
     }
 
     /**
@@ -153,7 +220,11 @@ export class WebXKeyboard {
      * @param message the string to type
      */
     public type(message: string): void {
-
+        for (const char of message) {
+            // @TODO
+            // press down
+            // and then release
+        }
     }
 
     /**
@@ -163,15 +234,63 @@ export class WebXKeyboard {
      * @param keysym the keysym of the key to press
      * @return {boolean} true if event should not be canceled, false otherwise.
      */
-    public press(keysym: number): boolean {
-        return false;
+    public press(keysym: number): void {
+        if (keysym == null) {
+            return;
+        }
+        console.log('Pressed key', keysym);
+        if (this.isKeyRepeatable(keysym)) {
+            console.log('Key is repeatable', keysym);
+            this._pressed.push(keysym);
+            this.clearKeyRepeatTimers();
+            this.setKeyRepeatTimeout(keysym);
+        }
     }
 
     /**
      * Marks a key as released, firing the keyup event if registered
      * @param keysym the keysym of the key to release.
      */
-    public release(keysym: number): void {
-
+    public release(key: number): void {
+        if (this.isKeyPressed(key)) {
+            console.log('Releasing key', key);
+            delete this._pressed[key];
+            this.clearKeyRepeatTimers();
+            // send key event
+            this.onKeyUp(key);
+        }
     }
+
+    /**
+     * Set the key repeat interval for a given timeout
+     * @param key the key to repeat
+     */
+    public setKeyRepeatInterval(key: number): void {
+        console.log('Setting key repeat interval');
+        const timeout = 50;
+        this.keyRepeatInterval = setInterval(() => {
+            this.onKeyUp(key);
+            this.onKeyDown(key);
+        }, timeout);
+    }
+
+    /**
+     * Set the key repeat timeout for a given timeout
+     * @param key the key to repeat
+     */
+    public setKeyRepeatTimeout(key: number): void {
+        const timeout = 500;
+        this.keyRepeatTimeout = setTimeout(() => {
+            this.setKeyRepeatInterval(key);
+        }, timeout)
+    }
+
+    /**
+     * Clear the key repeat timers
+     */
+    public clearKeyRepeatTimers(): void {
+        clearTimeout(this.keyRepeatTimeout);
+        clearInterval(this.keyRepeatInterval);
+    }
+
 }

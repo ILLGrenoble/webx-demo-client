@@ -89,7 +89,9 @@ export class WebXWindow {
         this.updateScale();
         this.updatePosition();
 
-        WebXTextureFactory.instance().getTexture(this._id).then(texture => this.updateTexture(texture));
+        WebXTextureFactory.instance().getTexture(this._id).then(response => {
+            this.updateTexture(response.depth, response.texture);
+        });
     }
 
     public setRectangle(x: number, y: number, z: number, width: number, height: number): void {
@@ -103,7 +105,9 @@ export class WebXWindow {
         this.updatePosition();
     }
 
-    public updateTexture(texture: Texture): void {
+    public updateTexture(depth: number, texture: Texture): void {
+        this._material.transparent = (depth == 32);
+
         // TODO Dispose of previous texture?
         this._material.map = texture;
         this._material.needsUpdate = true;

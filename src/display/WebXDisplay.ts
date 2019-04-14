@@ -90,9 +90,9 @@ export class WebXDisplay {
         });
     }
 
-    updateImage(windowId: number, texture: Texture): void {
+    updateImage(windowId: number, depth: number, texture: Texture): void {
         const window:WebXWindow = this.getWindow(windowId);
-        window.updateTexture(texture);
+        window.updateTexture(depth, texture);
     }
 
     getWindow(id: number): WebXWindow {

@@ -33,6 +33,7 @@ export class JsonSerializer implements Serializer {
             } else if (json.type === 'Image') {
                 const data = 'data:image/png;base64,' + json.data;
                 const windowId = json.windowId;
+                const depth = json.depth;
                 const image: HTMLImageElement = new Image();
                 const texture: Texture = new Texture(image);
                 image.onload = () => {
@@ -40,7 +41,7 @@ export class JsonSerializer implements Serializer {
                     texture.flipY = false;
                     texture.minFilter = LinearFilter;
                     
-                    resolve(new WebXImageMessage(windowId, texture, json.commandId));
+                    resolve(new WebXImageMessage(windowId, depth, texture, json.commandId));
                 }
                 image.src = data;
 

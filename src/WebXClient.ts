@@ -38,7 +38,7 @@ export class WebXClient {
         
         } else if (message.type === WebXMessageType.IMAGE) {
             const imageMessage = (message as WebXImageMessage);
-            this.onImage(imageMessage.windowId, imageMessage.texture);
+            this.onImage(imageMessage.windowId, imageMessage.depth, imageMessage.texture);
         } 
     }
 
@@ -46,7 +46,7 @@ export class WebXClient {
         throw new Error('Method not implemented');
     }
 
-    onImage(windowId: number, texture: Texture):void {
+    onImage(windowId: number, depth:number, texture: Texture):void {
         throw new Error('Method not implemented');
     }
 

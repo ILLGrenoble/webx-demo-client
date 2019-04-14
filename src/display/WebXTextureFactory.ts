@@ -21,11 +21,14 @@ export class WebXTextureFactory {
         return WebXTextureFactory._instance;
     }
 
-    public getTexture(windowId: number): Promise<Texture> {
-        const promise: Promise<Texture> = new Promise<Texture>((resolve, reject) => {
+    public getTexture(windowId: number): Promise<{depth: number, texture: Texture}> {
+        const promise: Promise<{depth: number, texture: Texture}> = new Promise<{depth: number, texture: Texture}>((resolve, reject) => {
             return this._tunnel.sendRequest(new WebXCommand(WebXCommandType.IMAGE, windowId))
                 .then((response: WebXImageMessage) => {
-                    resolve(response.texture)
+                    resolve({
+                        depth: response.depth,
+                        texture: response.texture
+                    });
                 })
         });
 

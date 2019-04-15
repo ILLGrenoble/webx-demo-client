@@ -1,21 +1,21 @@
 import { WebXTunnel } from "./WebXTunnel";
 import { WebXCommand, WebXCommandResponse } from "../command";
-import { Serializer } from "./Serializer";
-import { JsonSerializer } from "./JsonSerializer";
+import { WebXSerializer } from "./WebXSerializer";
+import { WebXJsonSerializer } from "./WebXJsonSerializer";
 import { WebXMessage } from "../message";
 
 export class WebXWebSocketTunnel implements WebXTunnel {
 
     private socket: WebSocket;
     private url: string;
-    private serializer: Serializer;
+    private serializer: WebXSerializer;
 
     private commandResponses: Map<number, WebXCommandResponse<any>> = new Map<number, WebXCommandResponse<any>>();
 
     constructor(url: string, options: any = {}) {
         const parameters = new URLSearchParams(options);
         this.url = `${url}?${parameters}`
-        this.serializer = new JsonSerializer();
+        this.serializer = new WebXJsonSerializer();
     }
 
     connect(): Promise<Event> {

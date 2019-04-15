@@ -1,2 +1,4 @@
-export { WebXTunnel } from "./WebXTunnel";
-export { WebXWebSocketTunnel } from "./WebXWebSocketTunnel";
+export * from "./WebXTunnel";
+export * from "./WebXWebSocketTunnel";
+export * from "./WebXSerializer";
+export * from "./WebXJsonSerializer";

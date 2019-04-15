@@ -19,10 +19,10 @@ export class WebXWindow {
     private static COLOR_INDEX = 0;
     private _colorIndex: number;
     private _id: number;
-    private _geometry: THREE.Geometry;
     private _texture: THREE.Texture;
     private _material: THREE.MeshBasicMaterial;
     private _mesh: THREE.Mesh;
+    private _depth: number;
 
     private _x: number;
     private _y: number;
@@ -36,6 +36,14 @@ export class WebXWindow {
 
     public get id(): number {
         return this._id;
+    }
+
+    public get texture(): Texture {
+        return this._texture;
+    }
+
+    public get depth(): number {
+        return this._depth;
     }
 
     public set x(value: number) {
@@ -106,12 +114,14 @@ export class WebXWindow {
     }
 
     public updateTexture(depth: number, texture: Texture): void {
-        this._material.transparent = (depth == 32);
-
         // TODO Dispose of previous texture?
+        this._depth = depth;
+        this._texture = texture;
+
+        this._material.transparent = (depth == 32);
         this._material.map = texture;
         this._material.needsUpdate = true;
-        this._mesh.material = this._material;
+        // this._mesh.material = this._material;
     }
 
     private updateScale(): void {

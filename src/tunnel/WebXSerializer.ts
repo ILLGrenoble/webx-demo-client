@@ -1,7 +1,7 @@
 import { WebXCommand } from "../command";
 import { WebXMessage } from "../message";
 
-export interface Serializer {
+export interface WebXSerializer {
 
     serializeCommand(command: WebXCommand): any;
 

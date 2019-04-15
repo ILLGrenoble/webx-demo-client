@@ -1,7 +1,7 @@
 import { WebXTunnel } from "./tunnel";
 import { WebXCommand, WebXCommandResponse, WebXCommandType } from "./command";
-import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXConnectionMessage, WebXImageMessage } from "./message";
-import { WebXWindowProperties } from "./display";
+import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXConnectionMessage, WebXImageMessage, WebXSubImagesMessage } from "./message";
+import { WebXWindowProperties, WebXSubImage } from "./display";
 import { WebXTextureFactory } from "./display/WebXTextureFactory";
 import { Texture } from "three";
 
@@ -39,6 +39,10 @@ export class WebXClient {
         } else if (message.type === WebXMessageType.IMAGE) {
             const imageMessage = (message as WebXImageMessage);
             this.onImage(imageMessage.windowId, imageMessage.depth, imageMessage.texture);
+        
+        } else if (message.type === WebXMessageType.SUBIMAGES) {
+            const subImagesMessage = (message as WebXSubImagesMessage);
+            this.onSubImages(subImagesMessage.windowId, subImagesMessage.subImages);
         } 
     }
 
@@ -50,6 +54,9 @@ export class WebXClient {
         throw new Error('Method not implemented');
     }
 
+    onSubImages(windowId: number, subImages: WebXSubImage[]):void {
+        throw new Error('Method not implemented');
+    }
 
     /**
      * Sends a mouse event having the properties provided by the given mouse state

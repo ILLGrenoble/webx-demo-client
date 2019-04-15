@@ -5,6 +5,7 @@ import { WebXWebSocketTunnel } from './tunnel';
 import { WebXCommand, WebXCommandType } from './command';
 import { WebXMouse, WebXKeyboard } from "./input";
 import { WebXWindowsMessage } from "./message";
+import { WebXSubImage } from "./display";
 
 document.addEventListener("DOMContentLoaded", function (event) {
 
@@ -52,7 +53,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
 
     client.onImage = (windowId, depth, texture) => {
-        display.updateImage(windowId, depth, texture);
+       // console.log(`Updating image ${windowId} [${texture.image.width}, ${texture.image.height}]\n`);
+       display.updateImage(windowId, depth, texture);
+    }
+
+    client.onSubImages = (windowId: number, subImages: WebXSubImage[]) => {
+       console.log(`Updating sub images ${windowId}\n`);
+       display.updateSubImages(windowId, subImages);
     }
 
 });

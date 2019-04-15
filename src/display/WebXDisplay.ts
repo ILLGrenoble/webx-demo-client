@@ -4,11 +4,12 @@ import { Vector3 } from 'three';
 import { WebXWindowProperties } from './WebXWindowProperties';
 import { Texture } from 'three';
 import { WebXSubImage } from './WebXSubImage';
+import { WebXWebGLRenderer } from '../utils/WebXWebGLRenderer';
 
 export class WebXDisplay {
     private _scene: THREE.Scene;
     private _camera: THREE.OrthographicCamera;
-    private _renderer: THREE.WebGLRenderer;
+    private _renderer: WebXWebGLRenderer;
 
     private _screenWidth = 10;
     private _screenHeight = 10;
@@ -37,7 +38,7 @@ export class WebXDisplay {
         this._camera.position.z = 10;
         this._camera.lookAt(new Vector3(0, 0 ,0));
 
-        this._renderer = new THREE.WebGLRenderer();
+        this._renderer = new THREE.WebGLRenderer() as WebXWebGLRenderer;
         this._renderer.setSize(screenWidth, screenHeight, false);
     }
 
@@ -85,7 +86,7 @@ export class WebXDisplay {
                 this.addWindow(webXWindow);
 
             } else {
-                // Update window
+                // Update window    
                 webXWindow.setRectangle(window.x, window.y, index, window.width, window.height);
             }
         });
@@ -103,7 +104,7 @@ export class WebXDisplay {
         const windowTexture = window.texture;
         if (window != null) {
             subImages.forEach(subImage => {
-                // this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.texture, windowTexture)
+                this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.texture, windowTexture)
             });
 
         }

@@ -48,7 +48,7 @@ export class WebXJsonSerializer implements WebXSerializer {
             } else if (json.type === 'subimages') {
                 const windowId = json.windowId;
                 const imagePromises = new Array<Promise<WebXSubImage>>();
-                json.subimages.forEach((subImage: any) => {
+                json.subImages.forEach((subImage: any) => {
                     const x = subImage.x;
                     const y = subImage.y;
                     const width = subImage.width;

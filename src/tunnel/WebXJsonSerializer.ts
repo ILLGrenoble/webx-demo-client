@@ -31,7 +31,7 @@ export class WebXJsonSerializer implements WebXSerializer {
                 resolve(new WebXWindowsMessage(windows.map(window  => new WebXWindowProperties(window as {id: number, x: number, y: number, width: number, height: number})), json.commandId));
             
             } else if (json.type === 'image') {
-                const data = 'data:image/png;base64,' + json.data;
+                const data = json.data;
                 const windowId = json.windowId;
                 const depth = json.depth;
                 const image: HTMLImageElement = new Image();
@@ -54,7 +54,7 @@ export class WebXJsonSerializer implements WebXSerializer {
                     const width = subImage.width;
                     const height = subImage.height;
                     const depth = subImage.depth;
-                    const data = 'data:image/png;base64,' + subImage.data;
+                    const data = subImage.data;
 
                     const promise = new Promise<WebXSubImage>((resolve, reject) => {
                         const image: HTMLImageElement = new Image();

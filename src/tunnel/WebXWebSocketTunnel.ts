@@ -1,5 +1,5 @@
 import { WebXTunnel } from "./WebXTunnel";
-import { WebXCommand, WebXCommandResponse } from "../command";
+import { WebXInstruction, WebXInstructionResponse } from "../instruction";
 import { WebXSerializer } from "./WebXSerializer";
 import { WebXJsonSerializer } from "./WebXJsonSerializer";
 import { WebXMessage } from "../message";
@@ -10,7 +10,7 @@ export class WebXWebSocketTunnel implements WebXTunnel {
     private url: string;
     private serializer: WebXSerializer;
 
-    private commandResponses: Map<number, WebXCommandResponse<any>> = new Map<number, WebXCommandResponse<any>>();
+    private instructionResponses: Map<number, WebXInstructionResponse<any>> = new Map<number, WebXInstructionResponse<any>>();
 
     constructor(url: string, options: any = {}) {
         const parameters = new URLSearchParams(options);
@@ -32,10 +32,10 @@ export class WebXWebSocketTunnel implements WebXTunnel {
     onMessage(data: any): void {
         this.serializer.deserializeMessage(data).then((message: WebXMessage) => {
             // Handle any blocking requests
-            if (message.commandId != null && this.commandResponses.get(message.commandId) != null) {
-                const commandResponse = this.commandResponses.get(message.commandId);
-                this.commandResponses.delete(message.commandId);
-                commandResponse.resolve(message)
+            if (message.commandId != null && this.instructionResponses.get(message.commandId) != null) {
+                const instructionResponse = this.instructionResponses.get(message.commandId);
+                this.instructionResponses.delete(message.commandId);
+                instructionResponse.resolve(message)
 
             } else {
                 // Send async message
@@ -60,14 +60,14 @@ export class WebXWebSocketTunnel implements WebXTunnel {
         throw new Error("Method not implemented.");
     }
 
-    sendCommand(command: WebXCommand): void {
+    sendInstruction(command: WebXInstruction): void {
         const message = this.serializer.serializeCommand(command);
         this.socket.send(message);
     }
     
-    sendRequest(command: WebXCommand): Promise<WebXMessage> {
-        const response = new WebXCommandResponse<WebXMessage>(command);
-        this.commandResponses.set(command.id, response);
+    sendRequest(command: WebXInstruction): Promise<WebXMessage> {
+        const response = new WebXInstructionResponse<WebXMessage>(command);
+        this.instructionResponses.set(command.id, response);
         return new Promise((resolve, reject) => {
             const message = this.serializer.serializeCommand(command);
             this.socket.send(message);
@@ -75,7 +75,7 @@ export class WebXWebSocketTunnel implements WebXTunnel {
             response
                 .then(message => resolve(message))
                 .timeout(5000, () => {
-                    this.commandResponses.delete(command.id);
+                    this.instructionResponses.delete(command.id);
                     reject('Request failed due to timeout');
                 });
         });

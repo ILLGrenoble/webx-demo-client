@@ -1,5 +1,5 @@
 import { WebXSerializer } from "./WebXSerializer";
-import { WebXCommand } from "../command";
+import { WebXInstruction } from "../instruction";
 import { WebXWindowsMessage, WebXMessage, WebXImageMessage, WebXSubImagesMessage } from "../message";
 import { WebXWindowProperties, WebXSubImage } from "../display";
 import { Texture, LinearFilter } from "three";
@@ -7,16 +7,8 @@ import { WebXScreenMessage } from "../message/WebXScreenMessage";
 
 export class WebXJsonSerializer implements WebXSerializer {
 
-    serializeCommand(command: WebXCommand): string {
-        const json: any = {
-            id: command.id,
-            type: command.type
-        };
-        if (command.numericPayload) {
-            json.numericPayload = command.numericPayload;
-        }
-
-        return JSON.stringify(json);
+    serializeCommand(command: WebXInstruction): string {
+        return command.toJsonString();
     }
 
     deserializeMessage(data: any): Promise<WebXMessage> {

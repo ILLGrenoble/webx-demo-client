@@ -110,10 +110,26 @@ export class WebXMouseState {
         this._down = down;
     }
 
+    /**
+     * Release all buttons
+     */
     public releaseButtons(): void {
         this._left = false;
         this._middle = false;
         this._right = false;
+    }
+
+    /**
+     * Get a button mask for this mouse state
+     */
+    public getButtonMask(): number {
+        let mask = 0;
+        mask |= this._left   ? (1 << 0) : 0;
+        mask |= this._right  ? (1 << 1) : 0;
+        mask |= this._middle ? (1 << 2) : 0;
+        mask |= this._up     ? (1 << 3) : 0;
+        mask |= this._down   ? (1 << 4) : 0;
+        return mask;
     }
 
 }

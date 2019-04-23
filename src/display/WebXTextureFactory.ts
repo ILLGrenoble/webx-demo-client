@@ -1,5 +1,5 @@
 import { WebXTunnel } from "../tunnel";
-import { WebXCommand, WebXCommandType } from "../command";
+import { WebXInstruction, WebXInstructionType, WebXImageInstruction } from "../instruction";
 import { Texture } from "three";
 import { WebXImageMessage } from "../message";
 
@@ -23,13 +23,13 @@ export class WebXTextureFactory {
 
     public getTexture(windowId: number): Promise<{depth: number, texture: Texture}> {
         const promise: Promise<{depth: number, texture: Texture}> = new Promise<{depth: number, texture: Texture}>((resolve, reject) => {
-            return this._tunnel.sendRequest(new WebXCommand(WebXCommandType.IMAGE, windowId))
+            return this._tunnel.sendRequest(new WebXImageInstruction(windowId))
                 .then((response: WebXImageMessage) => {
                     resolve({
                         depth: response.depth,
                         texture: response.texture
                     });
-                })
+                });
         });
 
         return promise;

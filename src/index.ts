@@ -2,7 +2,7 @@ import "./styles.css";
 import { WebXDisplay } from './display/WebXDisplay';
 import { WebXClient } from "./WebXClient";
 import { WebXWebSocketTunnel } from './tunnel';
-import { WebXCommand, WebXCommandType } from './command';
+import { WebXInstruction, WebXInstructionType, WebXWindowsInstruction } from './instruction';
 import { WebXMouse, WebXKeyboard } from "./input";
 import { WebXWindowsMessage } from "./message";
 import { WebXSubImage } from "./display";
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
         container.appendChild(display.renderer.domElement);
         container.style.maxWidth = display.screenWidth + 'px';
 
-        client.sendRequest(new WebXCommand(WebXCommandType.WINDOWS))
+        client.sendRequest(new WebXWindowsInstruction())
             .then(response => {
                 display.updateWindows((response as WebXWindowsMessage).windows);
             });
@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             const scale = display.getScale();
             mouseState.x = mouseState.x / scale;
             mouseState.y = mouseState.y / scale;
+            console.log('Button mask', mouseState.getButtonMask())
             console.log(JSON.stringify(mouseState));
         });
 

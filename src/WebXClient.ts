@@ -1,5 +1,5 @@
 import { WebXTunnel } from "./tunnel";
-import { WebXCommand, WebXCommandType } from "./command";
+import { WebXInstruction, WebXInstructionType, WebXScreenInstruction } from "./instruction";
 import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXImageMessage, WebXSubImagesMessage } from "./message";
 import { WebXWindowProperties, WebXSubImage } from "./display";
 import { WebXTextureFactory } from "./display/WebXTextureFactory";
@@ -18,16 +18,16 @@ export class WebXClient {
         return this.tunnel.connect()
             .then(data => {
                 // When connect get configuration from server
-                return this.sendRequest(new WebXCommand(WebXCommandType.SCREEN)) as Promise<WebXScreenMessage>;
+                return this.sendRequest(new WebXScreenInstruction()) as Promise<WebXScreenMessage>;
             });
     }
 
-    sendCommand(command: WebXCommand): void {
+    sendInstruction(command: WebXInstruction): void {
         console.log(`Sending command: `, command);
-        this.tunnel.sendCommand(command);
+        this.tunnel.sendInstruction(command);
     }
 
-    sendRequest(command: WebXCommand): Promise<WebXMessage> {
+    sendRequest(command: WebXInstruction): Promise<WebXMessage> {
         console.log(`Sending request: `, command);
         return this.tunnel.sendRequest(command);
     }

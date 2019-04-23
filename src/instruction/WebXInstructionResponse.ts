@@ -1,21 +1,21 @@
-import { WebXCommand } from "./WebXCommand";
+import { WebXInstruction } from "./WebXInstruction";
 
-export class WebXCommandResponse<T> {
+export class WebXInstructionResponse<T> {
 
     private _onResponseReceived: (message: T) => void;
     private _onTimeout: () => void;
     private _timeoutMs: number;
     private _timeoutId: number = 0;
 
-    constructor(private command: WebXCommand) {
+    constructor(private instruction: WebXInstruction) {
     }
 
-    then(onResponseReceived: (message: T) => void): WebXCommandResponse<T> {
+    then(onResponseReceived: (message: T) => void): WebXInstructionResponse<T> {
         this._onResponseReceived = onResponseReceived;
         return this;
     }
 
-    timeout(timeoutMs: number, onTimeout: () => void): WebXCommandResponse<T> {
+    timeout(timeoutMs: number, onTimeout: () => void): WebXInstructionResponse<T> {
         this._timeoutMs = timeoutMs;
         this._onTimeout = onTimeout;
 

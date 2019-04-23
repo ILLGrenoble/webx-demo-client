@@ -3,7 +3,7 @@ import { WebXMessage } from "../message";
 
 export interface WebXSerializer {
 
-    serializeCommand(command: WebXInstruction): any;
+    serializeInstruction(command: WebXInstruction): any;
 
     deserializeMessage(data: any): Promise<WebXMessage>;
 }

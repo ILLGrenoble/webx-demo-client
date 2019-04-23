@@ -23,7 +23,7 @@ export class WebXInstruction {
         Object.keys(this).filter(key => key[0] === "_").forEach(key => {
             json = json.replace(key, key.substring(1));
         });
-
+        
         return json;
     }
 }

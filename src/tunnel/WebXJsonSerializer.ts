@@ -7,7 +7,7 @@ import { WebXScreenMessage } from "../message/WebXScreenMessage";
 
 export class WebXJsonSerializer implements WebXSerializer {
 
-    serializeCommand(command: WebXInstruction): string {
+    serializeInstruction(command: WebXInstruction): string {
         return command.toJsonString();
     }
 

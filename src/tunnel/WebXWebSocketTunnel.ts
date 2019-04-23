@@ -61,7 +61,7 @@ export class WebXWebSocketTunnel implements WebXTunnel {
     }
 
     sendInstruction(command: WebXInstruction): void {
-        const message = this.serializer.serializeCommand(command);
+        const message = this.serializer.serializeInstruction(command);
         this.socket.send(message);
     }
     
@@ -69,7 +69,7 @@ export class WebXWebSocketTunnel implements WebXTunnel {
         const response = new WebXInstructionResponse<WebXMessage>(command);
         this.instructionResponses.set(command.id, response);
         return new Promise((resolve, reject) => {
-            const message = this.serializer.serializeCommand(command);
+            const message = this.serializer.serializeInstruction(command);
             this.socket.send(message);
 
             response

@@ -2,7 +2,7 @@ import "./styles.css";
 import { WebXDisplay } from './display/WebXDisplay';
 import { WebXClient } from "./WebXClient";
 import { WebXWebSocketTunnel } from './tunnel';
-import { WebXInstruction, WebXInstructionType, WebXWindowsInstruction } from './instruction';
+import { WebXWindowsInstruction, WebXMouseInstruction } from './instruction';
 import { WebXMouse, WebXKeyboard } from "./input";
 import { WebXWindowsMessage } from "./message";
 import { WebXSubImage } from "./display";
@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             mouseState.y = mouseState.y / scale;
             console.log('Button mask', mouseState.getButtonMask())
             console.log(JSON.stringify(mouseState));
+            client.sendInstruction(new WebXMouseInstruction(mouseState.x, mouseState.y, mouseState.getButtonMask()));
         });
 
         // Attach a keyboard to the canvas container

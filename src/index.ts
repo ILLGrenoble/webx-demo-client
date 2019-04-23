@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     const client = new WebXClient(tunnel);
 
     let display: WebXDisplay;
-    client.connect().then(connectionMessage => {
-        const { width, height } = connectionMessage.screenSize;
+    client.connect().then(screenMessage => {
+        const { width, height } = screenMessage.screenSize;
 
         display = new WebXDisplay(width, height);
         display.animate();

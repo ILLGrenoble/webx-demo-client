@@ -1,9 +1,10 @@
 import { WebXTunnel } from "./tunnel";
-import { WebXCommand, WebXCommandResponse, WebXCommandType } from "./command";
-import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXConnectionMessage, WebXImageMessage, WebXSubImagesMessage } from "./message";
+import { WebXCommand, WebXCommandType } from "./command";
+import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXImageMessage, WebXSubImagesMessage } from "./message";
 import { WebXWindowProperties, WebXSubImage } from "./display";
 import { WebXTextureFactory } from "./display/WebXTextureFactory";
 import { Texture } from "three";
+import { WebXScreenMessage } from "./message/WebXScreenMessage";
 
 export class WebXClient {
 
@@ -13,11 +14,11 @@ export class WebXClient {
         WebXTextureFactory.initInstance(tunnel);
     }
 
-    connect(): Promise<WebXConnectionMessage> {
+    connect(): Promise<WebXScreenMessage> {
         return this.tunnel.connect()
             .then(data => {
                 // When connect get configuration from server
-                return this.sendRequest(new WebXCommand(WebXCommandType.CONNECT)) as Promise<WebXConnectionMessage>;
+                return this.sendRequest(new WebXCommand(WebXCommandType.SCREEN)) as Promise<WebXScreenMessage>;
             });
     }
 

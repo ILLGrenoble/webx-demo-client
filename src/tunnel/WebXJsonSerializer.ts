@@ -1,9 +1,9 @@
 import { WebXSerializer } from "./WebXSerializer";
 import { WebXCommand } from "../command";
 import { WebXWindowsMessage, WebXMessage, WebXImageMessage, WebXSubImagesMessage } from "../message";
-import { WebXConnectionMessage } from "../message/WebXConnectionMessage";
 import { WebXWindowProperties, WebXSubImage } from "../display";
 import { Texture, LinearFilter } from "three";
+import { WebXScreenMessage } from "../message/WebXScreenMessage";
 
 export class WebXJsonSerializer implements WebXSerializer {
 
@@ -23,8 +23,8 @@ export class WebXJsonSerializer implements WebXSerializer {
         const json: any = JSON.parse(data);
 
         const promise: Promise<WebXMessage> = new Promise<WebXMessage>((resolve, reject) => {
-            if (json.type === 'connection') {
-                resolve(new WebXConnectionMessage(json.screenSize, json.commandId));
+            if (json.type === 'screen') {
+                resolve(new WebXScreenMessage(json.screenSize, json.commandId));
 
             } else if (json.type === 'windows') {
                 const windows = json.windows as Array<{id: number, x: number, y: number, width: number, height: number}>;

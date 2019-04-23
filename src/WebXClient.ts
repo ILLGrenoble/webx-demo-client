@@ -48,15 +48,12 @@ export class WebXClient {
     }
 
     onWindows(windows: Array<WebXWindowProperties>):void {
-        throw new Error('Method not implemented');
     }
 
     onImage(windowId: number, depth:number, texture: Texture):void {
-        throw new Error('Method not implemented');
     }
 
     onSubImages(windowId: number, subImages: WebXSubImage[]):void {
-        throw new Error('Method not implemented');
     }
 
     /**

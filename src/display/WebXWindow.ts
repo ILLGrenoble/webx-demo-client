@@ -114,14 +114,16 @@ export class WebXWindow {
     }
 
     public updateTexture(depth: number, texture: Texture): void {
-        // TODO Dispose of previous texture?
-        this._depth = depth;
-        this._texture = texture;
+        if (texture != null) {
+            // TODO Dispose of previous texture?
+            this._depth = depth;
+            this._texture = texture;
 
-        this._material.transparent = (depth == 32);
-        this._material.map = texture;
-        this._material.needsUpdate = true;
-        // this._mesh.material = this._material;
+            this._material.transparent = (depth == 32);
+            this._material.map = texture;
+            this._material.needsUpdate = true;
+            // this._mesh.material = this._material;
+        }
     }
 
     private updateScale(): void {

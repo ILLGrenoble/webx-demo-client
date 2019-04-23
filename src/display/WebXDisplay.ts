@@ -94,21 +94,22 @@ export class WebXDisplay {
 
     updateImage(windowId: number, depth: number, texture: Texture): void {
         const window:WebXWindow = this.getWindow(windowId);
-        if (window != null) {
+        if (window != null && texture != null) {
             window.updateTexture(depth, texture);
         }
     }
 
     updateSubImages(windowId: number, subImages: WebXSubImage[]): void {
-        const window:WebXWindow = this.getWindow(windowId);
-        const windowTexture = window.texture;
+        const window: WebXWindow = this.getWindow(windowId);
         if (window != null) {
-            subImages.forEach(subImage => {
-                this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.texture, windowTexture)
-            });
-
+            const windowTexture = window.texture;
+            if (windowTexture != null) {
+                subImages.forEach(subImage => {
+                    this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.texture, windowTexture)
+                });
+                window.updateTexture(window.depth, windowTexture);
+            }
         }
-        window.updateTexture(window.depth, windowTexture);
     }
 
     getWindow(id: number): WebXWindow {

@@ -46,20 +46,20 @@ document.addEventListener("DOMContentLoaded", function (event) {
             console.log('On keydown', JSON.stringify(key));
         });
 
+        client.onWindows = (windows) => {
+            display.updateWindows(windows);
+        }
+
+        client.onImage = (windowId, depth, texture) => {
+            // console.log(`Updating image ${windowId} [${texture.image.width}, ${texture.image.height}]\n`);
+            display.updateImage(windowId, depth, texture);
+        }
+
+        client.onSubImages = (windowId: number, subImages: WebXSubImage[]) => {
+            // console.log(`Updating sub images ${windowId}\n`);
+            display.updateSubImages(windowId, subImages);
+        }
+
     }).catch(err => console.error(err));
-
-    client.onWindows = (windows) => {
-        display.updateWindows(windows);
-    }
-
-    client.onImage = (windowId, depth, texture) => {
-       // console.log(`Updating image ${windowId} [${texture.image.width}, ${texture.image.height}]\n`);
-       display.updateImage(windowId, depth, texture);
-    }
-
-    client.onSubImages = (windowId: number, subImages: WebXSubImage[]) => {
-       console.log(`Updating sub images ${windowId}\n`);
-       display.updateSubImages(windowId, subImages);
-    }
 
 });

@@ -34,16 +34,20 @@ export class WebXJsonSerializer implements WebXSerializer {
                 const data = json.data;
                 const windowId = json.windowId;
                 const depth = json.depth;
-                const image: HTMLImageElement = new Image();
-                const texture: Texture = new Texture(image);
-                image.onload = () => {
-                    texture.needsUpdate = true;
-                    texture.flipY = false;
-                    texture.minFilter = LinearFilter;
-                    
-                    resolve(new WebXImageMessage(windowId, depth, texture, json.commandId));
+                if (data != null && data != "") {
+                    const image: HTMLImageElement = new Image();
+                    const texture: Texture = new Texture(image);
+                    image.onload = () => {
+                        texture.needsUpdate = true;
+                        texture.flipY = false;
+                        texture.minFilter = LinearFilter;
+                        
+                        resolve(new WebXImageMessage(windowId, depth, texture, json.commandId));
+                    }
+                    image.src = data;
+                } else {
+                    resolve(new WebXImageMessage(windowId, depth, null, json.commandId));
                 }
-                image.src = data;
             
             } else if (json.type === 'subimages') {
                 const windowId = json.windowId;

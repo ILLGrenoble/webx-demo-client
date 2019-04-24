@@ -3,6 +3,7 @@ import { WebXInstruction, WebXInstructionResponse } from "../instruction";
 import { WebXSerializer } from "./WebXSerializer";
 import { WebXJsonSerializer } from "./WebXJsonSerializer";
 import { WebXMessage } from "../message";
+import { WebXBinarySerializer } from "./WebXBinarySerializer";
 
 export class WebXWebSocketTunnel implements WebXTunnel {
 
@@ -22,24 +23,39 @@ export class WebXWebSocketTunnel implements WebXTunnel {
         const url = this.url;
         return new Promise((resolve, reject) => {
             this.socket = new WebSocket(url);
-            this.socket.onopen = (event: Event) => resolve(event);
+            this.socket.onopen = (event: Event) => {
+                this.socket.send("comm");
+                resolve(event);
+            }
             this.socket.onerror = (event: Event) => reject(event);
             this.socket.onclose = this.handleClose.bind(this);
-            this.socket.onmessage = (message: any) => this.onMessage(message.data);
+            this.socket.onmessage = (message: any) => {
+                if (message.data == "json") {
+                    this.serializer = new WebXJsonSerializer();
+
+                } else if (message.data == "binary") {
+                    this.serializer = new WebXBinarySerializer();
+                    this.socket.binaryType = 'arraybuffer';
+
+                }
+                this.socket.onmessage = (message: any) => this.onMessage(message.data);
+            }
         });
     }
 
     onMessage(data: any): void {
         this.serializer.deserializeMessage(data).then((message: WebXMessage) => {
-            // Handle any blocking requests
-            if (message.commandId != null && this.instructionResponses.get(message.commandId) != null) {
-                const instructionResponse = this.instructionResponses.get(message.commandId);
-                this.instructionResponses.delete(message.commandId);
-                instructionResponse.resolve(message)
+            if (message != null) {
+                // Handle any blocking requests
+                if (message.commandId != null && this.instructionResponses.get(message.commandId) != null) {
+                    const instructionResponse = this.instructionResponses.get(message.commandId);
+                    this.instructionResponses.delete(message.commandId);
+                    instructionResponse.resolve(message)
 
-            } else {
-                // Send async message
-                this.handleMessage(message);
+                } else {
+                    // Send async message
+                    this.handleMessage(message);
+                }
             }
         });
     }

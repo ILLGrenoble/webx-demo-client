@@ -1,7 +1,7 @@
 export enum WebXMessageType {
-    CONNECT = 1,
+    CONNECTION = 1,
     WINDOWS = 2,
     IMAGE = 3,
-    SUBIMAGES = 4,
-    SCREEN = 5
+    SCREEN = 4,
+    SUBIMAGES = 5
 }

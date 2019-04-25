@@ -23,12 +23,10 @@ export class WebXClient {
     }
 
     sendInstruction(command: WebXInstruction): void {
-        console.log(`Sending command: `, command);
         this.tunnel.sendInstruction(command);
     }
 
     sendRequest(command: WebXInstruction): Promise<WebXMessage> {
-        console.log(`Sending request: `, command);
         return this.tunnel.sendRequest(command);
     }
 

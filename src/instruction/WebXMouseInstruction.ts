@@ -15,7 +15,6 @@ export class WebXMouseInstruction extends WebXInstruction {
         this._x = x;
     }
 
-
     public get y(): number {
         return this._y;
     }

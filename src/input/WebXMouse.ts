@@ -19,69 +19,17 @@ export class WebXMouse {
         down: false
     });
 
-    /**
-     * The minimum amount of pixels scrolled required for a single scroll button
-     * click.
-     */
-    private _scrollThreshold: number = 53;
-
-    /**
-     * The number of pixels to scroll per line.
-     */
-
-    private _pixelsPerLine: number = 18;
-
-    /**
-     * The number of pixels to scroll per page.
-     */
-    private _pixelsPerPage: number = this._pixelsPerLine * 16;
-
-    /**
-     * Cumulative scroll delta amount. This value is accumulated through scroll
-     * events and results in scroll button clicks if it exceeds a certain
-     * threshold.
-     */
-    private _scrollDelta: number = 0;
-
-    public get scrollThreshold(): number {
-        return this._scrollThreshold;
-    }
-
-    public set scrollThreshold(scrollThreshold: number) {
-        this._scrollThreshold = scrollThreshold;
-    }
-
-    public get pixelsPerLine(): number {
-        return this._pixelsPerLine;
-    }
-
-    public set pixelsPerLine(value: number) {
-        this._pixelsPerLine = value;
-        this._pixelsPerPage = value * 16;
-    }
-
 
     /**
      * Provides cross-browser mouse events for a given element
      * @param _element The element to use to provide mouse events
      */
-    constructor(private element: HTMLElement, config?: { pixelsPerLine?: number, scrollThreshold?: number }) {
+    constructor(private element: HTMLElement) {
         this._element = element;
-        if (config) {
-            this.setConfiguration(config);
-        }
         this.bindListeners();
     }
 
-    /**
-     * Set the mouse configuration
-     * @param config the configuration
-     */
-    private setConfiguration(config: { pixelsPerLine?: number, scrollThreshold?: number }): void {
-        const { pixelsPerLine, scrollThreshold } = config;
-        this.pixelsPerLine = pixelsPerLine || this._pixelsPerLine;
-        this.scrollThreshold = scrollThreshold || this._scrollThreshold;
-    }
+
 
     /**
      * Cancel an event
@@ -108,6 +56,7 @@ export class WebXMouse {
         ['DOMMouseScroll', 'mousewheel', 'wheel'].forEach(listener => {
             element.addEventListener(listener, this.handleMouseWheel.bind(this), { passive: true });
         });
+        element.addEventListener('keydown', this.handleKeyDown.bind(this));
     }
 
     /**
@@ -155,67 +104,22 @@ export class WebXMouse {
      * @param event the mouse event
      */
     private handleMouseWheel(event: MouseWheelEvent): void {
-        // Determine approximate scroll amount (in pixels)
-        let delta = event.deltaY;
-        // If successfully retrieved scroll amount, convert to pixels if not
-        // already in pixels
-        if (delta) {
+        const currentState = this._currentState;
+        if (event.deltaY < 0) {
+            currentState.up = true;
+            this.onMouseDown(currentState);
 
-            // Convert to pixels if delta was lines
-            if (event.deltaMode === 1) {
-                delta = event.deltaY * this._pixelsPerLine;
-            }
-            // Convert to pixels if delta was pages
-            else if (event.deltaMode === 2) {
-                delta = event.deltaY * this._pixelsPerPage;
-            }
-
-        } else {
-            // Otherwise, assume legacy mousewheel event and line scrolling
-            delta = event.detail * this._pixelsPerLine;
+            currentState.up = false;
+            this.onMouseUp(currentState);
         }
 
-        // Update overall delta
-        this._scrollDelta += delta;
+        if (event.deltaY > 0) {
+            currentState.down = true;
+            this.onMouseDown(currentState);
 
-        // Up
-        if (this._scrollDelta <= -this._scrollThreshold) {
+            currentState.down = false;
+            this.onMouseUp(currentState);
 
-            // Repeatedly click the up button until insufficient delta remains
-            do {
-                const currentState = this._currentState;
-                currentState.up = true;
-                this.onMouseDown(currentState);
-
-                currentState.up = false;
-                this.onMouseUp(currentState);
-
-                this._scrollDelta += this._scrollThreshold;
-
-            } while (this._scrollDelta <= -this._scrollThreshold);
-
-            // Reset delta
-            this._scrollDelta = 0;
-        }
-
-        // Down
-        if (this._scrollDelta >= this._scrollThreshold) {
-            // Repeatedly click the down button until insufficient delta remains
-            do {
-                const currentState = this._currentState;
-
-                currentState.down = true;
-                this.onMouseDown(currentState);
-
-                currentState.down = false;
-                this.onMouseUp(currentState);
-
-                this._scrollDelta -= this._scrollThreshold;
-
-            } while (this._scrollDelta >= this._scrollThreshold);
-
-            // Reset delta
-            this._scrollDelta = 0;
         }
     }
 
@@ -253,6 +157,26 @@ export class WebXMouse {
     }
 
     /**
+     * Handle keydown event
+     * @param event the keyboard event
+     */
+    private handleKeyDown(event: KeyboardEvent): void {
+        console.log('etting shift', event);
+        console.log('Num lock', event.getModifierState("NumLock"));
+        if (event.shiftKey) {
+            this._currentState.shift = true;
+        }
+        if (event.ctrlKey) {
+            this._currentState.ctrl = true;
+        }
+        if (event.altKey) {
+            console.log('Got alt key');
+            this._currentState.alt = true;
+        }
+        this.onKeyDown(this._currentState);
+    }
+
+    /**
      * Fired whenever the user moves the mouse
      * @param mouseState the current mouse state
      */
@@ -287,6 +211,11 @@ export class WebXMouse {
      * @param mouseState the current mouse state
      */
     onMouseOut(mouseState: WebXMouseState): void {
+    }
+
+
+    onKeyDown(mouseState: WebXMouseState): void {
+
     }
 
 

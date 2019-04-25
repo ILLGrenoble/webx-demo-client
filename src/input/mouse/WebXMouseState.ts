@@ -39,6 +39,14 @@ export class WebXMouseState {
     */
     private _down: boolean;
 
+
+    private _shift: boolean;
+
+    private _ctrl: boolean;
+
+    private _alt: boolean;
+
+
     public get x(): number {
         return this._x;
     }
@@ -67,6 +75,18 @@ export class WebXMouseState {
         return this._down;
     }
 
+    public get shift(): boolean {
+        return this._shift;
+    }
+
+    public get ctrl(): boolean {
+        return this._ctrl;
+    }
+
+    public get alt(): boolean {
+        return this._alt;
+    }
+
     public set x(value: number) {
         this._x = value;
     }
@@ -93,6 +113,18 @@ export class WebXMouseState {
 
     public set down(value: boolean) {
         this._down = value;
+    }
+
+    public set shift(value: boolean) {
+        this._shift = value;
+    }
+
+    public set ctrl(value: boolean) {
+        this._ctrl = value;
+    }
+
+    public set alt(value: boolean) {
+        this._alt = value;
     }
 
     /**
@@ -124,11 +156,14 @@ export class WebXMouseState {
      */
     public getButtonMask(): number {
         let mask = 0;
-        mask |= this._left   ? (1 << 0) : 0;
-        mask |= this._right  ? (1 << 1) : 0;
-        mask |= this._middle ? (1 << 2) : 0;
-        mask |= this._up     ? (1 << 3) : 0;
-        mask |= this._down   ? (1 << 4) : 0;
+        mask |= this._left   ? (1 << 8) : 0;
+        mask |= this._middle ? (1 << 9) : 0;
+        mask |= this._right  ? (1 << 10) : 0;
+        mask |= this._up     ? (1 << 11) : 0;
+        mask |= this._down   ? (1 << 12) : 0;
+        mask |= this._shift  ? (1 << 0) : 0;
+        mask |= this._ctrl   ? (1 << 2): 0;
+        mask |= this._alt    ? (1 << 3) : 0;
         return mask;
     }
 

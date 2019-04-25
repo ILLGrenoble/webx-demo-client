@@ -33,12 +33,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
         // Attach a mouse to the canvas container
         const mouse = new WebXMouse(container);
 
-        mouse.onMouseDown = mouse.onMouseUp = mouse.onMouseMove = mouse.onMouseOut = (mouseState => {
+        mouse.onMouseDown = mouse.onMouseUp = mouse.onMouseMove = mouse.onMouseOut  = mouse.onKeyDown= (mouseState => {
             const scale = display.getScale();
             mouseState.x = mouseState.x / scale;
             mouseState.y = mouseState.y / scale;
-            console.log('Button mask', mouseState.getButtonMask())
-            console.log(JSON.stringify(mouseState));
             client.sendInstruction(new WebXMouseInstruction(mouseState.x, mouseState.y, mouseState.getButtonMask()));
         });
 

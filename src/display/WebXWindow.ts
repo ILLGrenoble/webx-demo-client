@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { WebXTextureFactory } from './WebXTextureFactory';
-import { MeshBasicMaterial, Texture } from 'three';
+import { MeshBasicMaterial, Texture, LinearFilter } from 'three';
 
 export class WebXWindow {
 
@@ -108,7 +108,11 @@ export class WebXWindow {
         this._z = z;
         this._width = width;
         this._height = height;
-        
+
+        if (this._texture) {
+            this._texture.repeat.set(this._width / this._texture.image.width, this._height / this._texture.image.height);
+        }
+
         this.updateScale();
         this.updatePosition();
     }
@@ -118,6 +122,9 @@ export class WebXWindow {
             // TODO Dispose of previous texture?
             this._depth = depth;
             this._texture = texture;
+
+            this._texture.minFilter = LinearFilter;
+            this._texture.repeat.set(this._width / this._texture.image.width, this._height / this._texture.image.height);
 
             this._material.transparent = (depth == 32);
             this._material.map = texture;

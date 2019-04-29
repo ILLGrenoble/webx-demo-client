@@ -65,7 +65,6 @@ export class WebXBinarySerializer implements WebXSerializer {
 
                         texture.needsUpdate = true;
                         texture.flipY = false;
-                        texture.minFilter = LinearFilter;
                         
                         resolve(new WebXImageMessage(windowId, depth, texture, commandId));
                     }
@@ -101,7 +100,6 @@ export class WebXBinarySerializer implements WebXSerializer {
 
                             texture.needsUpdate = true;
                             texture.flipY = false;
-                            texture.minFilter = LinearFilter;
                             
                             resolve(new WebXSubImage({x, y, width, height, depth, texture}));
                         }

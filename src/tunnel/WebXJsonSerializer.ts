@@ -32,7 +32,6 @@ export class WebXJsonSerializer implements WebXSerializer {
                     image.onload = () => {
                         texture.needsUpdate = true;
                         texture.flipY = false;
-                        texture.minFilter = LinearFilter;
                         
                         resolve(new WebXImageMessage(windowId, depth, texture, json.commandId));
                     }
@@ -58,7 +57,6 @@ export class WebXJsonSerializer implements WebXSerializer {
                         image.onload = () => {
                             texture.needsUpdate = true;
                             texture.flipY = false;
-                            texture.minFilter = LinearFilter;
                             
                             resolve(new WebXSubImage({x, y, width, height, depth, texture}));
                         }

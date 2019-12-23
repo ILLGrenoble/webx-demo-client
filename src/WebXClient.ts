@@ -5,6 +5,7 @@ import { WebXWindowProperties, WebXSubImage } from "./display";
 import { WebXTextureFactory } from "./display/WebXTextureFactory";
 import { Texture } from "three";
 import { WebXScreenMessage } from "./message/WebXScreenMessage";
+import { WebXMouseCursorMessage } from "./message/WebXMouseCursorMessage";
 
 export class WebXClient {
 
@@ -42,7 +43,13 @@ export class WebXClient {
         } else if (message.type === WebXMessageType.SUBIMAGES) {
             const subImagesMessage = (message as WebXSubImagesMessage);
             this.onSubImages(subImagesMessage.windowId, subImagesMessage.subImages);
-        } 
+        }  else if (message.type === WebXMessageType.MOUSE_CURSOR) {
+            const mouseCursorMessage = (message as WebXMouseCursorMessage);
+            this.onMouseCursor(mouseCursorMessage.x, mouseCursorMessage.y, mouseCursorMessage.texture);
+        }
+    
+    }
+    onMouseCursor(x: number, y: number, image: any) {
     }
 
     onWindows(windows: Array<WebXWindowProperties>):void {
@@ -67,7 +74,7 @@ export class WebXClient {
      * @param pressed {Boolean} Whether the key is pressed (true) or released (false)
      * @param key {number} the key to send
      */
-    sendKeyEvent(pressed: boolean, key: number): void {
+    sendKeyEvent(key: number, pressed: boolean): void {
         throw new Error('Method not implemented');
     }
 

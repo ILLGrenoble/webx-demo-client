@@ -2,7 +2,7 @@ import "./styles.css";
 import { WebXDisplay } from './display/WebXDisplay';
 import { WebXClient } from "./WebXClient";
 import { WebXWebSocketTunnel } from './tunnel';
-import { WebXWindowsInstruction, WebXMouseInstruction } from './instruction';
+import { WebXWindowsInstruction, WebXMouseInstruction, WebXKeyboardInstruction } from './instruction';
 import { WebXMouse, WebXKeyboard } from "./input";
 import { WebXWindowsMessage } from "./message";
 import { WebXSubImage } from "./display";
@@ -43,7 +43,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
         // Attach a keyboard to the canvas container
         const keyboard = new WebXKeyboard(document.body)
         keyboard.onKeyDown = (key => {
-            console.log('On keydown', JSON.stringify(key));
+            client.sendInstruction(new WebXKeyboardInstruction(key, true));
+        });
+
+        keyboard.onKeyUp = (key => {
+            client.sendInstruction(new WebXKeyboardInstruction(key, false));
+
         });
 
         client.onWindows = (windows) => {
@@ -58,6 +63,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
         client.onSubImages = (windowId: number, subImages: WebXSubImage[]) => {
             // console.log(`Updating sub images ${windowId}\n`);
             display.updateSubImages(windowId, subImages);
+        }
+
+
+        client.onMouseCursor = (x: number, y: number, texture) => {
+            display.updateMouseCursor(x, y, texture);
         }
 
     }).catch(err => console.error(err));

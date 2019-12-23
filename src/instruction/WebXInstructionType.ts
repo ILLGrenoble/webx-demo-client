@@ -3,5 +3,6 @@ export enum WebXInstructionType {
     WINDOWS = 2,
     IMAGE = 3,
     SCREEN = 4,
-    MOUSE = 5
+    MOUSE = 5,
+    KEYBOARD = 6
 }

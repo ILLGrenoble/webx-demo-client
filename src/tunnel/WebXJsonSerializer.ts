@@ -4,6 +4,7 @@ import { WebXWindowsMessage, WebXMessage, WebXImageMessage, WebXSubImagesMessage
 import { WebXWindowProperties, WebXSubImage } from "../display";
 import { Texture, LinearFilter } from "three";
 import { WebXScreenMessage } from "../message/WebXScreenMessage";
+import { WebXMouseCursorMessage } from "../message/WebXMouseCursorMessage";
 
 export class WebXJsonSerializer implements WebXSerializer {
 
@@ -69,8 +70,23 @@ export class WebXJsonSerializer implements WebXSerializer {
                 Promise.all(imagePromises).then((webXSubImages: WebXSubImage[]) => {
                     resolve(new WebXSubImagesMessage(windowId, webXSubImages));
                 })
-
-            } else {
+            }  else if(json.type === 'cursor') {
+                const data = json.data;
+                if (data != null && data != "") {
+                    const image: HTMLImageElement = new Image();
+                    const texture: Texture = new Texture(image);
+                    image.onload = () => {
+                        texture.needsUpdate = true;
+                        texture.flipY = false;
+                        texture.minFilter = LinearFilter;
+                        
+                        resolve(new WebXMouseCursorMessage(json.x, json.y, texture, json.commandId));
+                    }
+                    image.src = data;
+                } else {
+                    resolve(new WebXMouseCursorMessage(json.x, json.y, null, json.commandId));
+                }
+            }else {
                 resolve(null);
             }
         });

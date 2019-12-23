@@ -1,12 +1,13 @@
 import * as THREE from 'three';
-import {WebXWindow} from './WebXWindow';
-import { Vector3 } from 'three';
-import { WebXWindowProperties } from './WebXWindowProperties';
 import { Texture } from 'three';
+import { Vector3 } from 'three';
+import {WebXWindow} from './WebXWindow';
+import { WebXWindowProperties } from './WebXWindowProperties';
 import { WebXSubImage } from './WebXSubImage';
 import { WebXWebGLRenderer } from '../utils/WebXWebGLRenderer';
 
 export class WebXDisplay {
+ 
     private _scene: THREE.Scene;
     private _camera: THREE.OrthographicCamera;
     private _renderer: WebXWebGLRenderer;
@@ -112,12 +113,25 @@ export class WebXDisplay {
         }
     }
 
+    /**
+     * Update the mouse cursor
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param image the cursor image
+     */
+    updateMouseCursor(x: number, y: number, image: Texture) {
+
+        // Add the image cursor to the canvas...
+    }
+
+
+
     getWindow(id: number): WebXWindow {
         return this._windows.find(window => window.id === id);
     }
 
     getScale(): number {
-        const scale = (1.0 *this._renderer.domElement.offsetWidth) / this._screenWidth;
+        const scale = (1.0 * this._renderer.domElement.offsetWidth) / this._screenWidth;
         return scale;
     }
 

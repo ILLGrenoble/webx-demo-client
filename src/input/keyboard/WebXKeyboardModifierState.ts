@@ -79,8 +79,6 @@ export class WebXKeyboardModifierState {
         }
     }
 
-
-
     /**
      * Handles the modifier state applicable to the keyboard event given 
      * @param event the keyboard event to be read

@@ -6,3 +6,4 @@ export * from './WebXScreenInstruction';
 export * from './WebXWindowsInstruction';
 export * from './WebXImageInstruction';
 export * from './WebXMouseInstruction';
+export * from './WebXKeyboardInstruction';

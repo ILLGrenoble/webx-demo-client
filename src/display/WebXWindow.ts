@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { WebXTextureFactory } from './WebXTextureFactory';
 import { MeshBasicMaterial, Texture, LinearFilter } from 'three';
+import { APP_CONFIG } from '../utils/Config';
 
 export class WebXWindow {
 
@@ -84,6 +85,7 @@ export class WebXWindow {
         // this._material = new THREE.MeshBasicMaterial( { color: WebXWindow._colorArray[this._colorIndex] } );
         this._material = new THREE.MeshBasicMaterial( {transparent: true} );
         this._material.side = THREE.BackSide;
+        this._material.visible = APP_CONFIG().showWindowsBeforeImage;
 
         const {id, x, y, z, width, height} = configuration;
         this._id = id;
@@ -128,6 +130,7 @@ export class WebXWindow {
 
             this._material.transparent = (depth == 32);
             this._material.map = texture;
+            this._material.visible = true;
             this._material.needsUpdate = true;
             // this._mesh.material = this._material;
         }

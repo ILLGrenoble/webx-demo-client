@@ -1,9 +1,9 @@
 export interface Config {
-  showWindowsBeforeImage: boolean
+  showWindowsBeforeImage: boolean;
 }
 
 export function APP_CONFIG(): Config {
   return {
     showWindowsBeforeImage: false
-  }
+  };
 }

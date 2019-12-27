@@ -1,17 +1,16 @@
-import { WebXInstruction } from "../instruction";
-import { WebXMessage } from "../message";
+import { WebXInstruction } from '../instruction';
+import { WebXMessage } from '../message';
 
 export interface WebXTunnel {
+  connect(): Promise<Event>;
 
-    connect(): Promise<Event>;
+  disconnect(): void;
 
-    disconnect(): void;
+  sendInstruction(command: WebXInstruction): void;
 
-    sendInstruction(command: WebXInstruction): void;
-    
-    sendRequest(command: WebXInstruction): Promise<any>;
+  sendRequest(command: WebXInstruction): Promise<any>;
 
-    handleMessage(message: WebXMessage): void;
+  handleMessage(message: WebXMessage): void;
 
-    isConnected(): boolean;
+  isConnected(): boolean;
 }

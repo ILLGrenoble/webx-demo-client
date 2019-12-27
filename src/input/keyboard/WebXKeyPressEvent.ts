@@ -1,4 +1,4 @@
-import { WebXKeyEvent } from ".";
+import { WebXKeyEvent } from '.';
 
 /**
  * Information related to the pressing of a key, which MUST be
@@ -6,21 +6,20 @@ import { WebXKeyEvent } from ".";
  * information within this object is browser-dependent.
  */
 export class WebXKeyPressEvent extends WebXKeyEvent {
+  private _charCode: number;
 
-    private _charCode: number;
+  public get charCode(): number {
+    return this._charCode;
+  }
 
-    public get charCode(): number {
-        return this._charCode;
-    }
+  public set charCode(charCode: number) {
+    this._charCode = charCode;
+  }
 
-    public set charCode(charCode: number) {
-        this._charCode = charCode;
-    }
-
-    constructor(charCode: number) {
-        super();
-        this.charCode = charCode;
-        // @TODO get keysym
-        this.keysym = null;
-    }
+  constructor(charCode: number) {
+    super();
+    this.charCode = charCode;
+    // @TODO get keysym
+    this.keysym = null;
+  }
 }

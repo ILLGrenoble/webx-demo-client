@@ -1,9 +1,8 @@
-import { WebXInstruction } from "../instruction";
-import { WebXMessage } from "../message";
+import { WebXInstruction } from '../instruction';
+import { WebXMessage } from '../message';
 
 export interface WebXSerializer {
+  serializeInstruction(command: WebXInstruction): any;
 
-    serializeInstruction(command: WebXInstruction): any;
-
-    deserializeMessage(data: any): Promise<WebXMessage>;
+  deserializeMessage(data: any): Promise<WebXMessage>;
 }

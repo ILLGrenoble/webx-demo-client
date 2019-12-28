@@ -1,7 +1,7 @@
 import { WebXInstructionType } from './WebXInstructionType';
 
 export class WebXInstruction {
-  private static INSTRUCTION_COUNTER = 0;
+  private static _INSTRUCTION_COUNTER = 0;
   private _id: number;
   private _synchronous = false;
 
@@ -22,7 +22,7 @@ export class WebXInstruction {
   }
 
   constructor(private _type: WebXInstructionType) {
-    this._id = WebXInstruction.INSTRUCTION_COUNTER++;
+    this._id = WebXInstruction._INSTRUCTION_COUNTER++;
   }
 
   toJsonString(): string {

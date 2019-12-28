@@ -5,6 +5,7 @@ import { WebXWindow } from './WebXWindow';
 import { WebXWindowProperties } from './WebXWindowProperties';
 import { WebXSubImage } from './WebXSubImage';
 import { WebXWebGLRenderer } from '../utils/WebXWebGLRenderer';
+import { WebXCursor } from './WebXCursor';
 
 export class WebXDisplay {
   private _scene: THREE.Scene;
@@ -15,6 +16,7 @@ export class WebXDisplay {
   private _screenHeight = 10;
 
   private _windows: WebXWindow[] = [];
+  private _cursor: WebXCursor = new WebXCursor();
 
   public get renderer(): THREE.WebGLRenderer {
     return this._renderer;
@@ -33,9 +35,12 @@ export class WebXDisplay {
     this._screenHeight = screenHeight;
 
     this._scene = new THREE.Scene();
+
+    this._scene.add(this._cursor.mesh);
+
     // this._camera = new THREE.OrthographicCamera(0, screenWidth, 0, screenHeight, 0.1, 100);
     this._camera = new THREE.OrthographicCamera(0, screenWidth, 0, screenHeight, 0.1, 10000);
-    this._camera.position.z = 10;
+    this._camera.position.z = 1000;
     this._camera.lookAt(new Vector3(0, 0, 0));
 
     this._renderer = new THREE.WebGLRenderer() as WebXWebGLRenderer;
@@ -119,8 +124,8 @@ export class WebXDisplay {
    * @param y the y coordinate
    * @param image the cursor image
    */
-  updateMouseCursor(x: number, y: number, image: Texture) {
-    // Add the image cursor to the canvas...
+  updateMouseCursor(x: number, y: number, name: string, texture: Texture) {
+    this._cursor.update(x, y, name, texture);
   }
 
   getWindow(id: number): WebXWindow {

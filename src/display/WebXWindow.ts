@@ -4,7 +4,9 @@ import { Texture, LinearFilter } from 'three';
 import { APP_CONFIG } from '../utils';
 
 export class WebXWindow {
-  private static _colorArray = [
+  private static _PLANE_GEOMETRY: THREE.Geometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
+  private static _COLOR_INDEX = 0;
+  private static _COLOR_ARRAY = [
     '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
     '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
     '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
@@ -17,7 +19,6 @@ export class WebXWindow {
     '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'
   ];
 
-  private static COLOR_INDEX = 0;
   private _colorIndex: number;
   private _id: number;
   private _texture: THREE.Texture;
@@ -74,22 +75,21 @@ export class WebXWindow {
     this._updatePosition();
   }
 
-  private static PLANE_GEOMETRY: THREE.Geometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
 
-  constructor(configuration: { id: number; x: number; y: number; width: number; z: number; height: number }) {
-    this._colorIndex = WebXWindow.COLOR_INDEX++;
-    if (this._colorIndex === WebXWindow._colorArray.length) {
-      WebXWindow.COLOR_INDEX = 0;
+  constructor(configuration: { id: number; x: number; y: number; z: number; width: number; height: number }) {
+    this._colorIndex = WebXWindow._COLOR_INDEX++;
+    if (this._colorIndex === WebXWindow._COLOR_ARRAY.length) {
+      WebXWindow._COLOR_INDEX = 0;
     }
 
-    // this._material = new THREE.MeshBasicMaterial( { color: WebXWindow._colorArray[this._colorIndex] } );
+    // this._material = new THREE.MeshBasicMaterial( { color: WebXWindow._COLOR_ARRAY[this._colorIndex] } );
     this._material = new THREE.MeshBasicMaterial({ transparent: true });
     this._material.side = THREE.BackSide;
     this._material.visible = APP_CONFIG().showWindowsBeforeImage;
 
     const { id, x, y, z, width, height } = configuration;
     this._id = id;
-    this._mesh = new THREE.Mesh(WebXWindow.PLANE_GEOMETRY, this._material);
+    this._mesh = new THREE.Mesh(WebXWindow._PLANE_GEOMETRY, this._material);
 
     this._x = x;
     this._y = y;

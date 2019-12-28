@@ -11,11 +11,15 @@ export class WebXMouseCursorMessage extends WebXMessage {
     return this._y;
   }
 
+  get name() {
+    return this._name;
+  }
+
   public get texture(): Texture {
     return this._texture;
   }
 
-  constructor(private _x: number, private _y: number, private _texture: Texture, commandId?: number) {
+  constructor(private _x: number, private _y: number, private _name: string, private _texture: Texture, commandId?: number) {
     super(WebXMessageType.MOUSE_CURSOR, commandId);
   }
 }

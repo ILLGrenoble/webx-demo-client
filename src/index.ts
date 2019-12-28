@@ -6,6 +6,7 @@ import { WebXWindowsInstruction, WebXMouseInstruction, WebXKeyboardInstruction }
 import { WebXMouse, WebXKeyboard } from './input';
 import { WebXWindowsMessage } from './message';
 import { WebXSubImage } from './display';
+import { Texture } from 'three';
 
 document.addEventListener('DOMContentLoaded', function(event) {
   const tunnel = new WebXWebSocketTunnel('ws://miro.local:8080', {
@@ -64,8 +65,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
         display.updateSubImages(windowId, subImages);
       };
 
-      client.onMouseCursor = (x: number, y: number, texture) => {
-        display.updateMouseCursor(x, y, texture);
+      client.onMouseCursor = (x: number, y: number, name: string, texture: Texture) => {
+        display.updateMouseCursor(x, y, name, texture);
       };
     })
     .catch(err => console.error(err));

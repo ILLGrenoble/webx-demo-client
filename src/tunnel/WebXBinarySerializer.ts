@@ -5,6 +5,7 @@ import { WebXScreenMessage } from '../message/WebXScreenMessage';
 import { BinaryBuffer } from '../utils';
 import { WebXWindowProperties, WebXSubImage } from '../display';
 import { Texture } from 'three';
+import { WebXMouseCursorMessage } from '../message/WebXMouseCursorMessage';
 
 export class WebXBinarySerializer implements WebXSerializer {
   serializeInstruction(command: WebXInstruction): string {
@@ -24,6 +25,7 @@ export class WebXBinarySerializer implements WebXSerializer {
 
     const promise: Promise<WebXMessage> = new Promise<WebXMessage>((resolve, reject) => {
       const commandId: number = buffer.getUint32();
+
       /*if (buffer.messageTypeId === WebXMessageType.CONNECTION) {
       } else */
       if (buffer.messageTypeId === WebXMessageType.SCREEN) {
@@ -110,7 +112,36 @@ export class WebXBinarySerializer implements WebXSerializer {
         Promise.all(imagePromises).then((webXSubImages: WebXSubImage[]) => {
           resolve(new WebXSubImagesMessage(windowId, webXSubImages));
         });
+
+      } else if (buffer.messageTypeId === WebXMessageType.MOUSE_CURSOR) {
+        const x = buffer.getInt32();
+        const y = buffer.getInt32();
+        const nameLength = buffer.getUint32();
+        const name = buffer.getString(nameLength);
+        const imageDataSize = buffer.getUint32();
+        const imageData: Uint8Array = buffer.getUint8Array(imageDataSize);
+
+        if (imageDataSize > 0 && imageData != null) {
+          const blob = new Blob([imageData], { type: 'image/png' });
+          const url = URL.createObjectURL(blob);
+
+          const image: HTMLImageElement = new Image();
+          const texture: Texture = new Texture(image);
+          image.onload = () => {
+            URL.revokeObjectURL(url);
+
+            texture.needsUpdate = true;
+            texture.flipY = false;
+
+            resolve(new WebXMouseCursorMessage(x, y, name, texture, commandId));
+          };
+          image.src = url;
+
+        } else {
+          resolve(new WebXMouseCursorMessage(x, y, name, null, commandId));
+        }
       }
+
     });
 
     return promise;

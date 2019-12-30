@@ -107,7 +107,7 @@ export class WebXDisplay {
 
   updateSubImages(windowId: number, subImages: WebXSubImage[]): void {
     const window: WebXWindow = this.getWindow(windowId);
-    if (window != null) {
+    if (window != null && window.textureValid) {
       const windowTexture = window.texture;
       if (windowTexture != null) {
         subImages.forEach(subImage => {

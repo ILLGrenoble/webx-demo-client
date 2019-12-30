@@ -44,6 +44,10 @@ export class WebXWindow {
     return this._texture;
   }
 
+  public get textureValid(): boolean {
+    return this._texture != null && this._texture.image.width === this._width && this._texture.image.height === this._height;
+  }
+
   public get depth(): number {
     return this._depth;
   }
@@ -115,6 +119,11 @@ export class WebXWindow {
 
     if (this._texture) {
       this._texture.repeat.set(this._width / this._texture.image.width, this._height / this._texture.image.height);
+      if (this._texture.image.width !== this._width || this._texture.image.height !== this._height) {
+        WebXTextureFactory.instance().getTexture(this._id).then(response => {
+          this.updateTexture(response.depth, response.texture);
+        });
+      }
     }
 
     this._updateScale();

@@ -11,6 +11,14 @@ export class WebXMouseCursorMessage extends WebXMessage {
     return this._y;
   }
 
+  get xHot() {
+    return this._xHot;
+  }
+
+  get yHot() {
+    return this._yHot;
+  }
+
   get name() {
     return this._name;
   }
@@ -19,7 +27,7 @@ export class WebXMouseCursorMessage extends WebXMessage {
     return this._texture;
   }
 
-  constructor(private _x: number, private _y: number, private _name: string, private _texture: Texture, commandId?: number) {
+  constructor(private _x: number, private _y: number, private _xHot: number, private _yHot: number, private _name: string, private _texture: Texture, commandId?: number) {
     super(WebXMessageType.MOUSE_CURSOR, commandId);
   }
 }

@@ -124,8 +124,12 @@ export class WebXDisplay {
    * @param y the y coordinate
    * @param image the cursor image
    */
-  updateMouseCursor(x: number, y: number, name: string, texture: Texture) {
-    this._cursor.update(x, y, name, texture);
+  updateMouseCursor(x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture) {
+    this._cursor.update(x, y, xHot, yHot, name, texture);
+  }
+
+  updateMousePosition(x: number, y: number) {
+    this._cursor.setPosition(x, y);
   }
 
   getWindow(id: number): WebXWindow {

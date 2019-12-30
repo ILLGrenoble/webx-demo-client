@@ -11,6 +11,8 @@ export class WebXCursor {
 
   private _x: number;
   private _y: number;
+  private _xHot: number = 0;
+  private _yHot: number = 0;
   private _width: number = 1;
   private _height: number = 1;
 
@@ -36,19 +38,6 @@ export class WebXCursor {
     this._updatePosition();
   }
 
-  public set width(value: number) {
-    this._width = value;
-    this._updateScale();
-    this._updatePosition();
-  }
-
-  public set height(value: number) {
-    this._height = value;
-    this._updateScale();
-    this._updatePosition();
-  }
-
-
   constructor() {
     this._material = new THREE.MeshBasicMaterial({ transparent: true });
     this._material.side = THREE.BackSide;
@@ -59,21 +48,33 @@ export class WebXCursor {
 
     this._x = 0;
     this._y = 0;
+    this._xHot = 0;
+    this._yHot = 0;
     this._width = 16;
     this._height = 20;
     this._updateScale();
     this._updatePosition();
   }
 
-  public update(x: number, y: number, name: string, texture: Texture): void {
+
+  public setPosition(x: number, y: number): void {
     this._x = x;
     this._y = y;
+
+    this._updatePosition();
+  }
+
+  public update(x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture): void {
+    this._x = x;
+    this._y = y;
+    this._xHot = xHot;
+    this._yHot = yHot;
 
     if (texture != null && texture.image != null) {
       this._width = texture.image.width;
       this._height = texture.image.height;
 
-        // TODO Dispose of previous texture?
+      // TODO Dispose of previous texture?
       this._texture = texture;
 
       this._texture.minFilter = LinearFilter;
@@ -93,6 +94,6 @@ export class WebXCursor {
   }
 
   private _updatePosition(): void {
-    this._mesh.position.set(this._x + 0.5 * this._width, this._y + 0.5 * this._height, 999);
+    this._mesh.position.set(this._x - this._xHot + 0.5 * this._width, this._y - this._yHot + 0.5 * this._height, 999);
   }
 }

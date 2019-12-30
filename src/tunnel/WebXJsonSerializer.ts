@@ -84,12 +84,12 @@ export class WebXJsonSerializer implements WebXSerializer {
             texture.flipY = false;
             texture.minFilter = LinearFilter;
 
-            resolve(new WebXMouseCursorMessage(json.x, json.y, json.name, texture, json.commandId));
+            resolve(new WebXMouseCursorMessage(json.x, json.y, json.xHot, json.yHot, json.name, texture, json.commandId));
           };
           image.src = imageData;
           
         } else {
-          resolve(new WebXMouseCursorMessage(json.x, json.y, json.name, null, json.commandId));
+          resolve(new WebXMouseCursorMessage(json.x, json.y, json.xHot, json.yHot, json.name, null, json.commandId));
         }
         
       } else {

@@ -116,6 +116,8 @@ export class WebXBinarySerializer implements WebXSerializer {
       } else if (buffer.messageTypeId === WebXMessageType.MOUSE_CURSOR) {
         const x = buffer.getInt32();
         const y = buffer.getInt32();
+        const xHot = buffer.getInt32();
+        const yHot = buffer.getInt32();
         const nameLength = buffer.getUint32();
         const name = buffer.getString(nameLength);
         const imageDataSize = buffer.getUint32();
@@ -133,12 +135,12 @@ export class WebXBinarySerializer implements WebXSerializer {
             texture.needsUpdate = true;
             texture.flipY = false;
 
-            resolve(new WebXMouseCursorMessage(x, y, name, texture, commandId));
+            resolve(new WebXMouseCursorMessage(x, y, xHot, yHot, name, texture, commandId));
           };
           image.src = url;
 
         } else {
-          resolve(new WebXMouseCursorMessage(x, y, name, null, commandId));
+          resolve(new WebXMouseCursorMessage(x, y, xHot, yHot, name, null, commandId));
         }
       }
 

@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         mouseState.x = mouseState.x / scale;
         mouseState.y = mouseState.y / scale;
         client.sendInstruction(new WebXMouseInstruction(mouseState.x, mouseState.y, mouseState.getButtonMask()));
+        display.updateMousePosition(mouseState.x, mouseState.y);
       };
 
       // Attach a keyboard to the canvas container
@@ -65,8 +66,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
         display.updateSubImages(windowId, subImages);
       };
 
-      client.onMouseCursor = (x: number, y: number, name: string, texture: Texture) => {
-        display.updateMouseCursor(x, y, name, texture);
+      client.onMouseCursor = (x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture) => {
+        display.updateMouseCursor(x, y, xHot, yHot, name, texture);
       };
     })
     .catch(err => console.error(err));

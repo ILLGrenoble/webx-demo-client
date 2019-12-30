@@ -73,13 +73,13 @@ export class WebXWebSocketTunnel implements WebXTunnel {
   }
 
   sendInstruction(command: WebXInstruction): void {
-    console.log(`Sending command: `, command);
+    // console.log(`Sending command: `, command);
     const message = this._serializer.serializeInstruction(command);
     this._socket.send(message);
   }
 
   sendRequest(command: WebXInstruction): Promise<WebXMessage> {
-    console.log(`Sending request: `, command);
+    // console.log(`Sending request: `, command);
     command.synchronous = true;
     const response = new WebXInstructionResponse<WebXMessage>(command);
     this._instructionResponses.set(command.id, response);

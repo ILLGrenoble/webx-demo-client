@@ -82,7 +82,7 @@ export class WebXKeyboardModifierState {
    * Handles the modifier state applicable to the keyboard event given
    * @param event the keyboard event to be read
    */
-  public fromKeyboardEvent(event: KeyboardEvent) {
+  public fromKeyboardEvent(event: KeyboardEvent): this {
     this._shift = event.shiftKey;
     this._ctrl = event.ctrlKey;
     this._alt = event.altKey;
@@ -91,5 +91,7 @@ export class WebXKeyboardModifierState {
     if (event.getModifierState) {
       this.hyper = event.getModifierState('OS') || event.getModifierState('Super') || event.getModifierState('Hyper') || event.getModifierState('Win');
     }
+
+    return this;
   }
 }

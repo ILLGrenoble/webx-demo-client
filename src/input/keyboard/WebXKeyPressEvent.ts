@@ -1,4 +1,5 @@
 import { WebXKeyEvent } from '.';
+import { WebXKeyboardUtils } from './WebXKeyboardUtils';
 
 /**
  * Information related to the pressing of a key, which MUST be
@@ -19,7 +20,7 @@ export class WebXKeyPressEvent extends WebXKeyEvent {
   constructor(charCode: number) {
     super();
     this.charCode = charCode;
-    // @TODO get keysym
-    this.keysym = null;
+    this.keysym = WebXKeyboardUtils.keysymFromCharCode(charCode);
+    this.reliable = true;
   }
 }

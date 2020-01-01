@@ -1,11 +1,12 @@
 import { WebXTunnel } from './tunnel';
-import { WebXInstruction, WebXScreenInstruction } from './instruction';
+import { WebXInstruction, WebXScreenInstruction, WebXKeyboardInstruction, WebXMouseInstruction } from './instruction';
 import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXImageMessage, WebXSubImagesMessage } from './message';
 import { WebXWindowProperties, WebXSubImage } from './display';
 import { WebXTextureFactory } from './display/WebXTextureFactory';
 import { Texture } from 'three';
 import { WebXScreenMessage } from './message/WebXScreenMessage';
 import { WebXMouseCursorMessage } from './message/WebXMouseCursorMessage';
+import { WebXMouseState, WebXMouse, WebXKeyboard } from './input';
 
 const noop = function() {};
 
@@ -60,7 +61,24 @@ export class WebXClient {
     });
   }
 
+  /**
+   * Create a new mouse and bind it to an element
+   * @param element the element to attach the mouse to
+   */
+  createMouse(element: HTMLElement): WebXMouse {
+    return new WebXMouse(element);
+  }
+
+    /**
+   * Create a new keyboard and bind it to an element
+   * @param element the element to attach the keyboard to
+   */
+  createKeyboard(element: HTMLElement): WebXKeyboard {
+    return new WebXKeyboard(element);
+  }
+
   sendInstruction(command: WebXInstruction): void {
+    console.log('Sending instruction');
     this._tunnel.sendInstruction(command);
   }
 
@@ -91,8 +109,8 @@ export class WebXClient {
    * Sends a mouse event having the properties provided by the given mouse state
    * @param mouseState the state of the mouse to send in the mouse event
    */
-  sendMouseState(mouseState: any): void {
-    throw new Error('Method not implemented');
+  sendMouse(mouseState: WebXMouseState): void {
+    this.sendInstruction(new WebXMouseInstruction(mouseState.x, mouseState.y, mouseState.getButtonMask()));
   }
 
   /**
@@ -101,6 +119,24 @@ export class WebXClient {
    * @param key {number} the key to send
    */
   sendKeyEvent(key: number, pressed: boolean): void {
-    throw new Error('Method not implemented');
+    this.sendInstruction(new WebXKeyboardInstruction(key, pressed));
   }
+
+  /**
+   * Sends a key down event
+   * @param key {number} the key to send
+   */
+  sendKeyDown(key: number): void {
+    this.sendKeyEvent(key, true);
+  }
+
+  /**
+   * Sends a key up event
+   * @param key {number} the key to send
+   */
+  sendKeyUp(key: number): void {
+    this.sendKeyEvent(key, false);
+  }
+
+
 }

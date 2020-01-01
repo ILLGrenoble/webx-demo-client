@@ -1,17 +1,14 @@
 import './styles.css';
-import { WebXDisplay } from './display/WebXDisplay';
+import { WebXDisplay, WebXSubImage } from './display';
 import { WebXClient } from './WebXClient';
 import { WebXWebSocketTunnel } from './tunnel';
-import { WebXWindowsInstruction, WebXMouseInstruction, WebXKeyboardInstruction } from './instruction';
-import { WebXMouse, WebXKeyboard } from './input';
+import { WebXWindowsInstruction } from './instruction';
 import { WebXWindowsMessage } from './message';
-import { WebXSubImage } from './display';
 import { Texture } from 'three';
 
 document.addEventListener('DOMContentLoaded', function(event) {
-  const tunnel = new WebXWebSocketTunnel('ws://miro.local:8080', {
-    id: 123
-  });
+
+  const tunnel = new WebXWebSocketTunnel('ws://localhost:8080');
   const client = new WebXClient(tunnel);
 
   let display: WebXDisplay;
@@ -31,25 +28,24 @@ document.addEventListener('DOMContentLoaded', function(event) {
         display.updateWindows((response as WebXWindowsMessage).windows);
       });
 
-      // Attach a mouse to the canvas container
-      const mouse = new WebXMouse(container);
+      const mouse = client.createMouse(container);
 
-      mouse.onMouseDown = mouse.onMouseUp = mouse.onMouseMove = mouse.onMouseOut = mouse.onKeyDown = mouseState => {
+      mouse.onMouseDown = mouse.onMouseUp = mouse.onMouseMove = mouse.onMouseOut = mouseState => {
         const scale = display.getScale();
         mouseState.x = mouseState.x / scale;
         mouseState.y = mouseState.y / scale;
-        client.sendInstruction(new WebXMouseInstruction(mouseState.x, mouseState.y, mouseState.getButtonMask()));
+        client.sendMouse(mouseState);
         display.updateMousePosition(mouseState.x, mouseState.y);
       };
 
-      // Attach a keyboard to the canvas container
-      const keyboard = new WebXKeyboard(document.body);
+      const keyboard = client.createKeyboard(document.body);
+
       keyboard.onKeyDown = key => {
-        client.sendInstruction(new WebXKeyboardInstruction(key, true));
+        client.sendKeyDown(key);
       };
 
       keyboard.onKeyUp = key => {
-        client.sendInstruction(new WebXKeyboardInstruction(key, false));
+        client.sendKeyUp(key);
       };
 
       client.onWindows = windows => {

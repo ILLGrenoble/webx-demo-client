@@ -1,10 +1,14 @@
 import { WebXKeyEvent } from '.';
+import { WebXKeyboard } from '../WebXKeyboard';
 
 export class WebXKeydownEvent extends WebXKeyEvent {
+
   private _keyCode: number;
   private _keyIdentifier: string;
   private _key: string;
   private _location: number;
+  private _keyupReliable: boolean;
+
 
   public get keyCode(): number {
     return this._keyCode;
@@ -38,14 +42,17 @@ export class WebXKeydownEvent extends WebXKeyEvent {
     this._location = location;
   }
 
+  public get keyupReliable(): boolean {
+    return this._keyupReliable;
+  }
+
   /**
    * Information related to the pressing of a key, which need not be a key
    * associated with a printable character. The presence or absence of any
    * information within this object is browser-dependent.
    *
-   * @private
    * @constructor
-   * @augments Guacamole.Keyboard.KeyEvent
+   * @augments WebXKeyEvent
    * @param {number} keyCode The JavaScript key code of the key pressed.
    * @param {string} keyIdentifier The legacy DOM3 "keyIdentifier" of the key
    *                               pressed, as defined at:
@@ -62,5 +69,40 @@ export class WebXKeydownEvent extends WebXKeyEvent {
     this._keyIdentifier = keyIdentifier;
     this._key = key;
     this._location = location;
+    this._keyupReliable = !WebXKeyboard.quirks.keyupUnreliable;
+    this._keysym = this.keysymFromKeyIdentifier(key, location) || this.keysymFromKeycode(keyCode, location);
+
+    if (this._keysym && this.isPrintable()) {
+      this.reliable = true;
+    }
+
+    if (!this._keysym && !this.keyIdentifierSane(keyCode, keyIdentifier)) {
+      this._keysym = this.keysymFromKeyIdentifier(keyIdentifier, location, WebXKeyboard.modifiers.shift);
+    }
+
+
+    // If a key is pressed while meta is held down, the keyup will
+    // never be sent in Chrome (bug #108404)
+    if (WebXKeyboard.modifiers.meta && this.keysym !== 0xFFE7 && this.keysym !== 0xFFE8) {
+      this._keyupReliable = false;
+    } else if(this.keysym === 0xFFE5 && WebXKeyboard.quirks.capsLockKeyupUnreliable) {
+      this._keyupReliable = false;
+    }
+
+    // Determine whether default action for Ctrl+combinations must be prevented
+    const preventAlt = !WebXKeyboard.modifiers.ctrl && !WebXKeyboard.quirks.altIsTypableOnly;
+
+    // Determine whether default action for Ctrl+combinations must be prevented
+    const preventCtrl = !WebXKeyboard.modifiers.alt;
+
+    // We must rely on the (potentially buggy) keyIdentifier if preventing
+    // the default action is important
+    if ((preventCtrl && WebXKeyboard.modifiers.ctrl) 
+      || (preventAlt  && WebXKeyboard.modifiers.alt)
+      || WebXKeyboard.modifiers.meta
+      || WebXKeyboard.modifiers.hyper) {
+        this.reliable = true;
+    }
+
   }
 }

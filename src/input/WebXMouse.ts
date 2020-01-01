@@ -49,7 +49,6 @@ export class WebXMouse {
     ['DOMMouseScroll', 'mousewheel', 'wheel'].forEach(listener => {
       element.addEventListener(listener, this._handleMouseWheel.bind(this), { passive: true });
     });
-    element.addEventListener('keydown', this._handleKeyDown.bind(this));
   }
 
   /**
@@ -148,25 +147,6 @@ export class WebXMouse {
     this._cancelEvent(event);
   }
 
-  /**
-   * Handle keydown event
-   * @param event the keyboard event
-   */
-  private _handleKeyDown(event: KeyboardEvent): void {
-    console.log('etting shift', event);
-    console.log('Num lock', event.getModifierState('NumLock'));
-    if (event.shiftKey) {
-      this._currentState.shift = true;
-    }
-    if (event.ctrlKey) {
-      this._currentState.ctrl = true;
-    }
-    if (event.altKey) {
-      console.log('Got alt key');
-      this._currentState.alt = true;
-    }
-    this.onKeyDown(this._currentState);
-  }
 
   /**
    * Fired whenever the user moves the mouse
@@ -201,5 +181,4 @@ export class WebXMouse {
    */
   onMouseOut(mouseState: WebXMouseState): void {}
 
-  onKeyDown(mouseState: WebXMouseState): void {}
 }

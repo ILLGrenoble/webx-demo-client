@@ -3,7 +3,7 @@ export class WebXKeyMapper {
    * Map of known JavaScript keycodes which do not map to typable characters
    * to their X11 keysym equivalents.
    */
-  private static KEYCODE_KEY_SYMBOLS: Map<number, Array<number>> = new Map([
+  public static KEYCODE_KEY_SYMBOLS: Map<number, Array<number>> = new Map([
     [8, [0xff08]], // backspace
     [9, [0xff09]], // tab
     [12, [0xff0b, 0xff0b, 0xff0b, 0xffb5]], // clear       / KP 5
@@ -60,7 +60,7 @@ export class WebXKeyMapper {
     [225, [0xfe03]] // altgraph (iso_level3_shift)
   ]);
 
-  private static NON_REPEATABLE_KEYS: Array<number> = [
+  public static NON_REPEATABLE_KEYS: Array<number> = [
     0xfe03, // ISO Level 3 Shift (AltGr)
     0xffe1, // Left shift
     0xffe2, // Right shift
@@ -79,7 +79,7 @@ export class WebXKeyMapper {
    * Check if a given key symbol is repeatable
    * @param keySymbol the key to check
    */
-  public isKeyRepeatable(keySymbol: number): boolean {
+  public static isKeyRepeatable(keySymbol: number): boolean {
     const NON_REPEATABLE_KEYS = WebXKeyMapper.NON_REPEATABLE_KEYS;
     return NON_REPEATABLE_KEYS[keySymbol] ? false : true;
   }
@@ -88,7 +88,7 @@ export class WebXKeyMapper {
    * Map of known JavaScript keyidentifiers which do not map to typable
    * characters to their unshifted X11 keysym equivalents.
    */
-  private static KEYIDENTIFIER_KEY_SYMBOLS: Map<string, Array<number>> = new Map([
+  public static KEYIDENTIFIER_KEY_SYMBOLS: Map<string, Array<number>> = new Map([
     ['Again', [0xff66]],
     ['AllCandidates', [0xff3d]],
     ['Alphanumeric', [0xff30]],
@@ -199,21 +199,4 @@ export class WebXKeyMapper {
     ['ZenkakuHankaku', [0xff2a]]
   ]);
 
-  /**
-   * Look up an X11 key symbol for a given JavaScript key code
-   * @param keyCode the key code to lookup
-   */
-  public lookupX11KeySymbolByJavaScriptKeyCode(keyCode: number): number[] {
-    const KEYCODE_KEY_SYMBOLS = WebXKeyMapper.KEYCODE_KEY_SYMBOLS;
-    return KEYCODE_KEY_SYMBOLS.get(keyCode);
-  }
-
-  /**
-   * Look up an X11 symbol for a given JavaScript identifier;
-   * @param identifier the identifier to lookup
-   */
-  public lookupX11KeySymbolByJavascriptKeyIdentifier(identifier: string): number[] {
-    const KEYIDENTIFIER_KEY_SYMBOLS = WebXKeyMapper.KEYIDENTIFIER_KEY_SYMBOLS;
-    return KEYIDENTIFIER_KEY_SYMBOLS.get(identifier);
-  }
 }

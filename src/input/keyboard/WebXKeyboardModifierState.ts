@@ -92,6 +92,8 @@ export class WebXKeyboardModifierState {
       this.hyper = event.getModifierState('OS') || event.getModifierState('Super') || event.getModifierState('Hyper') || event.getModifierState('Win');
     }
 
+    console.log(this);
+
     return this;
   }
 }

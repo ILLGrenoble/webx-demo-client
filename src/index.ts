@@ -2,28 +2,50 @@ import './styles.scss';
 import { WebXDisplay, WebXSubImage } from './display';
 import { WebXClient } from './WebXClient';
 import { WebXWebSocketTunnel } from './tunnel';
-import { WebXWindowsInstruction, WebXInstruction } from './instruction';
-import { WebXWindowsMessage, WebXMessage, WebXScreenMessage } from './message';
+import { WebXWindowsInstruction, WebXInstruction, WebXInstructionType } from './instruction';
+import { WebXWindowsMessage, WebXMessage, WebXScreenMessage, WebXMessageType } from './message';
 import { Texture } from 'three';
 import { WebXInstructionTracer, WebXMessageTracer } from './tracer';
 import { WebXMouseState } from './input';
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
+  const createMessageElement = (type: string, clazz: string, content: string) => {
+    const el = document.createElement(type);
+    el.classList.add(clazz);
+    el.innerHTML = content;
+    return el;
+  };
+
+  const renderMessage = async (message: WebXMessage) => {
+    const el = document.getElementById("messages");
+    if(el.childElementCount >= 50) {
+      el.removeChild(el.childNodes[0])
+    }
+    const messageEl = createMessageElement('div', 'events__message', WebXMessageType[message.type]);
+    el.appendChild(messageEl);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  const renderInstruction = async (instruction: WebXInstruction) => {
+    const el = document.getElementById("instructions");
+    if(el.childElementCount >= 50) {
+      el.removeChild(el.childNodes[0])
+    }
+    const messageEl = createMessageElement('div', 'events__message', WebXInstructionType[instruction.type]);
+    el.appendChild(messageEl);
+    el.scrollTop = el.scrollHeight;
+  }
+
   const urlParams = new URLSearchParams(window.location.search);
   const tunnel = new WebXWebSocketTunnel(urlParams.get('url') || 'ws://localhost:8080');
 
   const client = new WebXClient(tunnel, {
     tracers: {
-      message: new WebXMessageTracer((message: WebXMessage) => {
-        console.debug('Message: {}', message);
-      }),
-      instruction: new WebXInstructionTracer((instruction: WebXInstruction) => {
-        console.debug('Instruction: {}', instruction);
-      })
+      message: new WebXMessageTracer(renderMessage),
+      instruction: new WebXInstructionTracer((instruction: WebXInstruction) => renderInstruction(instruction))
     }
   });
-
 
   let display: WebXDisplay;
   client

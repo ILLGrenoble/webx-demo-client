@@ -65,9 +65,15 @@ body {
   flex-direction: column;
   align-items: stretch;
   display: flex;
-  width: 100px;
-  flex: 0 0 300px;
+  flex: 0 0 200px;
   border-left: 2px solid #eaeced;
+
+  &__panel {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    flex-direction: column;
+  }
 
   &__header {
     flex: 0 0 40px;
@@ -82,6 +88,7 @@ body {
   &__message {
     padding: 10px;
     flex: 1 auto;
+    font-family: monospace;
   }
 
   &__content {

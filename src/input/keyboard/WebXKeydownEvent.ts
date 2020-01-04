@@ -72,18 +72,17 @@ export class WebXKeydownEvent extends WebXKeyEvent {
     this._keyupReliable = !WebXKeyboard.quirks.keyupUnreliable;
     this._keysym = this.keysymFromKeyIdentifier(key, location) || this.keysymFromKeycode(keyCode, location);
 
-    if (this._keysym && this.isPrintable()) {
-      this.reliable = true;
+    if (this._keysym && !this.isPrintable()) {
+      this._reliable = true;
     }
 
-    if (!this._keysym && !this.keyIdentifierSane(keyCode, keyIdentifier)) {
+    if (!this._keysym && this.keyIdentifierSane(keyCode, keyIdentifier)) {
       this._keysym = this.keysymFromKeyIdentifier(keyIdentifier, location, WebXKeyboard.modifiers.shift);
     }
 
-
     // If a key is pressed while meta is held down, the keyup will
     // never be sent in Chrome (bug #108404)
-    if (WebXKeyboard.modifiers.meta && this.keysym !== 0xFFE7 && this.keysym !== 0xFFE8) {
+    if (WebXKeyboard.modifiers.meta && this._keysym !== 0xFFE7 && this._keysym !== 0xFFE8) {
       this._keyupReliable = false;
     } else if(this.keysym === 0xFFE5 && WebXKeyboard.quirks.capsLockKeyupUnreliable) {
       this._keyupReliable = false;
@@ -97,7 +96,7 @@ export class WebXKeydownEvent extends WebXKeyEvent {
 
     // We must rely on the (potentially buggy) keyIdentifier if preventing
     // the default action is important
-    if ((preventCtrl && WebXKeyboard.modifiers.ctrl) 
+    if ((preventCtrl && WebXKeyboard.modifiers.ctrl)
       || (preventAlt  && WebXKeyboard.modifiers.alt)
       || WebXKeyboard.modifiers.meta
       || WebXKeyboard.modifiers.hyper) {

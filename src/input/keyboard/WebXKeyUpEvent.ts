@@ -25,6 +25,7 @@ export class WebXKeyUpEvent extends WebXKeyEvent {
     return this._keyIdentifier;
   }
 
+
   constructor(keyCode: number,  keyIdentifier: string, key: string, location: number) {
     super();
     this._keyCode = keyCode;

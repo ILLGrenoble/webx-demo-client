@@ -229,7 +229,7 @@ export class WebXKeyboard {
 
     // Fall back to the most recently pressed keysym associated with the
     // keyCode if the inferred key doesn't seem to actually be pressed
-    if (!this._isKeyPressed(keyupEvent.keysym) {
+    if (!this._isKeyPressed(keyupEvent.keysym)) {
       keyupEvent.keysym = this._recentKeysym[keyupEvent.keyCode] || keyupEvent.keysym;
     }
 

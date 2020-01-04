@@ -207,7 +207,7 @@ export abstract class WebXKeyEvent {
    * If false, the keysym may still be valid, but it's only a best guess,
    * and future key events may be a better source of information.
    */
-  private _reliable = false;
+  protected _reliable = false;
 
   public get timestamp() {
     return this._timestamp;
@@ -293,7 +293,7 @@ export abstract class WebXKeyEvent {
 
     let typedCharacter: string;
 
-    // If identifier is U+xxxx, decode Unicode character 
+    // If identifier is U+xxxx, decode Unicode character
     const unicodePrefixLocation = identifier.indexOf("U+");
     if (unicodePrefixLocation >= 0) {
       const hex = identifier.substring(unicodePrefixLocation + 2);

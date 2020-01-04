@@ -1,26 +1,40 @@
-import './styles.css';
+import './styles.scss';
 import { WebXDisplay, WebXSubImage } from './display';
 import { WebXClient } from './WebXClient';
 import { WebXWebSocketTunnel } from './tunnel';
-import { WebXWindowsInstruction } from './instruction';
-import { WebXWindowsMessage } from './message';
+import { WebXWindowsInstruction, WebXInstruction } from './instruction';
+import { WebXWindowsMessage, WebXMessage, WebXScreenMessage } from './message';
 import { Texture } from 'three';
+import { WebXInstructionTracer, WebXMessageTracer } from './tracer';
+import { WebXMouseState } from './input';
 
-document.addEventListener('DOMContentLoaded', function(event) {
+document.addEventListener('DOMContentLoaded', (event) => {
 
-  const tunnel = new WebXWebSocketTunnel('ws://localhost:8080');
-  const client = new WebXClient(tunnel);
+  const urlParams = new URLSearchParams(window.location.search);
+  const tunnel = new WebXWebSocketTunnel(urlParams.get('url') || 'ws://localhost:8080');
+
+  const client = new WebXClient(tunnel, {
+    tracers: {
+      message: new WebXMessageTracer((message: WebXMessage) => {
+        console.debug('Message: {}', message);
+      }),
+      instruction: new WebXInstructionTracer((instruction: WebXInstruction) => {
+        console.debug('Instruction: {}', instruction);
+      })
+    }
+  });
+
 
   let display: WebXDisplay;
   client
     .connect()
-    .then(screenMessage => {
+    .then((screenMessage: WebXScreenMessage) => {
       const { width, height } = screenMessage.screenSize;
 
       display = new WebXDisplay(width, height);
       display.animate();
 
-      const container = document.getElementById('canvas-frame');
+      const container = document.getElementById('display-container');
       container.appendChild(display.renderer.domElement);
       container.style.maxWidth = display.screenWidth + 'px';
 
@@ -30,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
       const mouse = client.createMouse(container);
 
-      mouse.onMouseDown = mouse.onMouseUp = mouse.onMouseMove = mouse.onMouseOut = mouseState => {
+      mouse.onMouseDown = mouse.onMouseUp = mouse.onMouseMove = mouse.onMouseOut = (mouseState: WebXMouseState) => {
         const scale = display.getScale();
         mouseState.x = mouseState.x / scale;
         mouseState.y = mouseState.y / scale;

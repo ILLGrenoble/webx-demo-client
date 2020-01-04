@@ -1,8 +1,5 @@
-const {
-    resolve,
-} = require('path')
+const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
     context: resolve(__dirname, 'src'),
@@ -30,20 +27,17 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
-            }, {
-                test: /\.css$/,
-                use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader
-                    }, {
-                        loader: "css-loader",
-                        options: {
-                            sourceMap: true,
-                            modules: true,
-                            localIdentName: "[local]"
-                        }
-                    }
-                ]
+            },
+            {
+              test: /\.s[ac]ss$/i,
+              use: [
+                // Creates `style` nodes from JS strings
+                'style-loader',
+                // Translates CSS into CommonJS
+                'css-loader',
+                // Compiles Sass to CSS
+                'sass-loader',
+              ],
             }
         ]
     },
@@ -51,11 +45,6 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js']
     },
     plugins: [
-        new MiniCssExtractPlugin(
-            {
-                filename: "[hash].css",
-                chunkFilename: "[id].css"
-            }),
         new HtmlWebpackPlugin({
             inject: true,
             template: 'index.html',

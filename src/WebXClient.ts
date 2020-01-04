@@ -7,6 +7,8 @@ import { Texture } from 'three';
 import { WebXScreenMessage } from './message/WebXScreenMessage';
 import { WebXMouseCursorMessage } from './message/WebXMouseCursorMessage';
 import { WebXMouseState, WebXMouse, WebXKeyboard } from './input';
+import { WebXConfiguration } from './WebXConfiguration';
+import { WebXMessageTracer, WebXInstructionTracer } from './tracer';
 
 const noop = function() {};
 
@@ -16,6 +18,7 @@ export class WebXClient {
   private _onImage: (windowId: number, depth: number, texture: Texture) => void = null;
   private _onSubImages: (windowId: number, subImages: WebXSubImage[]) => void = null;
   private _onMouseCursor: (x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture) => void = null;
+  private _tracers: { message: WebXMessageTracer, instruction: WebXInstructionTracer} = null;
 
   get onWindows(): (windows: Array<WebXWindowProperties>) => void {
     return this._onWindows ? this._onWindows : noop;
@@ -49,8 +52,11 @@ export class WebXClient {
     this._onMouseCursor = func;
   }
 
-  constructor(private _tunnel: WebXTunnel) {
+  constructor(private _tunnel: WebXTunnel, private _config: WebXConfiguration) {
     this._tunnel.handleMessage = this.handleMessage.bind(this);
+    if(this._config.tracers) {
+      this._tracers = this._config.tracers;
+    }
     WebXTextureFactory.initInstance(this._tunnel);
   }
 
@@ -78,7 +84,9 @@ export class WebXClient {
   }
 
   sendInstruction(command: WebXInstruction): void {
-    console.log('Sending instruction');
+    if(this._tracers && this._tracers.instruction) {
+      this._tracers.instruction.handle(command);
+    }
     this._tunnel.sendInstruction(command);
   }
 
@@ -87,6 +95,9 @@ export class WebXClient {
   }
 
   handleMessage(message: WebXMessage) {
+    if(this._tracers && this._tracers.message) {
+      this._tracers.message.handle(message);
+    }
     if (message.type === WebXMessageType.WINDOWS) {
       const windows = (message as WebXWindowsMessage).windows;
       this.onWindows(windows);
@@ -98,7 +109,7 @@ export class WebXClient {
     } else if (message.type === WebXMessageType.SUBIMAGES) {
       const subImagesMessage = message as WebXSubImagesMessage;
       this.onSubImages(subImagesMessage.windowId, subImagesMessage.subImages);
-      
+
     } else if (message.type === WebXMessageType.MOUSE_CURSOR) {
       const mouseCursorMessage = message as WebXMouseCursorMessage;
       this.onMouseCursor(mouseCursorMessage.x, mouseCursorMessage.y, mouseCursorMessage.xHot, mouseCursorMessage.yHot, mouseCursorMessage.name, mouseCursorMessage.texture);

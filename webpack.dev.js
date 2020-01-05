@@ -6,6 +6,7 @@ module.exports = merge(common, {
     devtool: 'inline-source-map',
     devServer: {
         watchContentBase: false,
+        disableHostCheck: true,
         compress: false,
         port: 9000,
         stats: {

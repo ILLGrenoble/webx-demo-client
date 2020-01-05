@@ -163,4 +163,5 @@ export class WebXMouseState {
     mask |= this._alt ? 1 << 3 : 0;
     return mask;
   }
+
 }

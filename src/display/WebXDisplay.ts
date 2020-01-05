@@ -8,6 +8,7 @@ import { WebXWebGLRenderer } from '../utils/WebXWebGLRenderer';
 import { WebXCursor } from './WebXCursor';
 
 export class WebXDisplay {
+
   private _scene: THREE.Scene;
   private _camera: THREE.OrthographicCamera;
   private _renderer: WebXWebGLRenderer;
@@ -17,6 +18,14 @@ export class WebXDisplay {
 
   private _windows: WebXWindow[] = [];
   private _cursor: WebXCursor = new WebXCursor();
+
+  private _scale: number = 1;
+
+  private _containerElement: HTMLElement;
+
+  private _displayElement: HTMLElement;
+
+  private _boundsElement: HTMLElement;
 
   public get renderer(): THREE.WebGLRenderer {
     return this._renderer;
@@ -30,7 +39,16 @@ export class WebXDisplay {
     return this._screenHeight;
   }
 
-  constructor(screenWidth: number, screenHeight: number) {
+  public get containerElement(): HTMLElement {
+    return this._containerElement;
+  }
+
+  public get scale(): number {
+    return this._scale;
+  }
+
+  constructor(containerElement: HTMLElement, screenWidth: number, screenHeight: number) {
+    this._containerElement = containerElement;
     this._screenWidth = screenWidth;
     this._screenHeight = screenHeight;
 
@@ -45,6 +63,42 @@ export class WebXDisplay {
 
     this._renderer = new THREE.WebGLRenderer() as WebXWebGLRenderer;
     this._renderer.setSize(screenWidth, screenHeight, false);
+
+    this._render();
+    this._bindListeners();
+
+    // initial size
+    this.resize();
+  }
+
+  private _createDisplayElement(): HTMLElement {
+    const element = document.createElement('div');
+    element.style.width = `${this._screenWidth}px`;
+    element.style.height = `${this._screenHeight}px`;
+    element.appendChild(this._renderer.domElement);
+    return element;
+  }
+
+  private _createDisplayBoundingElement(): HTMLElement {
+    const element = document.createElement('div');
+    element.appendChild(this._displayElement);
+    return element;
+  }
+
+  /**
+   * Render the display to the screen
+   */
+  private _render(): void {
+    this._displayElement = this._createDisplayElement();
+    this._boundsElement = this._createDisplayBoundingElement();
+    this._containerElement.appendChild(this._boundsElement);
+  }
+
+  /**
+   * Bind the event listeners
+   */
+  private _bindListeners(): void {
+    this.resize = this.resize.bind(this);
   }
 
   animate(): void {
@@ -136,8 +190,36 @@ export class WebXDisplay {
     return this._windows.find(window => window.id === id);
   }
 
-  getScale(): number {
-    const scale = (1.0 * this._renderer.domElement.offsetWidth) / this._screenWidth;
-    return scale;
+  /**
+   * Set the scale
+   * @param scale the scale (between 0 and 1)
+   */
+  setScale(scale: number) {
+    this._scale = scale;
+  }
+
+  /**
+   * Scale automatically
+   */
+  autoScale() {
+    const container = this._containerElement;
+    const { clientWidth, clientHeight } = container;
+    const { screenWidth, screenHeight } = this;
+    this._scale = Math.min(clientWidth / screenWidth, clientHeight / screenHeight);
+  }
+
+  /**
+   * Update the screen scale
+   * @param scale between 0 and 1 or empty. If empty then the display will autoscale
+   *              to fit the dimensions of its container
+   */
+  resize(scale?: number): void {
+    const element = this._boundsElement;
+    if (scale) {
+      this.setScale(scale);
+    } else {
+      this.autoScale();
+    }
+    element.style.transform = `scale(${this._scale},${this._scale})`;
   }
 }

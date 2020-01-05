@@ -47,7 +47,7 @@ export class WebXMouse {
     element.addEventListener('mouseup', this._handleMouseUp.bind(this));
     element.addEventListener('mouseout', this._handleMouseOut.bind(this));
     ['DOMMouseScroll', 'mousewheel', 'wheel'].forEach(listener => {
-      element.addEventListener(listener, this._handleMouseWheel.bind(this), { passive: true });
+      element.addEventListener(listener, this._handleMouseWheel.bind(this));
     });
   }
 
@@ -76,6 +76,7 @@ export class WebXMouse {
    * @param event the mouse event
    */
   private _handleMouseDown(event: MouseEvent): void {
+    this._cancelEvent(event);
     const currentState = this._currentState;
     switch (event.button) {
       case 0:
@@ -112,6 +113,7 @@ export class WebXMouse {
       currentState.down = false;
       this.onMouseUp(currentState);
     }
+    this._cancelEvent(event);
   }
 
   /**
@@ -131,12 +133,15 @@ export class WebXMouse {
    * @param event the mouse event
    */
   private _handleMouseMove(event: MouseEvent): void {
+    this._cancelEvent(event);
     const currentState = this._currentState;
     const bounds = this._element.getBoundingClientRect();
     currentState.x = event.clientX - bounds.left;
     currentState.y = event.clientY - bounds.top;
     this.onMouseMove(currentState);
+
   }
+
 
   /**
    * Process the context menu event
@@ -152,7 +157,7 @@ export class WebXMouse {
    * Fired whenever the user moves the mouse
    * @param mouseState the current mouse state
    */
-  onMouseMove(mouseState: WebXMouseState): void {}
+  onMouseMove(mouseState: WebXMouseState): void { }
 
   /**
    * Fired whenever a mouse button is effectively pressed. This can happen
@@ -162,7 +167,7 @@ export class WebXMouse {
    *
    * @param mouseState the current mouse state
    */
-  onMouseDown(mouseState: WebXMouseState): void {}
+  onMouseDown(mouseState: WebXMouseState): void { }
 
   /**
    * Fired whenever a mouse button is effectively released. This can happen
@@ -171,7 +176,7 @@ export class WebXMouse {
    * gesture initiated by dragging two fingers up or down, etc.
    * @param mouseState the current mouse state
    */
-  onMouseUp(mouseState: WebXMouseState): void {}
+  onMouseUp(mouseState: WebXMouseState): void { }
 
   /**
    * Fired whenever the mouse leaves the boundaries of the element associated
@@ -179,6 +184,6 @@ export class WebXMouse {
    *
    * @param mouseState the current mouse state
    */
-  onMouseOut(mouseState: WebXMouseState): void {}
+  onMouseOut(mouseState: WebXMouseState): void { }
 
 }

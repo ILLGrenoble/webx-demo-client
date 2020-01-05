@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
   const renderMessage = async (message: WebXMessage) => {
     const el = document.getElementById("messages");
-    if(el.childElementCount >= 50) {
+    if (el.childElementCount >= 50) {
       el.removeChild(el.childNodes[0])
     }
     const messageEl = createMessageElement('div', 'events__message', WebXMessageType[message.type]);
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
   const renderInstruction = async (instruction: WebXInstruction) => {
     const el = document.getElementById("instructions");
-    if(el.childElementCount >= 50) {
+    if (el.childElementCount >= 50) {
       el.removeChild(el.childNodes[0])
     }
     const messageEl = createMessageElement('div', 'events__message', WebXInstructionType[instruction.type]);
@@ -52,13 +52,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     .connect()
     .then((screenMessage: WebXScreenMessage) => {
       const { width, height } = screenMessage.screenSize;
-
-      display = new WebXDisplay(width, height);
-      display.animate();
-
       const container = document.getElementById('display-container');
-      container.appendChild(display.renderer.domElement);
-      container.style.maxWidth = display.screenWidth + 'px';
+
+      display = new WebXDisplay(container, width, height);
+      display.animate();
 
       client.sendRequest(new WebXWindowsInstruction()).then(response => {
         display.updateWindows((response as WebXWindowsMessage).windows);
@@ -67,9 +64,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
       const mouse = client.createMouse(container);
 
       mouse.onMouseDown = mouse.onMouseUp = mouse.onMouseMove = mouse.onMouseOut = (mouseState: WebXMouseState) => {
-        const scale = display.getScale();
-        mouseState.x = mouseState.x / scale;
-        mouseState.y = mouseState.y / scale;
         client.sendMouse(mouseState);
         display.updateMousePosition(mouseState.x, mouseState.y);
       };
@@ -101,6 +95,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
       client.onMouseCursor = (x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture) => {
         display.updateMouseCursor(x, y, xHot, yHot, name, texture);
       };
+
+      // Resize the display when the window is resized
+      window.addEventListener('resize', () => display.resize());
+
+
     })
     .catch(err => console.error(err));
 });

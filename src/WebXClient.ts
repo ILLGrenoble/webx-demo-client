@@ -18,7 +18,7 @@ export class WebXClient {
   private _onImage: (windowId: number, depth: number, texture: Texture) => void = null;
   private _onSubImages: (windowId: number, subImages: WebXSubImage[]) => void = null;
   private _onMouseCursor: (x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture) => void = null;
-  private _tracers: { message: WebXMessageTracer, instruction: WebXInstructionTracer} = null;
+  private _tracers: { message: WebXMessageTracer; instruction: WebXInstructionTracer} = null;
 
   get onWindows(): (windows: Array<WebXWindowProperties>) => void {
     return this._onWindows ? this._onWindows : noop;

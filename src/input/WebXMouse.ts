@@ -6,15 +6,7 @@ export class WebXMouse {
    * mouse events fire. This state object is also passed in as a parameter to
    * the handler of any mouse events.
    */
-  private _currentState = new WebXMouseState({
-    x: 0,
-    y: 0,
-    left: false,
-    middle: false,
-    right: false,
-    up: false,
-    down: false
-  });
+  private _currentState: WebXMouseState;
 
   /**
    * Provides cross-browser mouse events for a given element
@@ -22,6 +14,7 @@ export class WebXMouse {
    */
   constructor(private _element: HTMLElement) {
     this._bindListeners();
+    this._createDefaultState();
   }
 
   /**
@@ -48,6 +41,19 @@ export class WebXMouse {
     element.addEventListener('mouseout', this._handleMouseOut.bind(this));
     ['DOMMouseScroll', 'mousewheel', 'wheel'].forEach(listener => {
       element.addEventListener(listener, this._handleMouseWheel.bind(this));
+    });
+    this.reset = this.reset.bind(this);
+  }
+
+  private _createDefaultState(): void {
+    this._currentState = new WebXMouseState({
+      x: 0,
+      y: 0,
+      left: false,
+      middle: false,
+      right: false,
+      up: false,
+      down: false
     });
   }
 
@@ -135,14 +141,20 @@ export class WebXMouse {
   private _handleMouseMove(event: MouseEvent): void {
     this._cancelEvent(event);
     const currentState = this._currentState;
-    const bounds = this._element.getBoundingClientRect();
+    // get the container wrapping the display canvas element
+    const bounds = this._element.firstElementChild.getBoundingClientRect();
     currentState.x = event.clientX - bounds.left;
     currentState.y = event.clientY - bounds.top;
     this.onMouseMove(currentState);
-
   }
 
 
+  /**
+   * Resets the mouse state
+   */
+  public reset() {
+    this._createDefaultState();
+  }
   /**
    * Process the context menu event
    * Block context menu so right-click gets sent properly

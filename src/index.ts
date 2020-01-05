@@ -63,10 +63,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
       const mouse = client.createMouse(container);
 
-      mouse.onMouseDown = mouse.onMouseUp = mouse.onMouseMove = mouse.onMouseOut = (mouseState: WebXMouseState) => {
+      mouse.onMouseMove = mouse.onMouseOut = (mouseState: WebXMouseState) => {
+        const scale = display.scale;
+        mouseState.x = mouseState.x / scale;
+        mouseState.y = mouseState.y / scale;
         client.sendMouse(mouseState);
-        display.updateMousePosition(mouseState.x, mouseState.y);
+        display.updateMousePosition(mouseState.x , mouseState.y);
       };
+
+      mouse.onMouseDown = mouse.onMouseUp  = (mouseState: WebXMouseState) => {
+        client.sendMouse(mouseState);
+      }
 
       const keyboard = client.createKeyboard(document.body);
 
@@ -98,6 +105,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
       // Resize the display when the window is resized
       window.addEventListener('resize', () => display.resize());
+
+      document.addEventListener("visibilitychange", () => {
+        mouse.reset();
+      });
 
 
     })

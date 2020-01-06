@@ -7,33 +7,54 @@ import { WebXWindowsMessage, WebXMessage, WebXScreenMessage, WebXMessageType } f
 import { Texture } from 'three';
 import { WebXInstructionTracer, WebXMessageTracer } from './tracer';
 import { WebXMouseState } from './input';
+import * as screenfull from 'screenfull';
+import { Screenfull } from 'screenfull';
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
-  const createMessageElement = (type: string, clazz: string, content: string) => {
+  const createMessageElement = (type: string, clazz: string, html: string) => {
     const el = document.createElement(type);
     el.classList.add(clazz);
-    el.innerHTML = content;
+    el.innerHTML = html;
     return el;
   };
 
-  const renderMessage = async (message: WebXMessage) => {
-    const el = document.getElementById("messages");
-    if (el.childElementCount >= 50) {
-      el.removeChild(el.childNodes[0])
+  let messages: WebXMessage[] = [];
+  let instructions: WebXInstruction[] = [];
+
+  const renderMessage = (message: WebXMessage) => {
+    messages.push(message);
+    if (messages.length > 25) {
+      messages.shift();
     }
-    const messageEl = createMessageElement('div', 'events__message', WebXMessageType[message.type]);
-    el.appendChild(messageEl);
+    const fragment = document.createDocumentFragment();
+    messages.forEach(message => {
+      const messageEl = createMessageElement('div', 'events__message', WebXMessageType[message.type]);
+      fragment.appendChild(messageEl);
+    });
+    const el = document.getElementById('messages');
+    while (el.firstChild) {
+      el.removeChild(el.firstChild);
+    }
+    el.appendChild(fragment);
     el.scrollTop = el.scrollHeight;
   }
 
-  const renderInstruction = async (instruction: WebXInstruction) => {
-    const el = document.getElementById("instructions");
-    if (el.childElementCount >= 50) {
-      el.removeChild(el.childNodes[0])
+  const renderInstruction = (instruction: WebXInstruction) => {
+    instructions.push(instruction);
+    if (instructions.length > 25) {
+      instructions.shift();
     }
-    const messageEl = createMessageElement('div', 'events__message', WebXInstructionType[instruction.type]);
-    el.appendChild(messageEl);
+    const fragment = document.createDocumentFragment();
+    instructions.forEach(instruction => {
+      const messageEl = createMessageElement('div', 'events__message', WebXInstructionType[instruction.type]);
+      fragment.appendChild(messageEl);
+    });
+    const el = document.getElementById('instructions');
+    while (el.firstChild) {
+      el.removeChild(el.firstChild);
+    }
+    el.appendChild(fragment);
     el.scrollTop = el.scrollHeight;
   }
 
@@ -43,7 +64,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const client = new WebXClient(tunnel, {
     tracers: {
       message: new WebXMessageTracer(renderMessage),
-      instruction: new WebXInstructionTracer((instruction: WebXInstruction) => renderInstruction(instruction))
+      instruction: new WebXInstructionTracer(renderInstruction)
     }
   });
 
@@ -68,10 +89,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
         mouseState.x = mouseState.x / scale;
         mouseState.y = mouseState.y / scale;
         client.sendMouse(mouseState);
-        display.updateMousePosition(mouseState.x , mouseState.y);
+        display.updateMousePosition(mouseState.x, mouseState.y);
       };
 
-      mouse.onMouseDown = mouse.onMouseUp  = (mouseState: WebXMouseState) => {
+      mouse.onMouseDown = mouse.onMouseUp = (mouseState: WebXMouseState) => {
         client.sendMouse(mouseState);
       }
 
@@ -106,10 +127,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
       // Resize the display when the window is resized
       window.addEventListener('resize', () => display.resize());
 
-      document.addEventListener("visibilitychange", () => {
+      document.addEventListener('visibilitychange', () => {
         mouse.reset();
       });
 
+      // Enter into full screen mode
+      document.getElementById('btn-fullscreen').addEventListener('click', () => {
+        (screenfull as Screenfull).request(display.containerElement);
+        display.resize();
+      });
 
     })
     .catch(err => console.error(err));

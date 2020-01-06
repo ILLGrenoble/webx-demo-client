@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "query-string": "^6.2.0",
+    "screenfull": "^5.0.0",
     "three": "^0.103.0"
   }
 }

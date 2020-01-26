@@ -89,7 +89,7 @@ export class WebXJsonSerializer implements WebXSerializer {
           image.src = imageData;
           
         } else {
-          resolve(new WebXMouseCursorMessage(json.x, json.y, json.xHot, json.yHot, json.name, null, json.commandId));
+          resolve(new WebXMouseCursorMessage(json.x, json.y, json.xHot, json.yHot, json.id, null, json.commandId));
         }
         
       } else {

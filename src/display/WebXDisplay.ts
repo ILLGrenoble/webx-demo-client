@@ -178,8 +178,8 @@ export class WebXDisplay {
    * @param y the y coordinate
    * @param image the cursor image
    */
-  updateMouseCursor(x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture) {
-    this._cursor.update(x, y, xHot, yHot, name, texture);
+  updateMouseCursor(x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture) {
+    this._cursor.update(x, y, xHot, yHot, id, texture);
   }
 
   updateMousePosition(x: number, y: number) {

@@ -4,7 +4,7 @@ import { Texture, LinearFilter } from 'three';
 export class WebXCursor {
   private static _PLANE_GEOMETRY: THREE.Geometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
 
-  private _name: string;
+  private _id: number;
   private _texture: THREE.Texture;
   private _material: THREE.MeshBasicMaterial;
   private _mesh: THREE.Mesh;
@@ -20,8 +20,8 @@ export class WebXCursor {
     return this._mesh;
   }
 
-  public get name(): string {
-    return this._name;
+  public get id(): number {
+    return this._id;
   }
 
   public get texture(): Texture {
@@ -64,11 +64,12 @@ export class WebXCursor {
     this._updatePosition();
   }
 
-  public update(x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture): void {
+  public update(x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture): void {
     this._x = x;
     this._y = y;
     this._xHot = xHot;
     this._yHot = yHot;
+    this._id = id;
 
     if (texture != null && texture.image != null) {
       this._width = texture.image.width;

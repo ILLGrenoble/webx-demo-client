@@ -17,7 +17,7 @@ export class WebXClient {
   private _onWindows: (windows: Array<WebXWindowProperties>) => void = null;
   private _onImage: (windowId: number, depth: number, texture: Texture) => void = null;
   private _onSubImages: (windowId: number, subImages: WebXSubImage[]) => void = null;
-  private _onMouseCursor: (x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture) => void = null;
+  private _onMouseCursor: (x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture) => void = null;
   private _tracers: { message: WebXMessageTracer; instruction: WebXInstructionTracer} = null;
 
   get onWindows(): (windows: Array<WebXWindowProperties>) => void {
@@ -44,11 +44,11 @@ export class WebXClient {
     this._onSubImages = func;
   }
 
-  get onMouseCursor(): (x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture) => void {
+  get onMouseCursor(): (x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture) => void {
     return this._onMouseCursor ? this._onMouseCursor : noop;
   }
 
-  set onMouseCursor(func: (x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture) => void) {
+  set onMouseCursor(func: (x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture) => void) {
     this._onMouseCursor = func;
   }
 
@@ -112,7 +112,7 @@ export class WebXClient {
 
     } else if (message.type === WebXMessageType.MOUSE_CURSOR) {
       const mouseCursorMessage = message as WebXMouseCursorMessage;
-      this.onMouseCursor(mouseCursorMessage.x, mouseCursorMessage.y, mouseCursorMessage.xHot, mouseCursorMessage.yHot, mouseCursorMessage.name, mouseCursorMessage.texture);
+      this.onMouseCursor(mouseCursorMessage.x, mouseCursorMessage.y, mouseCursorMessage.xHot, mouseCursorMessage.yHot, mouseCursorMessage.id, mouseCursorMessage.texture);
     }
   }
 

@@ -120,8 +120,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         display.updateSubImages(windowId, subImages);
       };
 
-      client.onMouseCursor = (x: number, y: number, xHot: number, yHot: number, name: string, texture: Texture) => {
-        display.updateMouseCursor(x, y, xHot, yHot, name, texture);
+      client.onMouseCursor = (x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture) => {
+        display.updateMouseCursor(x, y, xHot, yHot, id, texture);
       };
 
       // Resize the display when the window is resized

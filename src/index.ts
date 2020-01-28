@@ -9,6 +9,8 @@ import { WebXInstructionTracer, WebXMessageTracer } from './tracer';
 import { WebXMouseState } from './input';
 import * as screenfull from 'screenfull';
 import { Screenfull } from 'screenfull';
+import { WebXCursorInstruction } from './instruction/WebXCursorInstruction';
+import { WebXMouseCursorMessage } from './message/WebXMouseCursorMessage';
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
@@ -83,6 +85,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
       });
 
       const mouse = client.createMouse(container);
+      client.sendRequest(new WebXCursorInstruction()).then(response => {
+        const mouseCursorMessage = response as WebXMouseCursorMessage;
+        display.updateMouseCursor(mouseCursorMessage.x, mouseCursorMessage.y, mouseCursorMessage.xHot, mouseCursorMessage.yHot, mouseCursorMessage.id, mouseCursorMessage.texture);
+      });
 
       mouse.onMouseMove = mouse.onMouseOut = (mouseState: WebXMouseState) => {
         const scale = display.scale;

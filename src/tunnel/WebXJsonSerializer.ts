@@ -1,10 +1,8 @@
 import { WebXSerializer } from './WebXSerializer';
 import { WebXInstruction } from '../instruction';
-import { WebXWindowsMessage, WebXMessage, WebXImageMessage, WebXSubImagesMessage } from '../message';
+import { WebXWindowsMessage, WebXMessage, WebXImageMessage, WebXSubImagesMessage, WebXScreenMessage, WebXMouseMessage, WebXCursorImageMessage } from '../message';
 import { WebXWindowProperties, WebXSubImage } from '../display';
 import { Texture, LinearFilter } from 'three';
-import { WebXScreenMessage } from '../message/WebXScreenMessage';
-import { WebXMouseCursorMessage } from '../message/WebXMouseCursorMessage';
 
 export class WebXJsonSerializer implements WebXSerializer {
   serializeInstruction(command: WebXInstruction): string {
@@ -74,7 +72,10 @@ export class WebXJsonSerializer implements WebXSerializer {
           resolve(new WebXSubImagesMessage(windowId, webXSubImages));
         });
 
-      } else if (json.type === 'cursor') {
+      } else if (json.type === 'mouse') {
+        resolve(new WebXMouseMessage(json.x, json.y, json.cursorId, json.commandId));
+
+      } else if (json.type === 'cursorimage') {
         const imageData = json.data;
         if (data != null && data !== '') {
           const image: HTMLImageElement = new Image();
@@ -84,12 +85,12 @@ export class WebXJsonSerializer implements WebXSerializer {
             texture.flipY = false;
             texture.minFilter = LinearFilter;
 
-            resolve(new WebXMouseCursorMessage(json.x, json.y, json.xHot, json.yHot, json.name, texture, json.commandId));
+            resolve(new WebXCursorImageMessage(json.x, json.y, json.xHot, json.yHot, json.name, texture, json.commandId));
           };
           image.src = imageData;
           
         } else {
-          resolve(new WebXMouseCursorMessage(json.x, json.y, json.xHot, json.yHot, json.id, null, json.commandId));
+          resolve(new WebXCursorImageMessage(json.x, json.y, json.xHot, json.yHot, json.id, null, json.commandId));
         }
         
       } else {

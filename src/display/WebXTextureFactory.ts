@@ -19,7 +19,7 @@ export class WebXTextureFactory {
     return WebXTextureFactory._instance;
   }
 
-  public getTexture(windowId: number): Promise<{ depth: number; texture: Texture }> {
+  public getWindowTexture(windowId: number): Promise<{ depth: number; texture: Texture }> {
     const promise: Promise<{ depth: number; texture: Texture }> = new Promise<{ depth: number; texture: Texture }>((resolve, reject) => {
       return this._tunnel.sendRequest(new WebXImageInstruction(windowId)).then((response: WebXImageMessage) => {
         resolve({

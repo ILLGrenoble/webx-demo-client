@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import { Texture, LinearFilter } from 'three';
+import { WebXCursorFactory, WebXCursorData } from './WebXCursorFactory';
 
 export class WebXCursor {
   private static _PLANE_GEOMETRY: THREE.Geometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
 
-  private _id: number;
+  private _cursorId: number;
   private _texture: THREE.Texture;
   private _material: THREE.MeshBasicMaterial;
   private _mesh: THREE.Mesh;
@@ -20,8 +21,8 @@ export class WebXCursor {
     return this._mesh;
   }
 
-  public get id(): number {
-    return this._id;
+  public get cursorId(): number {
+    return this._cursorId;
   }
 
   public get texture(): Texture {
@@ -42,10 +43,11 @@ export class WebXCursor {
     this._material = new THREE.MeshBasicMaterial({ transparent: true });
     this._material.side = THREE.BackSide;
     this._material.transparent = true;
-    // this._material.visible = false;
+    this._material.visible = false;
 
     this._mesh = new THREE.Mesh(WebXCursor._PLANE_GEOMETRY, this._material);
 
+    this._cursorId = 0;
     this._x = 0;
     this._y = 0;
     this._xHot = 0;
@@ -54,8 +56,13 @@ export class WebXCursor {
     this._height = 20;
     this._updateScale();
     this._updatePosition();
-  }
 
+    WebXCursorFactory.instance().getCursor().then(cursorData => {
+      const cursor = cursorData.cursor;
+      if (this._cursorId === 0 || this._cursorId === cursor.cursorId)
+      this.update(cursorData.x, cursorData.y, cursor.xHot, cursor.yHot, cursor.cursorId, cursor.texture);
+    }); 
+  }
 
   public setPosition(x: number, y: number): void {
     this._x = x;
@@ -64,18 +71,27 @@ export class WebXCursor {
     this._updatePosition();
   }
 
-  public update(x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture): void {
+  public updateCursorId(x: number, y: number, cursorId: number): void {
+    this._cursorId = cursorId;
+    WebXCursorFactory.instance().getCursor(cursorId).then(cursorData => {
+      const cursor = cursorData.cursor;
+
+      if (this._cursorId === 0 || this._cursorId === cursor.cursorId)
+      this.update(cursorData.x != null ? cursorData.x : this._x, cursorData.y != null ? cursorData.y : this._y, cursor.xHot, cursor.yHot, cursor.cursorId, cursor.texture);
+    }); 
+  }
+
+  public update(x: number, y: number, xHot: number, yHot: number, cursorId: number, texture: Texture): void {
     this._x = x;
     this._y = y;
     this._xHot = xHot;
     this._yHot = yHot;
-    this._id = id;
+    this._cursorId = cursorId;
 
     if (texture != null && texture.image != null) {
       this._width = texture.image.width;
       this._height = texture.image.height;
 
-      // TODO Dispose of previous texture?
       this._texture = texture;
 
       this._texture.minFilter = LinearFilter;

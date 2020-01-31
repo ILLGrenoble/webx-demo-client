@@ -2,7 +2,8 @@ import { WebXMessage } from './WebXMessage';
 import { WebXMessageType } from './WebXMessageType';
 import { Texture } from 'three';
 
-export class WebXMouseCursorMessage extends WebXMessage {
+export class WebXCursorImageMessage extends WebXMessage {
+
   get x(): number {
     return this._x;
   }
@@ -19,15 +20,15 @@ export class WebXMouseCursorMessage extends WebXMessage {
     return this._yHot;
   }
 
-  get id(): number {
-    return this._id;
+  get cursorId(): number {
+    return this._cursorId;
   }
 
   public get texture(): Texture {
     return this._texture;
   }
 
-  constructor(private _x: number, private _y: number, private _xHot: number, private _yHot: number, private _id: number, private _texture: Texture, commandId?: number) {
-    super(WebXMessageType.MOUSE_CURSOR, commandId);
+  constructor(private _x: number, private _y: number, private _xHot: number, private _yHot: number, private _cursorId: number, private _texture: Texture, commandId?: number) {
+    super(WebXMessageType.CURSOR_IMAGE, commandId);
   }
 }

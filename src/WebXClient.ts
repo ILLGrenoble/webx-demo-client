@@ -1,14 +1,15 @@
 import { WebXTunnel } from './tunnel';
 import { WebXInstruction, WebXScreenInstruction, WebXKeyboardInstruction, WebXMouseInstruction } from './instruction';
-import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXImageMessage, WebXSubImagesMessage } from './message';
+import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXImageMessage, WebXSubImagesMessage, WebXMouseMessage  } from './message';
 import { WebXWindowProperties, WebXSubImage } from './display';
 import { WebXTextureFactory } from './display/WebXTextureFactory';
 import { Texture } from 'three';
 import { WebXScreenMessage } from './message/WebXScreenMessage';
-import { WebXMouseCursorMessage } from './message/WebXMouseCursorMessage';
+import {  } from './message/WebXCursorImageMessage';
 import { WebXMouseState, WebXMouse, WebXKeyboard } from './input';
 import { WebXConfiguration } from './WebXConfiguration';
 import { WebXMessageTracer, WebXInstructionTracer } from './tracer';
+import { WebXCursorFactory } from './display/WebXCursorFactory';
 
 const noop = function() {};
 
@@ -17,7 +18,7 @@ export class WebXClient {
   private _onWindows: (windows: Array<WebXWindowProperties>) => void = null;
   private _onImage: (windowId: number, depth: number, texture: Texture) => void = null;
   private _onSubImages: (windowId: number, subImages: WebXSubImage[]) => void = null;
-  private _onMouseCursor: (x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture) => void = null;
+  private _onMouse: (x: number, y: number, cursorId: number) => void = null;
   private _tracers: { message: WebXMessageTracer; instruction: WebXInstructionTracer} = null;
 
   get onWindows(): (windows: Array<WebXWindowProperties>) => void {
@@ -44,12 +45,12 @@ export class WebXClient {
     this._onSubImages = func;
   }
 
-  get onMouseCursor(): (x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture) => void {
-    return this._onMouseCursor ? this._onMouseCursor : noop;
+  get onMouse(): (x: number, y: number, cursorId: number) => void {
+    return this._onMouse ? this._onMouse : noop;
   }
 
-  set onMouseCursor(func: (x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture) => void) {
-    this._onMouseCursor = func;
+  set onMouse(func: (x: number, y: number, cursorId: number) => void) {
+    this._onMouse = func;
   }
 
   constructor(private _tunnel: WebXTunnel, private _config: WebXConfiguration) {
@@ -58,6 +59,7 @@ export class WebXClient {
       this._tracers = this._config.tracers;
     }
     WebXTextureFactory.initInstance(this._tunnel);
+    WebXCursorFactory.initInstance(this._tunnel);
   }
 
   connect(): Promise<WebXScreenMessage> {
@@ -110,9 +112,9 @@ export class WebXClient {
       const subImagesMessage = message as WebXSubImagesMessage;
       this.onSubImages(subImagesMessage.windowId, subImagesMessage.subImages);
 
-    } else if (message.type === WebXMessageType.MOUSE_CURSOR) {
-      const mouseCursorMessage = message as WebXMouseCursorMessage;
-      this.onMouseCursor(mouseCursorMessage.x, mouseCursorMessage.y, mouseCursorMessage.xHot, mouseCursorMessage.yHot, mouseCursorMessage.id, mouseCursorMessage.texture);
+    } else if (message.type === WebXMessageType.MOUSE) {
+      const mouseMessage = message as WebXMouseMessage;
+      this.onMouse(mouseMessage.x, mouseMessage.y, mouseMessage.cursorId);
     }
   }
 

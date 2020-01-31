@@ -172,14 +172,8 @@ export class WebXDisplay {
     }
   }
 
-  /**
-   * Update the mouse cursor
-   * @param x the x coordinate
-   * @param y the y coordinate
-   * @param image the cursor image
-   */
-  updateMouseCursor(x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture) {
-    this._cursor.update(x, y, xHot, yHot, id, texture);
+  updateMouse(x: number, y: number, cursorId: number) {
+    this._cursor.updateCursorId(x, y, cursorId);
   }
 
   updateMousePosition(x: number, y: number) {

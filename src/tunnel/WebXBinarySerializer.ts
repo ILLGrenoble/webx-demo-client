@@ -1,11 +1,9 @@
 import { WebXSerializer } from './WebXSerializer';
 import { WebXInstruction } from '../instruction';
-import { WebXMessage, WebXMessageType, WebXWindowsMessage, WebXImageMessage, WebXSubImagesMessage } from '../message';
-import { WebXScreenMessage } from '../message/WebXScreenMessage';
+import { WebXScreenMessage, WebXMessage, WebXMessageType, WebXWindowsMessage, WebXImageMessage, WebXSubImagesMessage, WebXMouseMessage, WebXCursorImageMessage } from '../message';
 import { BinaryBuffer } from '../utils';
 import { WebXWindowProperties, WebXSubImage } from '../display';
 import { Texture } from 'three';
-import { WebXMouseCursorMessage } from '../message/WebXMouseCursorMessage';
 
 export class WebXBinarySerializer implements WebXSerializer {
   serializeInstruction(command: WebXInstruction): string {
@@ -113,7 +111,14 @@ export class WebXBinarySerializer implements WebXSerializer {
           resolve(new WebXSubImagesMessage(windowId, webXSubImages));
         });
 
-      } else if (buffer.messageTypeId === WebXMessageType.MOUSE_CURSOR) {
+      } else if (buffer.messageTypeId === WebXMessageType.MOUSE) {
+        const x = buffer.getInt32();
+        const y = buffer.getInt32();
+        const cursorId = buffer.getUint32();
+
+        resolve(new WebXMouseMessage(x, y, cursorId, commandId));
+
+      } else if (buffer.messageTypeId === WebXMessageType.CURSOR_IMAGE) {
         const x = buffer.getInt32();
         const y = buffer.getInt32();
         const xHot = buffer.getInt32();
@@ -134,12 +139,12 @@ export class WebXBinarySerializer implements WebXSerializer {
             texture.needsUpdate = true;
             texture.flipY = false;
 
-            resolve(new WebXMouseCursorMessage(x, y, xHot, yHot, cursorId, texture, commandId));
+            resolve(new WebXCursorImageMessage(x, y, xHot, yHot, cursorId, texture, commandId));
           };
           image.src = url;
 
         } else {
-          resolve(new WebXMouseCursorMessage(x, y, xHot, yHot, cursorId, null, commandId));
+          resolve(new WebXCursorImageMessage(x, y, xHot, yHot, cursorId, null, commandId));
         }
       }
 

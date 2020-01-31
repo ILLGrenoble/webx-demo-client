@@ -103,11 +103,9 @@ export class WebXWindow {
     this._updateScale();
     this._updatePosition();
 
-    WebXTextureFactory.instance()
-      .getTexture(this._id)
-      .then(response => {
-        this.updateTexture(response.depth, response.texture);
-      });
+    WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
+      this.updateTexture(response.depth, response.texture);
+    });
   }
 
   public setRectangle(x: number, y: number, z: number, width: number, height: number): void {
@@ -120,7 +118,7 @@ export class WebXWindow {
     if (this._texture) {
       this._texture.repeat.set(this._width / this._texture.image.width, this._height / this._texture.image.height);
       if (this._texture.image.width !== this._width || this._texture.image.height !== this._height) {
-        WebXTextureFactory.instance().getTexture(this._id).then(response => {
+        WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
           this.updateTexture(response.depth, response.texture);
         });
       }

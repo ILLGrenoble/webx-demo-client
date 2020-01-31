@@ -4,13 +4,10 @@ import { WebXClient } from './WebXClient';
 import { WebXWebSocketTunnel } from './tunnel';
 import { WebXWindowsInstruction, WebXInstruction, WebXInstructionType } from './instruction';
 import { WebXWindowsMessage, WebXMessage, WebXScreenMessage, WebXMessageType } from './message';
-import { Texture } from 'three';
 import { WebXInstructionTracer, WebXMessageTracer } from './tracer';
 import { WebXMouseState } from './input';
 import * as screenfull from 'screenfull';
 import { Screenfull } from 'screenfull';
-import { WebXCursorInstruction } from './instruction/WebXCursorInstruction';
-import { WebXMouseCursorMessage } from './message/WebXMouseCursorMessage';
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
@@ -85,10 +82,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
       });
 
       const mouse = client.createMouse(container);
-      client.sendRequest(new WebXCursorInstruction()).then(response => {
-        const mouseCursorMessage = response as WebXMouseCursorMessage;
-        display.updateMouseCursor(mouseCursorMessage.x, mouseCursorMessage.y, mouseCursorMessage.xHot, mouseCursorMessage.yHot, mouseCursorMessage.id, mouseCursorMessage.texture);
-      });
 
       mouse.onMouseMove = mouse.onMouseOut = (mouseState: WebXMouseState) => {
         const scale = display.scale;
@@ -126,8 +119,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         display.updateSubImages(windowId, subImages);
       };
 
-      client.onMouseCursor = (x: number, y: number, xHot: number, yHot: number, id: number, texture: Texture) => {
-        display.updateMouseCursor(x, y, xHot, yHot, id, texture);
+      client.onMouse = (x: number, y: number, cursorId: number) => {
+        display.updateMouse(x, y, cursorId);
       };
 
       // Resize the display when the window is resized

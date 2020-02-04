@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Texture, LinearFilter } from 'three';
-import { WebXCursorFactory, WebXCursorData } from './WebXCursorFactory';
+import { WebXCursorFactory } from './WebXCursorFactory';
 
 export class WebXCursor {
   private static _PLANE_GEOMETRY: THREE.Geometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
@@ -72,13 +72,16 @@ export class WebXCursor {
   }
 
   public updateCursorId(x: number, y: number, cursorId: number): void {
+    this._x = x;
+    this._y = y;
     this._cursorId = cursorId;
     WebXCursorFactory.instance().getCursor(cursorId).then(cursorData => {
       const cursor = cursorData.cursor;
 
       if (this._cursorId === 0 || this._cursorId === cursor.cursorId)
       this.update(cursorData.x != null ? cursorData.x : this._x, cursorData.y != null ? cursorData.y : this._y, cursor.xHot, cursor.yHot, cursor.cursorId, cursor.texture);
-    }); 
+    });
+    this._updatePosition();
   }
 
   public update(x: number, y: number, xHot: number, yHot: number, cursorId: number, texture: Texture): void {

@@ -53,6 +53,10 @@ export class WebXClient {
     this._onMouse = func;
   }
 
+  get tracers(): { message: WebXMessageTracer; instruction: WebXInstructionTracer } {
+    return this._tracers;
+  }
+
   constructor(private _tunnel: WebXTunnel, private _config: WebXConfiguration) {
     this._tunnel.handleMessage = this.handleMessage.bind(this);
     if(this._config.tracers) {

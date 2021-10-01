@@ -13,4 +13,8 @@ export abstract class WebXTracer<T> {
     this._handlers.forEach(handler => new WebXAsyncExec(handler.handle.bind(handler)).exec(data));
     // this._handlers.forEach(handler => handler.handle(data);
   }
+
+  addHandler(handler: WebXTracerHandler<T>) {
+    this._handlers.push(handler);
+  }
 }

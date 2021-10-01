@@ -6,6 +6,7 @@ import { WebXWindowProperties } from './WebXWindowProperties';
 import { WebXSubImage } from './WebXSubImage';
 import { WebXWebGLRenderer } from '../utils/WebXWebGLRenderer';
 import { WebXCursor } from './WebXCursor';
+import * as TWEEN from "@tweenjs/tween.js";
 
 export class WebXDisplay {
 
@@ -45,6 +46,10 @@ export class WebXDisplay {
 
   public get scale(): number {
     return this._scale;
+  }
+
+  public get scene(): THREE.Scene {
+    return this._scene;
   }
 
   constructor(containerElement: HTMLElement, screenWidth: number, screenHeight: number) {
@@ -102,7 +107,10 @@ export class WebXDisplay {
   }
 
   animate(): void {
-    requestAnimationFrame(this.animate.bind(this));
+    requestAnimationFrame((time) => {
+      this.animate();
+      TWEEN.update(time);
+    });
     this._renderer.render(this._scene, this._camera);
   }
 

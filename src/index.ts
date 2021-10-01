@@ -9,6 +9,7 @@ import { WebXMouseState } from './input';
 import * as screenfull from 'screenfull';
 import { Screenfull } from 'screenfull';
 import {DemoBasicInstructionHandler, DemoBasicMessageHandler} from "./demo/handlers";
+import {DemoVisualMessageHandler} from "./demo/handlers/DemoVisualMessageHandler";
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
@@ -31,6 +32,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
       display = new WebXDisplay(container, width, height);
       display.animate();
+
+      client.tracers.message.addHandler(new DemoVisualMessageHandler(display));
 
       client.sendRequest(new WebXWindowsInstruction()).then(response => {
         display.updateWindows((response as WebXWindowsMessage).windows);

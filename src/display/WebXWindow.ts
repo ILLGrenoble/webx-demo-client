@@ -92,6 +92,7 @@ export class WebXWindow {
     this._colorIndex = WebXWindow._COLOR_INDEX++;
 
     // this._material = new THREE.MeshBasicMaterial( { color: WebXColourGenerator.indexedColour(this._colorIndex) } );
+    this._material = new THREE.MeshBasicMaterial({ transparent: true });
     this._material.side = THREE.BackSide;
     this._material.visible = APP_CONFIG().showWindowsBeforeImage;
 

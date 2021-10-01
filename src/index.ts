@@ -2,68 +2,23 @@ import './styles.scss';
 import { WebXDisplay, WebXSubImage } from './display';
 import { WebXClient } from './WebXClient';
 import { WebXWebSocketTunnel } from './tunnel';
-import { WebXWindowsInstruction, WebXInstruction, WebXInstructionType } from './instruction';
-import { WebXWindowsMessage, WebXMessage, WebXScreenMessage, WebXMessageType } from './message';
+import { WebXWindowsInstruction } from './instruction';
+import { WebXWindowsMessage, WebXScreenMessage } from './message';
 import { WebXInstructionTracer, WebXMessageTracer } from './tracer';
 import { WebXMouseState } from './input';
 import * as screenfull from 'screenfull';
 import { Screenfull } from 'screenfull';
+import {DemoBasicInstructionHandler, DemoBasicMessageHandler} from "./demo/handlers";
 
 document.addEventListener('DOMContentLoaded', (event) => {
-
-  const createMessageElement = (type: string, clazz: string, html: string) => {
-    const el = document.createElement(type);
-    el.classList.add(clazz);
-    el.innerHTML = html;
-    return el;
-  };
-
-  let messages: WebXMessage[] = [];
-  let instructions: WebXInstruction[] = [];
-
-  const renderMessage = (message: WebXMessage) => {
-    messages.push(message);
-    if (messages.length > 25) {
-      messages.shift();
-    }
-    const fragment = document.createDocumentFragment();
-    messages.forEach(message => {
-      const messageEl = createMessageElement('div', 'events__message', WebXMessageType[message.type]);
-      fragment.appendChild(messageEl);
-    });
-    const el = document.getElementById('messages');
-    while (el.firstChild) {
-      el.removeChild(el.firstChild);
-    }
-    el.appendChild(fragment);
-    el.scrollTop = el.scrollHeight;
-  }
-
-  const renderInstruction = (instruction: WebXInstruction) => {
-    instructions.push(instruction);
-    if (instructions.length > 25) {
-      instructions.shift();
-    }
-    const fragment = document.createDocumentFragment();
-    instructions.forEach(instruction => {
-      const messageEl = createMessageElement('div', 'events__message', WebXInstructionType[instruction.type]);
-      fragment.appendChild(messageEl);
-    });
-    const el = document.getElementById('instructions');
-    while (el.firstChild) {
-      el.removeChild(el.firstChild);
-    }
-    el.appendChild(fragment);
-    el.scrollTop = el.scrollHeight;
-  }
 
   const urlParams = new URLSearchParams(window.location.search);
   const tunnel = new WebXWebSocketTunnel(urlParams.get('url') || 'ws://localhost:8080');
 
   const client = new WebXClient(tunnel, {
     tracers: {
-      message: new WebXMessageTracer(renderMessage),
-      instruction: new WebXInstructionTracer(renderInstruction)
+      message: new WebXMessageTracer(new DemoBasicMessageHandler()),
+      instruction: new WebXInstructionTracer(new DemoBasicInstructionHandler())
     }
   });
 

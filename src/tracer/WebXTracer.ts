@@ -1,10 +1,16 @@
+import {WebXTracerHandler} from "./WebXTracerHandler";
+import {WebXAsyncExec} from "../utils";
+
 export abstract class WebXTracer<T> {
 
-  protected _handler: (data: T) => void = null;
+  protected _handlers: WebXTracerHandler<T>[] = [];
 
-  constructor(handler: (data: T) => void) {
-    this._handler = handler;
+  constructor(handlers: WebXTracerHandler<T>[]) {
+    this._handlers = handlers;
   }
 
-  abstract handle(data: T): void;
+  handle(data: T): void {
+    this._handlers.forEach(handler => new WebXAsyncExec(handler.handle.bind(handler)).exec(data));
+    // this._handlers.forEach(handler => handler.handle(data);
+  }
 }

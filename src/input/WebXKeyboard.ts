@@ -149,16 +149,16 @@ export class WebXKeyboard {
       return;
     }
 
-    let keyCode;
-    if (window.event) {
-      keyCode = window.event.keyCode;
-    }
-    else if (event.which) {
-      keyCode = event.which;
-    }
+    let keyCode = event.which;
+    // if (window.event) {
+    //   keyCode = window.event.keyCode;
+    // }
+    // else if (event.which) {
+    //   keyCode = event.which;
+    // }
 
     // Fix modifier states
-    const keydownEvent = new WebXKeydownEvent(keyCode, event.keyIdentifier, event.key, this._getEventLocation(event));
+    const keydownEvent = new WebXKeydownEvent(keyCode, event.key, event.key, this._getEventLocation(event));
 
     this._recentKeysym[keydownEvent.keyCode] = keydownEvent.keysym;
 
@@ -220,12 +220,12 @@ export class WebXKeyboard {
 
     event.preventDefault();
 
-    let keyCode;
-    if (window.event) keyCode = window.event.keyCode;
-    else if (event.which) keyCode = event.which;
+    let keyCode = event.which;
+    // if (window.event) keyCode = window.event.keyCode;
+    // else if (event.which) keyCode = event.which;
 
     // Fix modifier states
-    const keyupEvent = new WebXKeyUpEvent(keyCode, event.keyIdentifier, event.key, this._getEventLocation(event));
+    const keyupEvent = new WebXKeyUpEvent(keyCode, event.key, event.key, this._getEventLocation(event));
 
     // Fall back to the most recently pressed keysym associated with the
     // keyCode if the inferred key doesn't seem to actually be pressed
@@ -261,9 +261,9 @@ export class WebXKeyboard {
     }
 
     // Failing that, attempt to use deprecated keyLocation
-    if ('keyLocation' in event) {
-      return event.keyLocation;
-    }
+    // if ('keyLocation' in event) {
+    //   return event.keyLocation;
+    // }
 
     // If no location is available, assume left side
     return 0;

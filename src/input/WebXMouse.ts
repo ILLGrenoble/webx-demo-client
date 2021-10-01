@@ -102,7 +102,7 @@ export class WebXMouse {
    * Process mouse wheel event
    * @param event the mouse event
    */
-  private _handleMouseWheel(event: MouseWheelEvent): void {
+  private _handleMouseWheel(event: WheelEvent): void {
     const currentState = this._currentState;
     if (event.deltaY < 0) {
       currentState.up = true;

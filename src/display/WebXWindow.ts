@@ -24,6 +24,11 @@ export class WebXWindow {
     return this._mesh;
   }
 
+
+  get colorIndex(): number {
+    return this._colorIndex;
+  }
+
   public get id(): number {
     return this._id;
   }

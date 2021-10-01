@@ -13,12 +13,12 @@ export class WebXColourGenerator {
     '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'
   ]
 
-    public static randomColour() {
+    public static randomColour(): string {
       const index = Math.floor(Math.random() * WebXColourGenerator.COLOURS.length);
       return WebXColourGenerator.COLOURS[index];
     }
 
-    public static indexedColour(index: number) {
+    public static indexedColour(index: number): string {
       index = index % WebXColourGenerator.COLOURS.length;
       return WebXColourGenerator.COLOURS[index];
     }

@@ -26,21 +26,19 @@ export class DemoVisualMessageHandler implements WebXTracerHandler<WebXMessage> 
       const window = this._display.getWindow(imageMessage.windowId);
       const {width, height} = imageMessage.texture.image;
 
-      this._createMesh(window.x, window.y, width, height);
+      this._createMesh(window.x, window.y, width, height, WebXColourGenerator.indexedColour(window.colorIndex));
 
     } else if (message.type === WebXMessageType.SUBIMAGES) {
       const subImageMessage = message as WebXSubImagesMessage;
       const window = this._display.getWindow(subImageMessage.windowId);
 
       subImageMessage.subImages.forEach(subImage => {
-        this._createMesh(window.x + subImage.x, window.y + subImage.y, subImage.width, subImage.height);
+        this._createMesh(window.x + subImage.x, window.y + subImage.y, subImage.width, subImage.height, WebXColourGenerator.indexedColour(window.colorIndex));
       });
     }
   }
 
-  private _createMesh(x: number, y: number, width: number, height: number): void {
-    const colour = WebXColourGenerator.randomColour();
-
+  private _createMesh(x: number, y: number, width: number, height: number, colour: string): void {
     const material = new THREE.MeshBasicMaterial({color: colour, opacity: 0.8, transparent: true});
     material.side = THREE.BackSide;
 
@@ -50,7 +48,7 @@ export class DemoVisualMessageHandler implements WebXTracerHandler<WebXMessage> 
     this._debugLayer.add(mesh);
 
     const tween = new TWEEN.Tween(material)
-      .to({opacity: 0.0}, 400)
+      .to({opacity: 0.0}, 500)
       .easing(TWEEN.Easing.Quadratic.Out)
       .onComplete(() => this._debugLayer.remove(mesh))
       .start();

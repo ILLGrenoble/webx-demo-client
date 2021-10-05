@@ -31,7 +31,7 @@ export class WebXWebSocketTunnel implements WebXTunnel {
       this._socket.onmessage = (message: any) => {
         if (message.data === 'json') {
           this._serializer = new WebXJsonSerializer();
-        
+
         } else if (message.data === 'binary') {
           this._serializer = new WebXBinarySerializer();
           this._socket.binaryType = 'arraybuffer';
@@ -82,7 +82,6 @@ export class WebXWebSocketTunnel implements WebXTunnel {
 
   sendRequest(command: WebXInstruction): Promise<WebXMessage> {
     // console.log(`Sending request: `, command);
-    command.synchronous = true;
     const response = new WebXInstructionResponse<WebXMessage>(command);
     this._instructionResponses.set(command.id, response);
     return new Promise((resolve, reject) => {

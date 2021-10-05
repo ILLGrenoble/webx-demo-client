@@ -2,8 +2,7 @@ import { WebXInstructionType } from './WebXInstructionType';
 
 export class WebXInstruction {
   private static _INSTRUCTION_COUNTER = 0;
-  private _id: number;
-  private _synchronous = false;
+  private readonly _id: number;
 
   public get id(): number {
     return this._id;
@@ -11,14 +10,6 @@ export class WebXInstruction {
 
   public get type(): WebXInstructionType {
     return this._type;
-  }
-
-  public get synchronous(): boolean {
-    return this._synchronous;
-  }
-
-  public set synchronous(value: boolean) {
-    this._synchronous = value;
   }
 
   constructor(private _type: WebXInstructionType) {

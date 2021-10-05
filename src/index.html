@@ -1,40 +1,91 @@
 <!doctype html>
-<html lang="en">
+<html lang='en'>
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
   <title>WebX Demo</title>
 </head>
 
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="header__content">WebX Demo</div>
-      <div class="header__right"><button class="btn-fullscreen" id="btn-fullscreen">Enter full screen</button></div>
+<div class='container'>
+  <div class='header'>
+    <div class='header__left'>
+      <button class='btn-debug-toolbar' id='btn-dev-tools'>Debug Tools</button>
     </div>
-    <div class="content">
-      <div class="viewer">
-        <div class="display">
-            <div class="display-container" id="display-container">
-          </div>
+    <div class='header__content'>WebX Demo</div>
+    <div class='header__right'>
+      <button class='btn-fullscreen' id='btn-fullscreen'>Enter full screen</button>
+    </div>
+  </div>
+  <div class='content'>
+    <div class='viewer'>
+      <div class='display'>
+        <div class='display-container' id='display-container'>
         </div>
       </div>
-      <div class="events">
-        <div class="events__panel">
-          <div class="events__header">Messages</div>
-          <div class="events__content" id="messages">
-          </div>
+    </div>
+    <div class='devtools'>
+      <div class='devtools__events' id='devtools-panel'>
+        <div class='devtools__events__toolbar'>
+          <div class='devtools__events__toolbar__text'>Debug Toolbar</div>
+          <button class='devtools__events__toolbar__btn_close' id='btn-dev-tools-close'>Hide</button>
         </div>
-        <div class="events__panel">
-          <div class="events__header">Instructions</div>
-          <div class="events__content" id="instructions">
+        <div class='devtools__events__tools'>
+          <div class=='devtools__events__tools__text'>
+            Tools
+          </div>
+          <ul class='devtools__events__tools__togglers'>
+            <li>
+              <input type='checkbox' id='toggle-visual-debugger' name='toggle-visual-debugger'>
+              <label for='toggle-visual-debugger'>Visual</label>
+            </li>
+            <li>
+              <input type='checkbox' id='toggle-messages-debugger' name='toggle-messages-debugger'>
+              <label for='toggle-messages-debugger'>Messages</label>
+            </li>
+            <li>
+              <input type='checkbox' id='toggle-instructions-debugger' name='toggle-instructions-debugger'>
+              <label for='toggle-instructions-debugger'>Instructions</label>
+            </li>
+          </ul>
+        </div>
+        <div class='devtools__events__panels'>
+          <div class='devtools__events__panel' id='debug-messages-panel'>
+            <div class='devtools__events__header'>Messages</div>
+            <div class='devtools__events__content'>
+              <table class='devtools__events__table'>
+                <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Details</th>
+                </tr>
+                </thead>
+                <tbody id='messages'>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class='devtools__events__panel' id='debug-instructions-panel'>
+            <div class='devtools__events__header'>Instructions</div>
+            <div class='devtools__events__content'>
+              <table class='devtools__events__table'>
+                <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Details</th>
+                </tr>
+                </thead>
+                <tbody id='instructions'>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  </div>
+</div>
 </body>
 
 </html>

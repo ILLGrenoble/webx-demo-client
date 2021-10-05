@@ -29,6 +29,7 @@ body {
   min-height: 0;
   min-width: 0;
   overflow: hidden;
+  position: relative;
 
   .viewer {
     background-color: #212526;
@@ -63,28 +64,111 @@ body {
   }
 }
 
-.events {
+.devtools {
+  display: flex;
+  position: absolute;
+  flex: 0 0 400px;
+  height: 100%;
+  flex-direction: column;
+}
+
+.devtools__events {
+  box-shadow: rgba(0, 0, 0, 0.2) 0 8px 10px -5px, rgba(0, 0, 0, 0.14) 0px 16px 24px 2px, rgba(0, 0, 0, 0.12) 0px 6px 30px 5px;
   flex-direction: column;
   align-items: stretch;
   display: flex;
-  flex: 0 0 200px;
-  border-left: 2px solid #eaeced;
+  width: 400px;
+  height: 100%;
+  background: white;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease, width 0.3s ease;
 
-  &__panel {
+  &.show {
+    transform: translateX(0);
+  }
+
+  &__panels {
     display: flex;
     flex: 1;
-    overflow: hidden;
     flex-direction: column;
   }
 
-  &__header {
+  &__panel {
+    overflow: hidden;
+    flex: 1 0 0;
+  }
+
+  &__toolbar {
     flex: 0 0 40px;
+    display: flex;
     background-color: #f5f6f7;
-    border-bottom: 1px solid #dddfe2;
+    padding: 5px;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    color: #212526;
+  }
+
+  &__tools {
+    height: 30px;
+    background-color: #212526;
+    align-items: center;
+    display: flex;
+    font-size: 11pt;
+    font-weight: 600;
+    padding: 5px;
+    color: #ffffff;
+    justify-content: space-between;
+  }
+
+
+  &__tools__togglers {
+    list-style: none;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+
+    li {
+      margin-left: 10px;
+    }
+  }
+
+  &__toolbar__btn_close {
+    color: #24292f;
+    background-color: #f6f8fa;
+    box-shadow: 0 1px 0 rgba(27, 31, 36, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+    transition-property: color, background-color, border-color;
+    position: relative;
+    display: inline-block;
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid rgba(27, 31, 36, 0.15);
+    border-radius: 3px;
+    appearance: none;
+
+    &:hover {
+      background-color: #f3f4f6;
+      border-color: rgba(27, 31, 36, 0.15);
+      transition-duration: 0.1s;
+    }
+  }
+
+  &__header {
+    height: 30px;
+    background-color: #212526;
     padding-left: 5px;
     align-items: center;
     display: flex;
+    font-size: 11pt;
     font-weight: 600;
+    color: #ffffff;
   }
 
   &__message {
@@ -93,10 +177,58 @@ body {
     font-family: monospace;
   }
 
-  &__content {
-    overflow: auto;
+  &__table {
+    width: 100%;
+    position: relative;
+    border-spacing: 0;
+    vertical-align: top;
+    text-align: left;
 
-    flex: 1 auto;
+    thead,
+    tbody,
+    tfoot,
+    tr,
+    td,
+    th {
+      border-color: inherit;
+      border-style: solid;
+      border-width: 0;
+    }
+
+    tbody tr td:first-child {
+      width: 8em;
+      min-width: 8em;
+      max-width: 8em;
+      word-break: break-all;
+      font-weight: 700;
+    }
+
+    tbody tr td:nth-child(2) {
+      //font-family: monospace;
+    }
+
+    td {
+      padding: 5px;
+      font-size: 10pt;
+    }
+
+    thead {
+      vertical-align: top;
+    }
+
+    th {
+      padding: 5px;
+      font-size: 10pt;
+      background-color: #f5f6f7;
+      border-bottom: 2px solid #d4d4d4;
+      position: sticky;
+      top: 0;
+    }
+  }
+
+  &__content {
+    overflow-y: scroll;
+    height: calc(100% - 30px);
   }
 
   &__blankslate {
@@ -114,31 +246,22 @@ body {
 .header {
   grid-area: header;
   display: flex;
-  align-items: center;
+  justify-content: space-between;
   padding: 5px;
   background-color: #0073b7;
   border-bottom: 2px solid #0067a3;
+  align-content: space-between;
+  align-items: center;
 
   &__content {
-    flex: 1;
     color: white;
     font-weight: bold;
     text-align: center;
     font-size: 1.2em;
   }
 
-  &__right {
-    font-size: 1em;
-    width: 150px;
-    flex: 0 0 auto;
-    text-align: right;
-    color: white;
-  }
-
-
-  .btn-fullscreen {
+  .btn-fullscreen, .btn-debug-toolbar {
     font-weight: 600;
-    line-height: 20px;
     white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
@@ -146,13 +269,10 @@ body {
     border-radius: 0.25em;
     color: #ffffff;
     background-color: #28a745;
-    padding: 5px 10px;
+    padding: 3px 10px;
     font-size: 12px;
     line-height: 16px;
     outline: none;
     border: 1px solid #28a745;
-
   }
-
-
 }

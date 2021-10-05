@@ -1,39 +1,31 @@
 import './styles.scss';
-import { WebXDisplay, WebXSubImage } from './display';
+import { WebXSubImage } from './display';
 import { WebXClient } from './WebXClient';
 import { WebXWebSocketTunnel } from './tunnel';
 import { WebXWindowsInstruction } from './instruction';
-import { WebXWindowsMessage, WebXScreenMessage } from './message';
-import { WebXInstructionTracer, WebXMessageTracer } from './tracer';
+import { WebXScreenMessage, WebXWindowsMessage } from './message';
 import { WebXMouseState } from './input';
+import { DemoBasicInstructionHandler, DemoBasicMessageHandler } from './demo/handlers';
+import { DemoVisualMessageHandler } from './demo/handlers/DemoVisualMessageHandler';
 import * as screenfull from 'screenfull';
 import { Screenfull } from 'screenfull';
-import {DemoBasicInstructionHandler, DemoBasicMessageHandler} from "./demo/handlers";
-import {DemoVisualMessageHandler} from "./demo/handlers/DemoVisualMessageHandler";
 
-document.addEventListener('DOMContentLoaded', (event) => {
+
+document.addEventListener('DOMContentLoaded', () => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const tunnel = new WebXWebSocketTunnel(urlParams.get('url') || 'ws://localhost:8080');
 
-  const client = new WebXClient(tunnel, {
-    tracers: {
-      message: new WebXMessageTracer(new DemoBasicMessageHandler()),
-      instruction: new WebXInstructionTracer(new DemoBasicInstructionHandler())
-    }
-  });
+  const client = new WebXClient(tunnel, {});
 
-  let display: WebXDisplay;
   client
     .connect()
     .then((screenMessage: WebXScreenMessage) => {
       const { width, height } = screenMessage.screenSize;
       const container = document.getElementById('display-container');
 
-      display = new WebXDisplay(container, width, height);
+      const display = client.createDisplay(container, width, height);
       display.animate();
-
-      client.tracers.message.addHandler(new DemoVisualMessageHandler(display));
 
       client.sendRequest(new WebXWindowsInstruction()).then(response => {
         display.updateWindows((response as WebXWindowsMessage).windows);
@@ -51,7 +43,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
       mouse.onMouseDown = mouse.onMouseUp = (mouseState: WebXMouseState) => {
         client.sendMouse(mouseState);
-      }
+      };
 
       const keyboard = client.createKeyboard(document.body);
 
@@ -92,6 +84,40 @@ document.addEventListener('DOMContentLoaded', (event) => {
       document.getElementById('btn-fullscreen').addEventListener('click', () => {
         (screenfull as Screenfull).request(display.containerElement);
         display.resize();
+      });
+
+      document.getElementById('btn-dev-tools').addEventListener('click', () => {
+        const el = document.getElementById('devtools-panel');
+        el.classList.add('show');
+      });
+
+      document.getElementById('btn-dev-tools-close').addEventListener('click', () => {
+        const el = document.getElementById('devtools-panel');
+        el.classList.remove('show');
+      });
+
+      document.getElementById('toggle-messages-debugger').addEventListener('click', (e: any) => {
+        if (e.target.checked) {
+          client.registerTracer('message', new DemoBasicMessageHandler());
+        } else {
+          client.unregisterTracer('message');
+        }
+      });
+
+      document.getElementById('toggle-instructions-debugger').addEventListener('click', (e: any) => {
+        if (e.target.checked) {
+          client.registerTracer('instruction', new DemoBasicInstructionHandler());
+        } else {
+          client.unregisterTracer('instruction');
+        }
+      });
+
+      document.getElementById('toggle-visual-debugger').addEventListener('click', (e: any) => {
+        if (e.target.checked) {
+          client.registerTracer('visual', new DemoVisualMessageHandler(display));
+        } else {
+          client.unregisterTracer('visual');
+        }
       });
 
     })

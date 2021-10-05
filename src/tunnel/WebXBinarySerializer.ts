@@ -65,12 +65,12 @@ export class WebXBinarySerializer implements WebXSerializer {
             texture.needsUpdate = true;
             texture.flipY = false;
 
-            resolve(new WebXImageMessage(windowId, depth, texture, commandId));
+            resolve(new WebXImageMessage(windowId, depth, texture, commandId, imageDataSize));
           };
           image.src = url;
 
         } else {
-          resolve(new WebXImageMessage(windowId, depth, null, commandId));
+          resolve(new WebXImageMessage(windowId, depth, null, commandId, 0));
         }
 
       } else if (buffer.messageTypeId === WebXMessageType.SUBIMAGES) {

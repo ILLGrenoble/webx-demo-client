@@ -1,2 +1,2 @@
-export * from './WebXInstructionTracer';
-export * from './WebXMessageTracer';
+export * from './WebXInstructionHandler';
+export * from './WebXMessageHandler';

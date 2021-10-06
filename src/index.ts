@@ -5,11 +5,7 @@ import { WebXWebSocketTunnel } from './tunnel';
 import { WebXWindowsInstruction } from './instruction';
 import { WebXScreenMessage, WebXWindowsMessage } from './message';
 import { WebXMouseState } from './input';
-import { DemoBasicInstructionHandler, DemoBasicMessageHandler } from './demo/handlers';
-import { DemoVisualMessageHandler } from './demo/handlers/DemoVisualMessageHandler';
-import * as screenfull from 'screenfull';
-import { Screenfull } from 'screenfull';
-
+import { WebXDemoDevTools } from './utils';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -81,44 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       // Enter into full screen mode
-      document.getElementById('btn-fullscreen').addEventListener('click', () => {
-        (screenfull as Screenfull).request(display.containerElement);
-        display.resize();
+      document.getElementById('btn-fullscreen').addEventListener('click', (event) => {
+        display.containerElement.requestFullscreen().then(() => {
+          display.resize();
+        });
       });
 
-      document.getElementById('btn-dev-tools').addEventListener('click', () => {
-        const el = document.getElementById('devtools-panel');
-        el.classList.add('show');
-      });
-
-      document.getElementById('btn-dev-tools-close').addEventListener('click', () => {
-        const el = document.getElementById('devtools-panel');
-        el.classList.remove('show');
-      });
-
-      document.getElementById('toggle-messages-debugger').addEventListener('click', (e: any) => {
-        if (e.target.checked) {
-          client.registerTracer('message', new DemoBasicMessageHandler());
-        } else {
-          client.unregisterTracer('message');
-        }
-      });
-
-      document.getElementById('toggle-instructions-debugger').addEventListener('click', (e: any) => {
-        if (e.target.checked) {
-          client.registerTracer('instruction', new DemoBasicInstructionHandler());
-        } else {
-          client.unregisterTracer('instruction');
-        }
-      });
-
-      document.getElementById('toggle-visual-debugger').addEventListener('click', (e: any) => {
-        if (e.target.checked) {
-          client.registerTracer('visual', new DemoVisualMessageHandler(display));
-        } else {
-          client.unregisterTracer('visual');
-        }
-      });
+      new WebXDemoDevTools(client, display);
 
     })
     .catch(err => console.error(err));

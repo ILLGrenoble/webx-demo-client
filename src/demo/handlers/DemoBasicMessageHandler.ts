@@ -5,10 +5,10 @@ import {
   WebXMouseMessage,
   WebXScreenMessage,
   WebXSubImagesMessage,
-  WebXWindowsMessage
-} from '../../message';
-import { WebXFileSize } from '../../utils';
-import { WebXMessageHandler } from '../../tracer';
+  WebXWindowsMessage,
+  WebXFileSize,
+  WebXMessageHandler
+} from '../../core';
 
 export class DemoBasicMessageHandler extends WebXMessageHandler {
 

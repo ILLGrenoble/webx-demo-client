@@ -1,11 +1,15 @@
 import './styles.scss';
-import { WebXSubImage } from './display';
-import { WebXClient } from './WebXClient';
-import { WebXWebSocketTunnel } from './tunnel';
-import { WebXWindowsInstruction } from './instruction';
-import { WebXScreenMessage, WebXWindowsMessage } from './message';
-import { WebXMouseState } from './input';
-import { WebXDemoDevTools } from './utils';
+
+import {
+  WebXClient,
+  WebXMouseState,
+  WebXScreenMessage,
+  WebXSubImage,
+  WebXWebSocketTunnel,
+  WebXWindowsInstruction,
+  WebXWindowsMessage
+} from './core';
+import { WebXDemoDevTools } from './demo';
 
 document.addEventListener('DOMContentLoaded', () => {
 

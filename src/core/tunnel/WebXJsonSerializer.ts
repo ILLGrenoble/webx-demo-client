@@ -1,8 +1,16 @@
 import { WebXSerializer } from './WebXSerializer';
 import { WebXInstruction } from '../instruction';
-import { WebXWindowsMessage, WebXMessage, WebXImageMessage, WebXSubImagesMessage, WebXScreenMessage, WebXMouseMessage, WebXCursorImageMessage } from '../message';
-import { WebXWindowProperties, WebXSubImage } from '../display';
-import { Texture, LinearFilter } from 'three';
+import {
+  WebXCursorImageMessage,
+  WebXImageMessage,
+  WebXMessage,
+  WebXMouseMessage,
+  WebXScreenMessage,
+  WebXSubImagesMessage,
+  WebXWindowsMessage
+} from '../message';
+import { WebXSubImage, WebXWindowProperties } from '../display';
+import { LinearFilter, Texture } from 'three';
 
 export class WebXJsonSerializer implements WebXSerializer {
   serializeInstruction(command: WebXInstruction): string {

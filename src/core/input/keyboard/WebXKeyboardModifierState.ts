@@ -1,5 +1,5 @@
 /**
- * The state of all supported keyboard mofifiers
+ * The state of all supported keyboard modifiers
  */
 export class WebXKeyboardModifierState {
   /**

@@ -1,4 +1,4 @@
-import { WebXKeyEvent } from '.';
+import { WebXKeyEvent } from './WebXKeyEvent';
 
 export class WebXKeyUpEvent extends WebXKeyEvent {
 

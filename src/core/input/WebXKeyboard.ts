@@ -1,7 +1,12 @@
-import { WebXKeydownEvent, WebXKeyPressEvent, WebXKeyboardModifierState, WebXKeyEvent } from './keyboard';
-import { WebXKeyboardUtils } from './keyboard/WebXKeyboardUtils';
-import { WebXKeyUpEvent } from './keyboard/WebXKeyUpEvent';
-import { WebXKeyMapper } from './keyboard/WebXKeyMapper';
+import {
+  WebXKeyboardModifierState,
+  WebXKeyboardUtils,
+  WebXKeydownEvent,
+  WebXKeyEvent,
+  WebXKeyMapper,
+  WebXKeyPressEvent,
+  WebXKeyUpEvent
+} from './keyboard';
 
 export class WebXKeyboard {
 
@@ -50,7 +55,7 @@ export class WebXKeyboard {
    * pressed, the value of pressed for that keysym will be true. If a key
    * is not currently pressed, it will not be defined.
    */
-  private _pressed: { [index: number]: boolean } = {}
+  private _pressed: { [index: number]: boolean } = {};
 
   /**
    * The state of every key, indexed by keysym, for strictly those keys whose
@@ -62,7 +67,7 @@ export class WebXKeyboard {
    *
    * @type {Object.<Number, Boolean>}
    */
-  private _implicitlyPressed: { [index: number]: boolean } = {}
+  private _implicitlyPressed: { [index: number]: boolean } = {};
 
   /**
    * The last result of calling the onkeydown handler for each key, indexed
@@ -100,7 +105,7 @@ export class WebXKeyboard {
    */
   constructor(element: HTMLElement) {
     this._element = element;
-    this._keyboardId = WebXKeyboard._nextId++
+    this._keyboardId = WebXKeyboard._nextId++;
     this._EVENT_MARKER = '_WEBX_KEYBOARD_HANDLED_BY_' + this._keyboardId;
     this._handleQuirks();
     this._bindListeners();
@@ -115,7 +120,7 @@ export class WebXKeyboard {
       if (navigator.platform.match(/ipad|iphone|ipod/i)) {
         WebXKeyboard.quirks.keyupUnreliable = true;
       }
-      // The Alt key on Mac is never used for keyboard shortcuts, and the
+        // The Alt key on Mac is never used for keyboard shortcuts, and the
       // Caps Lock key never dispatches keyup events
       else if (navigator.platform.match(/^mac/i)) {
         WebXKeyboard.quirks.altIsTypableOnly = true;
@@ -125,7 +130,7 @@ export class WebXKeyboard {
   }
 
   private _addEvent(event: WebXKeyEvent): void {
-    this._events.push(event)
+    this._events.push(event);
   }
 
   /**
@@ -133,9 +138,9 @@ export class WebXKeyboard {
    */
   private _bindListeners(): void {
     const element = this._element;
-    element.addEventListener("keydown", this._bindKeyDownListener.bind(this), true);
-    element.addEventListener("keypress", this._bindKeyPressListener.bind(this), true);
-    element.addEventListener("keyup", this._bindKeyUpListener.bind(this), true);
+    element.addEventListener('keydown', this._bindKeyDownListener.bind(this), true);
+    element.addEventListener('keypress', this._bindKeyPressListener.bind(this), true);
+    element.addEventListener('keyup', this._bindKeyUpListener.bind(this), true);
   }
 
   private _bindKeyDownListener(event: KeyboardEvent) {
@@ -361,8 +366,8 @@ export class WebXKeyboard {
         acceptedEvents = this._events.splice(0, 2);
       }
 
-      // If keydown is immediately followed by anything else, then no
-      // keypress can possibly occur to clarify this event, and we must
+        // If keydown is immediately followed by anything else, then no
+        // keypress can possibly occur to clarify this event, and we must
       // handle it now
       else if (this._events[1]) {
         keysym = first.keysym;
@@ -415,7 +420,7 @@ export class WebXKeyboard {
       return this._events.shift();
 
     }
-    // Ignore any other type of event (keypress by itself is invalid, and
+      // Ignore any other type of event (keypress by itself is invalid, and
     // unreliable keyup events should simply be dumped)
     else {
       return this._events.shift();
@@ -539,24 +544,24 @@ export class WebXKeyboard {
   }
 
   /**
-  * Given the remote and local state of a particular key, resynchronises the
-  * remote state of that key with the local state through pressing or
-  * releasing keysyms.
-  *
-  * @param {boolean} remoteState
-  *     Whether the key is currently pressed remotely.
-  *
-  * @param {boolean} localState
-  *     Whether the key is currently pressed locally. If the state
-  *     of the key is not known, this may be undefined.
-  *
-  * @param {number[]} keysyms
-  *     The keysyms which represent the key being updated.
-  *
-  * @param {WebXKeyEvent} keyEvent
-  *     Best interpretation of the key event being
-  *     processed.
-  */
+   * Given the remote and local state of a particular key, resynchronises the
+   * remote state of that key with the local state through pressing or
+   * releasing keysyms.
+   *
+   * @param {boolean} remoteState
+   *     Whether the key is currently pressed remotely.
+   *
+   * @param {boolean} localState
+   *     Whether the key is currently pressed locally. If the state
+   *     of the key is not known, this may be undefined.
+   *
+   * @param {number[]} keysyms
+   *     The keysyms which represent the key being updated.
+   *
+   * @param {WebXKeyEvent} keyEvent
+   *     Best interpretation of the key event being
+   *     processed.
+   */
   private _updateModifierState(remoteState: boolean, localState: boolean, keysyms: number[], keyEvent: WebXKeyEvent) {
 
     let i;
@@ -720,7 +725,7 @@ export class WebXKeyboard {
    *
    * @param key The key being pressed
    */
-  public onKeyDown: (key: any) => void = null
+  public onKeyDown: (key: any) => void = null;
 
   /**
    * Fired whenever the user releases a key with the element associated
@@ -728,7 +733,7 @@ export class WebXKeyboard {
    *
    * @param key The key being released
    */
-  public onKeyUp: (key: any) => void = null
+  public onKeyUp: (key: any) => void = null;
 
 
 }

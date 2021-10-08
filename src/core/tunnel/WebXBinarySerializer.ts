@@ -1,8 +1,17 @@
 import { WebXSerializer } from './WebXSerializer';
 import { WebXInstruction } from '../instruction';
-import { WebXScreenMessage, WebXMessage, WebXMessageType, WebXWindowsMessage, WebXImageMessage, WebXSubImagesMessage, WebXMouseMessage, WebXCursorImageMessage } from '../message';
-import { BinaryBuffer } from '../utils';
-import { WebXWindowProperties, WebXSubImage } from '../display';
+import {
+  WebXCursorImageMessage,
+  WebXImageMessage,
+  WebXMessage,
+  WebXMessageType,
+  WebXMouseMessage,
+  WebXScreenMessage,
+  WebXSubImagesMessage,
+  WebXWindowsMessage
+} from '../message';
+import { WebXBinaryBuffer } from '../utils';
+import { WebXSubImage, WebXWindowProperties } from '../display';
 import { Texture } from 'three';
 
 export class WebXBinarySerializer implements WebXSerializer {
@@ -19,7 +28,7 @@ export class WebXBinarySerializer implements WebXSerializer {
       });
     }
 
-    const buffer: BinaryBuffer = new BinaryBuffer(arrayBuffer);
+    const buffer: WebXBinaryBuffer = new WebXBinaryBuffer(arrayBuffer);
 
     const promise: Promise<WebXMessage> = new Promise<WebXMessage>((resolve, reject) => {
       const commandId: number = buffer.getUint32();
@@ -30,7 +39,7 @@ export class WebXBinarySerializer implements WebXSerializer {
         const screenWidth: number = buffer.getInt32();
         const screenHeight: number = buffer.getInt32();
         resolve(new WebXScreenMessage({ width: screenWidth, height: screenHeight }, commandId));
-        
+
       } else if (buffer.messageTypeId === WebXMessageType.WINDOWS) {
         const numberOfWindows: number = buffer.getUint32();
         const windows: Array<WebXWindowProperties> = new Array<WebXWindowProperties>();

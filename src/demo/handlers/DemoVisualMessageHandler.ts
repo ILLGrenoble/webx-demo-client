@@ -1,10 +1,15 @@
-import { WebXImageMessage, WebXMessage, WebXMessageType, WebXSubImagesMessage } from '../../message';
-import { WebXDisplay } from '../../display';
+import {
+  WebXColourGenerator,
+  WebXDisplay,
+  WebXImageMessage,
+  WebXMessage,
+  WebXMessageHandler,
+  WebXMessageType,
+  WebXSubImagesMessage
+} from '../../core';
 import * as THREE from 'three';
 import { Object3D, Scene } from 'three';
-import { WebXColourGenerator } from '../../utils';
 import * as TWEEN from '@tweenjs/tween.js';
-import { WebXMessageHandler } from '../../tracer';
 
 export class DemoVisualMessageHandler extends WebXMessageHandler {
 

@@ -1,7 +1,5 @@
-import { DemoBasicInstructionHandler, DemoBasicMessageHandler } from '../demo/handlers';
-import { DemoVisualMessageHandler } from '../demo/handlers/DemoVisualMessageHandler';
-import { WebXClient } from '../WebXClient';
-import { WebXDisplay } from '../display';
+import { DemoBasicInstructionHandler, DemoBasicMessageHandler, DemoVisualMessageHandler } from './handlers';
+import { WebXClient, WebXDisplay } from '../core';
 
 export class WebXDemoDevTools {
 

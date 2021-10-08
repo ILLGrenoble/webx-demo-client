@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { WebXTextureFactory } from './WebXTextureFactory';
 import { Texture, LinearFilter } from 'three';
-import {APP_CONFIG, WebXColourGenerator} from '../utils';
+import {APP_CONFIG} from '../utils';
 
 export class WebXWindow {
   private static _PLANE_GEOMETRY: THREE.Geometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);

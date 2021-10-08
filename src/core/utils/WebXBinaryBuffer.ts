@@ -1,4 +1,4 @@
-export class BinaryBuffer {
+export class WebXBinaryBuffer {
   private _messageTypeId: number;
   private _messageId: number;
   private _bufferLength: number;

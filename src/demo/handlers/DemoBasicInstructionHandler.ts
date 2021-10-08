@@ -1,5 +1,4 @@
-import {WebXInstruction, WebXInstructionType, WebXMouseInstruction} from "../../instruction";
-import { WebXInstructionHandler } from '../../tracer';
+import {WebXInstruction, WebXInstructionType, WebXMouseInstruction, WebXInstructionHandler} from '../../core';
 
 export class DemoBasicInstructionHandler extends WebXInstructionHandler {
 

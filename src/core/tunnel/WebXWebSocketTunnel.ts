@@ -15,7 +15,7 @@ export class WebXWebSocketTunnel implements WebXTunnel {
   constructor(url: string, options: any = {}) {
     const parameters = new URLSearchParams(options);
     this._url = `${url}?${parameters}`;
-    this._serializer = new WebXJsonSerializer();
+    this._serializer = null;
   }
 
   connect(): Promise<Event> {
@@ -24,7 +24,6 @@ export class WebXWebSocketTunnel implements WebXTunnel {
       this._socket = new WebSocket(url);
       this._socket.onopen = (event: Event) => {
         this._socket.send('comm');
-        resolve(event);
       };
       this._socket.onerror = (event: Event) => reject(event);
       this._socket.onclose = this.handleClose.bind(this);
@@ -36,7 +35,11 @@ export class WebXWebSocketTunnel implements WebXTunnel {
           this._serializer = new WebXBinarySerializer();
           this._socket.binaryType = 'arraybuffer';
         }
-        this._socket.onmessage = (aMessage: any) => this.onMessage(aMessage.data);
+
+        if (this._serializer) {
+          this._socket.onmessage = (aMessage: any) => this.onMessage(aMessage.data);
+          resolve(null);
+        }
       };
     });
   }

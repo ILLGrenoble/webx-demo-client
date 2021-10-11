@@ -57,13 +57,14 @@ export class WebXClient {
   }
 
   constructor(private _tunnel: WebXTunnel, private _config: WebXConfiguration) {
-    this._tunnel.handleMessage = this.handleMessage.bind(this);
     WebXTextureFactory.initInstance(this._tunnel);
     WebXCursorFactory.initInstance(this._tunnel);
   }
 
   connect(): Promise<WebXScreenMessage> {
     return this._tunnel.connect().then(data => {
+      this._tunnel.handleMessage = this.handleMessage.bind(this);
+
       // When connect get configuration from server
       return this.sendRequest(new WebXScreenInstruction()) as Promise<WebXScreenMessage>;
     });

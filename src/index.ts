@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       // Enter into full screen mode
-      document.getElementById('btn-fullscreen').addEventListener('click', (event) => {
+      document.getElementById('btn-fullscreen').addEventListener('click', () => {
         display.containerElement.requestFullscreen().then(() => {
           display.resize();
         });

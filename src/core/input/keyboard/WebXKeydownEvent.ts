@@ -3,11 +3,11 @@ import { WebXKeyboard } from '../WebXKeyboard';
 
 export class WebXKeydownEvent extends WebXKeyEvent {
 
+  private readonly _keyupReliable: boolean;
   private _keyCode: number;
   private _keyIdentifier: string;
   private _key: string;
   private _location: number;
-  private _keyupReliable: boolean;
 
 
   public get keyCode(): number {

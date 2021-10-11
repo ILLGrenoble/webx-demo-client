@@ -2,10 +2,10 @@ import { WebXKeyEvent } from './WebXKeyEvent';
 
 export class WebXKeyUpEvent extends WebXKeyEvent {
 
-  private _keyCode: number;
-  private _key: string;
-  private _location: number;
-  private _keyIdentifier: string;
+  private readonly _keyCode: number;
+  private readonly _key: string;
+  private readonly _location: number;
+  private readonly _keyIdentifier: string;
 
 
   public get keyCode(): number {

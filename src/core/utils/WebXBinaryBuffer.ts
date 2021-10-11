@@ -51,7 +51,7 @@ export class WebXBinaryBuffer {
     return typedArray;
   }
 
-  public getString(length: number) {
+  public getString(length: number): string {
     const array = new Uint8Array(this._buffer, this._readOffset, length);
     this._readOffset += length;
     return this._encoder.decode(array);

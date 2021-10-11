@@ -10,19 +10,20 @@ import * as TWEEN from "@tweenjs/tween.js";
 
 export class WebXDisplay {
 
-  private _scene: THREE.Scene;
-  private _camera: THREE.OrthographicCamera;
-  private _renderer: WebXWebGLRenderer;
+  private readonly _scene: THREE.Scene;
+  private readonly _camera: THREE.OrthographicCamera;
+  private readonly _renderer: WebXWebGLRenderer;
 
-  private _screenWidth = 10;
-  private _screenHeight = 10;
+  private readonly _screenWidth;
+  private readonly _screenHeight;
+
+  private readonly _containerElement: HTMLElement;
 
   private _windows: WebXWindow[] = [];
+
   private _cursor: WebXCursor = new WebXCursor();
 
   private _scale: number = 1;
-
-  private _containerElement: HTMLElement;
 
   private _displayElement: HTMLElement;
 
@@ -180,11 +181,11 @@ export class WebXDisplay {
     }
   }
 
-  updateMouse(x: number, y: number, cursorId: number) {
+  updateMouse(x: number, y: number, cursorId: number): void {
     this._cursor.updateCursorId(x, y, cursorId);
   }
 
-  updateMousePosition(x: number, y: number) {
+  updateMousePosition(x: number, y: number): void {
     this._cursor.setPosition(x, y);
   }
 
@@ -196,14 +197,14 @@ export class WebXDisplay {
    * Set the scale
    * @param scale the scale (between 0 and 1)
    */
-  setScale(scale: number) {
+  setScale(scale: number): void {
     this._scale = scale;
   }
 
   /**
    * Scale automatically
    */
-  autoScale() {
+  autoScale(): void {
     const container = this._containerElement;
     const { clientWidth, clientHeight } = container;
     const { screenWidth, screenHeight } = this;

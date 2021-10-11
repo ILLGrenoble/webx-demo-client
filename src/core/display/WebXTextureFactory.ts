@@ -4,23 +4,23 @@ import { Texture } from 'three';
 import { WebXImageMessage } from '../message';
 
 export class WebXTextureFactory {
-  private static _instance: WebXTextureFactory;
+  private static _INSTANCE: WebXTextureFactory;
 
   private constructor(private _tunnel: WebXTunnel) {}
 
   public static initInstance(tunnel: WebXTunnel): WebXTextureFactory {
-    if (WebXTextureFactory._instance == null) {
-      WebXTextureFactory._instance = new WebXTextureFactory(tunnel);
+    if (WebXTextureFactory._INSTANCE == null) {
+      WebXTextureFactory._INSTANCE = new WebXTextureFactory(tunnel);
     }
-    return WebXTextureFactory._instance;
+    return WebXTextureFactory._INSTANCE;
   }
 
   public static instance(): WebXTextureFactory {
-    return WebXTextureFactory._instance;
+    return WebXTextureFactory._INSTANCE;
   }
 
   public getWindowTexture(windowId: number): Promise<{ depth: number; texture: Texture }> {
-    const promise: Promise<{ depth: number; texture: Texture }> = new Promise<{ depth: number; texture: Texture }>((resolve, reject) => {
+    return new Promise<{ depth: number; texture: Texture }>((resolve) => {
       return this._tunnel.sendRequest(new WebXImageInstruction(windowId)).then((response: WebXImageMessage) => {
         resolve({
           depth: response.depth,
@@ -28,7 +28,5 @@ export class WebXTextureFactory {
         });
       });
     });
-
-    return promise;
   }
 }

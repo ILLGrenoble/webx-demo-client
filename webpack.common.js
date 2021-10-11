@@ -3,24 +3,16 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     context: resolve(__dirname, 'src'),
+    devtool: 'eval-cheap-module-source-map',
     entry: {
         app: ['./index.ts']
     },
-    devtool: 'inline-source-map',
     output: {
         publicPath: '/',
-        filename: '[hash].bundle.js',
+        filename: '[contenthash].bundle.js',
         path: resolve(__dirname, 'dist')
     },
     watch: false,
-    devServer: {
-        watchContentBase: false,
-        compress: false,
-        port: 9000,
-        stats: {
-            colors: true
-        }
-    },
     module: {
         rules: [
             {
@@ -46,7 +38,8 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            inject: true,
+          title: 'WebX',
+          inject: true,
             template: 'index.html',
             minify: false
         })

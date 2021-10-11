@@ -30,7 +30,7 @@ export class WebXBinarySerializer implements WebXSerializer {
 
     const buffer: WebXBinaryBuffer = new WebXBinaryBuffer(arrayBuffer);
 
-    const promise: Promise<WebXMessage> = new Promise<WebXMessage>((resolve, reject) => {
+    return new Promise<WebXMessage>((resolve) => {
       const commandId: number = buffer.getUint32();
 
       /*if (buffer.messageTypeId === WebXMessageType.CONNECTION) {
@@ -158,7 +158,5 @@ export class WebXBinarySerializer implements WebXSerializer {
       }
 
     });
-
-    return promise;
   }
 }

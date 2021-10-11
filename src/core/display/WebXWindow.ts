@@ -4,14 +4,14 @@ import { Texture, LinearFilter } from 'three';
 import {APP_CONFIG} from '../utils';
 
 export class WebXWindow {
-  private static _PLANE_GEOMETRY: THREE.Geometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
+  private static _PLANE_GEOMETRY: THREE.PlaneGeometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
   private static _COLOR_INDEX = 0;
 
-  private _colorIndex: number;
-  private _id: number;
+  private readonly _colorIndex: number;
+  private readonly _id: number;
+  private readonly _material: THREE.MeshBasicMaterial;
+  private readonly _mesh: THREE.Mesh;
   private _texture: THREE.Texture;
-  private _material: THREE.MeshBasicMaterial;
-  private _mesh: THREE.Mesh;
   private _depth: number;
 
   private _x: number;
@@ -23,7 +23,6 @@ export class WebXWindow {
   public get mesh(): THREE.Mesh {
     return this._mesh;
   }
-
 
   get colorIndex(): number {
     return this._colorIndex;

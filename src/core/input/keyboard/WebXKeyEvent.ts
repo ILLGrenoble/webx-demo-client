@@ -271,12 +271,12 @@ export abstract class WebXKeyEvent {
     return codepoint <= 0x1f || (codepoint >= 0x7f && codepoint <= 0x9f);
   }
 
-  public keysymFromKeycode(keyCode: number, location: number) {
+  public keysymFromKeycode(keyCode: number, location: number): number{
     return this.getKeysym(WebXKeyEvent.KEYCODE_KEY_SYMS[keyCode], location);
   }
 
 
-  public getKeysym(keysyms: Array<number>, location: number) {
+  public getKeysym(keysyms: Array<number>, location: number): number {
     if (!keysyms) {
       return null;
     }

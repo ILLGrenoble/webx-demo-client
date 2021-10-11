@@ -17,6 +17,8 @@ export class WebXInstructionResponse<T> {
     this._timeoutMs = timeoutMs;
     this._onTimeout = onTimeout;
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this._timeoutId = setTimeout(this._onTimeout.bind(this), this._timeoutMs);
     return this;
   }

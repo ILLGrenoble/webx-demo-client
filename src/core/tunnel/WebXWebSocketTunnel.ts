@@ -6,8 +6,8 @@ import { WebXMessage } from '../message';
 import { WebXBinarySerializer } from './WebXBinarySerializer';
 
 export class WebXWebSocketTunnel implements WebXTunnel {
+  private readonly _url: string;
   private _socket: WebSocket;
-  private _url: string;
   private _serializer: WebXSerializer;
 
   private _instructionResponses: Map<number, WebXInstructionResponse<any>> = new Map<number, WebXInstructionResponse<any>>();
@@ -65,7 +65,7 @@ export class WebXWebSocketTunnel implements WebXTunnel {
     throw new Error('Method not implemented.');
   }
 
-  handleClose(event: CloseEvent) {
+  handleClose(event: CloseEvent): void{
     console.log(`Websocket closed`);
   }
 

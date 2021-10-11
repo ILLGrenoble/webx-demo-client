@@ -17,10 +17,11 @@ export class WebXJsonSerializer implements WebXSerializer {
     return command.toJsonString();
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   deserializeMessage(data: any): Promise<WebXMessage> {
     const json: any = JSON.parse(data);
 
-    const promise: Promise<WebXMessage> = new Promise<WebXMessage>((resolve, reject) => {
+    return new Promise<WebXMessage>((resolve) => {
       if (json.type === 'screen') {
         resolve(new WebXScreenMessage(json.screenSize, json.commandId));
 
@@ -62,7 +63,7 @@ export class WebXJsonSerializer implements WebXSerializer {
           const depth = subImage.depth;
           const imageData = subImage.data;
 
-          const imagePromise = new Promise<WebXSubImage>((innerResolve, innerReject) => {
+          const imagePromise = new Promise<WebXSubImage>((innerResolve) => {
             const image: HTMLImageElement = new Image();
             const texture: Texture = new Texture(image);
             image.onload = () => {
@@ -105,7 +106,5 @@ export class WebXJsonSerializer implements WebXSerializer {
         resolve(null);
       }
     });
-
-    return promise;
   }
 }

@@ -1,5 +1,5 @@
 export class WebXKeyboardUtils {
-  public static keysymFromCharCode(codepoint: number) {
+  public static keysymFromCharCode(codepoint: number): number {
     const isControlCharacter = (char: number) => {
       return char <= 0x1f || (char >= 0x7f && char <= 0x9f);
     };

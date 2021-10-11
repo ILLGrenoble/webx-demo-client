@@ -10,7 +10,7 @@ import {
 
 export class WebXKeyboard {
 
-  private static _nextId: number = 0;
+  private static _NEXT_ID: number = 0;
 
   /**
    * All modifiers and their states.
@@ -43,7 +43,7 @@ export class WebXKeyboard {
 
   private _keyboardId: number;
 
-  private _EVENT_MARKER: string;
+  private _eventMarker: string;
 
   /**
    * The element to use to provide keyboard events
@@ -59,7 +59,7 @@ export class WebXKeyboard {
 
   /**
    * The state of every key, indexed by keysym, for strictly those keys whose
-   * status has been indirectly determined thorugh observation of other key
+   * status has been indirectly determined through observation of other key
    * events. If a particular key is implicitly pressed, the value of
    * implicitlyPressed for that keysym will be true. If a key
    * is not currently implicitly pressed (the key is not pressed OR the state
@@ -105,8 +105,8 @@ export class WebXKeyboard {
    */
   constructor(element: HTMLElement) {
     this._element = element;
-    this._keyboardId = WebXKeyboard._nextId++;
-    this._EVENT_MARKER = '_WEBX_KEYBOARD_HANDLED_BY_' + this._keyboardId;
+    this._keyboardId = WebXKeyboard._NEXT_ID++;
+    this._eventMarker = '_WEBX_KEYBOARD_HANDLED_BY_' + this._keyboardId;
     this._handleQuirks();
     this._bindListeners();
   }
@@ -154,7 +154,7 @@ export class WebXKeyboard {
       return;
     }
 
-    let keyCode = event.which;
+    const keyCode = event.which;
     // if (window.event) {
     //   keyCode = window.event.keyCode;
     // }
@@ -225,7 +225,7 @@ export class WebXKeyboard {
 
     event.preventDefault();
 
-    let keyCode = event.which;
+    const keyCode = event.which;
     // if (window.event) keyCode = window.event.keyCode;
     // else if (event.which) keyCode = event.which;
 
@@ -290,12 +290,12 @@ export class WebXKeyboard {
   private _markEvent(event: any): boolean {
 
     // Fail if event is already marked
-    if (event[this._EVENT_MARKER]) {
+    if (event[this._eventMarker]) {
       return false;
     }
 
     // Mark event otherwise
-    event[this._EVENT_MARKER] = true;
+    event[this._eventMarker] = true;
 
     return true;
   }

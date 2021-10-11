@@ -11,28 +11,28 @@ export interface WebXCursorData {
 }
 
 export class WebXCursorFactory {
-  private static _instance: WebXCursorFactory;
+  private static _INSTANCE: WebXCursorFactory;
 
   private _cursorMap: Map<number, WebXCursorData> = new Map();
 
   private constructor(private _tunnel: WebXTunnel) {}
 
   public static initInstance(tunnel: WebXTunnel): WebXCursorFactory {
-    if (WebXCursorFactory._instance == null) {
-      WebXCursorFactory._instance = new WebXCursorFactory(tunnel);
+    if (WebXCursorFactory._INSTANCE == null) {
+      WebXCursorFactory._INSTANCE = new WebXCursorFactory(tunnel);
     }
-    return WebXCursorFactory._instance;
+    return WebXCursorFactory._INSTANCE;
   }
 
   public static instance(): WebXCursorFactory {
-    return WebXCursorFactory._instance;
+    return WebXCursorFactory._INSTANCE;
   }
 
   public getCursor(cursorId?: number): Promise<{x?: number; y?: number; cursor: WebXCursorData}> {
-    const promise: Promise<{x?: number; y?: number; cursor: WebXCursorData}> = new Promise<{x?: number; y?: number; cursor: WebXCursorData}>((resolve, reject) => {
+    return new Promise<{ x?: number; y?: number; cursor: WebXCursorData }>((resolve) => {
       const cursorData = this._cursorMap.get(cursorId);
       if (cursorData != null) {
-        resolve({cursor: cursorData});
+        resolve({ cursor: cursorData });
       } else {
         this._tunnel.sendRequest(new WebXCursorImageInstruction(cursorId)).then((response: WebXCursorImageMessage) => {
           const newCursorData = {
@@ -52,7 +52,5 @@ export class WebXCursorFactory {
         });
       }
     });
-
-    return promise;
   }
 }

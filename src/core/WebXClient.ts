@@ -76,7 +76,7 @@ export class WebXClient {
    * @param screenWidth  the screen width
    * @param screenHeight the screen height
    */
-  createDisplay(containerElement: HTMLElement, screenWidth: number, screenHeight: number) {
+  createDisplay(containerElement: HTMLElement, screenWidth: number, screenHeight: number): WebXDisplay {
     return new WebXDisplay(containerElement, screenWidth, screenHeight);
   }
 
@@ -109,7 +109,7 @@ export class WebXClient {
     return this._tunnel.sendRequest(command);
   }
 
-  handleMessage(message: WebXMessage) {
+  handleMessage(message: WebXMessage): void {
     if (message.type === WebXMessageType.WINDOWS) {
       const windows = (message as WebXWindowsMessage).windows;
       this.onWindows(windows);
@@ -181,7 +181,7 @@ export class WebXClient {
    * Unregister a tracer
    * @param name the name of the tracer
    */
-  unregisterTracer(name: string) {
+  unregisterTracer(name: string): void {
     if(this._tracers.has(name)) {
       this._tracers.delete(name);
     }

@@ -1,6 +1,6 @@
 export class WebXColourGenerator {
 
-  private static COLOURS = [
+  private static _COLOURS = [
     '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
     '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
     '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
@@ -14,13 +14,13 @@ export class WebXColourGenerator {
   ]
 
     public static randomColour(): string {
-      const index = Math.floor(Math.random() * WebXColourGenerator.COLOURS.length);
-      return WebXColourGenerator.COLOURS[index];
+      const index = Math.floor(Math.random() * WebXColourGenerator._COLOURS.length);
+      return WebXColourGenerator._COLOURS[index];
     }
 
     public static indexedColour(index: number): string {
-      index = index % WebXColourGenerator.COLOURS.length;
-      return WebXColourGenerator.COLOURS[index];
+      index = index % WebXColourGenerator._COLOURS.length;
+      return WebXColourGenerator._COLOURS[index];
     }
 
 

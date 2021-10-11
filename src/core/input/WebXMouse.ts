@@ -148,11 +148,10 @@ export class WebXMouse {
     this.onMouseMove(currentState);
   }
 
-
   /**
    * Resets the mouse state
    */
-  public reset() {
+  public reset(): void {
     this._createDefaultState();
   }
   /**

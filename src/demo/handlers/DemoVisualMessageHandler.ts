@@ -13,7 +13,7 @@ import * as TWEEN from '@tweenjs/tween.js';
 
 export class DemoVisualMessageHandler extends WebXMessageHandler {
 
-  private static _PLANE_GEOMETRY: THREE.Geometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
+  private static _PLANE_GEOMETRY: THREE.PlaneGeometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
 
   private _scene: Scene;
   private _debugLayer: Object3D = new Object3D();
@@ -30,7 +30,7 @@ export class DemoVisualMessageHandler extends WebXMessageHandler {
     if (message.type === WebXMessageType.IMAGE) {
       const imageMessage = message as WebXImageMessage;
       const window = this._display.getWindow(imageMessage.windowId);
-      const {width, height} = imageMessage.texture.image;
+      const { width, height } = imageMessage.texture.image;
 
       this._createMesh(window.x, window.y, width, height, WebXColourGenerator.indexedColour(window.colorIndex));
 
@@ -45,7 +45,7 @@ export class DemoVisualMessageHandler extends WebXMessageHandler {
   }
 
   private _createMesh(x: number, y: number, width: number, height: number, colour: string): void {
-    const material = new THREE.MeshBasicMaterial({color: colour, opacity: 0.8, transparent: true});
+    const material = new THREE.MeshBasicMaterial({ color: colour, opacity: 0.8, transparent: true });
     material.side = THREE.BackSide;
 
     const mesh = new THREE.Mesh(DemoVisualMessageHandler._PLANE_GEOMETRY, material);
@@ -55,7 +55,7 @@ export class DemoVisualMessageHandler extends WebXMessageHandler {
     this._debugLayer.add(mesh);
 
     new TWEEN.Tween(material)
-      .to({opacity: 0.0}, 500)
+      .to({ opacity: 0.0 }, 500)
       .easing(TWEEN.Easing.Quadratic.Out)
       .onComplete(() => this._debugLayer.remove(mesh))
       .start();

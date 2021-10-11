@@ -3,7 +3,7 @@ import { Texture, LinearFilter } from 'three';
 import { WebXCursorFactory } from './WebXCursorFactory';
 
 export class WebXCursor {
-  private static _PLANE_GEOMETRY: THREE.Geometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
+  private static _PLANE_GEOMETRY: THREE.PlaneGeometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
 
   private _cursorId: number;
   private _texture: THREE.Texture;
@@ -61,7 +61,7 @@ export class WebXCursor {
       const cursor = cursorData.cursor;
       if (this._cursorId === 0 || this._cursorId === cursor.cursorId)
       this.update(cursorData.x, cursorData.y, cursor.xHot, cursor.yHot, cursor.cursorId, cursor.texture);
-    }); 
+    });
   }
 
   public setPosition(x: number, y: number): void {

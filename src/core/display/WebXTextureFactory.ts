@@ -19,12 +19,13 @@ export class WebXTextureFactory {
     return WebXTextureFactory._INSTANCE;
   }
 
-  public getWindowTexture(windowId: number): Promise<{ depth: number; texture: Texture }> {
-    return new Promise<{ depth: number; texture: Texture }>((resolve) => {
+  public getWindowTexture(windowId: number): Promise<{ depth: number; texture: Texture; alphaTexture: Texture }> {
+    return new Promise<{ depth: number; texture: Texture; alphaTexture: Texture }>((resolve) => {
       return this._tunnel.sendRequest(new WebXImageInstruction(windowId)).then((response: WebXImageMessage) => {
         resolve({
           depth: response.depth,
-          texture: response.texture
+          texture: response.texture,
+          alphaTexture: response.alphaTexture
         });
       });
     });

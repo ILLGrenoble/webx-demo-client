@@ -45,11 +45,11 @@ export class WebXJsonSerializer implements WebXSerializer {
             texture.needsUpdate = true;
             texture.flipY = false;
 
-            resolve(new WebXImageMessage(windowId, depth, texture, json.commandId, imageData.length));
+            resolve(new WebXImageMessage(windowId, depth, texture, null, json.commandId, imageData.length));
           };
           image.src = imageData;
         } else {
-          resolve(new WebXImageMessage(windowId, depth, null, json.commandId, 0));
+          resolve(new WebXImageMessage(windowId, depth, null, null, json.commandId, 0));
         }
 
       } else if (json.type === 'subimages') {
@@ -70,7 +70,7 @@ export class WebXJsonSerializer implements WebXSerializer {
               texture.needsUpdate = true;
               texture.flipY = false;
 
-              innerResolve(new WebXSubImage({ x, y, width, height, depth, texture }));
+              innerResolve(new WebXSubImage({ x, y, width, height, depth, texture, alphaTexture: null }));
             };
             image.src = imageData;
           });

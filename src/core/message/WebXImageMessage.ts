@@ -19,7 +19,11 @@ export class WebXImageMessage extends WebXMessage {
     return this._size;
   }
 
-  constructor(private _windowId: number, private _depth: number, private _texture: Texture, commandId: number, private _size: number) {
+  get alphaTexture(): Texture {
+    return this._alphaTexture;
+  }
+
+  constructor(private _windowId: number, private _depth: number, private _texture: Texture, private _alphaTexture: Texture, commandId: number, private _size: number) {
     super(WebXMessageType.IMAGE, commandId);
   }
 }

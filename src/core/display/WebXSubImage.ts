@@ -7,8 +7,9 @@ export class WebXSubImage {
   public height: number = 1;
   public depth: number = 32;
   public texture: Texture;
+  public alphaTexture: Texture;
 
-  constructor(configuration: { x: number; y: number; width: number; height: number; depth: number; texture: Texture }) {
+  constructor(configuration: { x: number; y: number; width: number; height: number; depth: number; texture: Texture, alphaTexture: Texture }) {
     const { x, y, width, height, depth, texture } = configuration;
     this.x = x;
     this.y = y;
@@ -16,5 +17,6 @@ export class WebXSubImage {
     this.height = height;
     this.depth = depth;
     this.texture = texture;
+    this.alphaTexture = texture;
   }
 }

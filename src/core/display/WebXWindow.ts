@@ -91,7 +91,6 @@ export class WebXWindow {
     this._updatePosition();
   }
 
-
   constructor(configuration: { id: number; x: number; y: number; z: number; width: number; height: number }) {
     this._colorIndex = WebXWindow._COLOR_INDEX++;
 
@@ -113,7 +112,7 @@ export class WebXWindow {
     this._updatePosition();
 
     WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
-      this.updateTexture(response.depth, response.texture);
+      this.updateTexture(response.depth, response.texture, response.alphaTexture);
     });
   }
 
@@ -128,7 +127,7 @@ export class WebXWindow {
       this._texture.repeat.set(this._width / this._texture.image.width, this._height / this._texture.image.height);
       if (this._texture.image.width !== this._width || this._texture.image.height !== this._height) {
         WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
-          this.updateTexture(response.depth, response.texture);
+          this.updateTexture(response.depth, response.texture, response.alphaTexture);
         });
       }
     }
@@ -137,7 +136,7 @@ export class WebXWindow {
     this._updatePosition();
   }
 
-  public updateTexture(depth: number, texture: Texture): void {
+  public updateTexture(depth: number, texture: Texture, alphaTexture: Texture): void {
     if (texture != null) {
       // TODO Dispose of previous texture?
       this._depth = depth;
@@ -150,6 +149,7 @@ export class WebXWindow {
       this._material.map = texture;
       this._material.visible = true;
       this._material.needsUpdate = true;
+      this._material.alphaMap = alphaTexture;
       // this._mesh.material = this._material;
     }
   }

@@ -174,12 +174,10 @@ export class WebXDisplay {
       const windowTexture = window.texture;
       if (windowTexture != null) {
         subImages.forEach(subImage => {
-          // Can't set an alpha map on a texture :(
-          // maybe a create a mesh of meshes?
-          // const group = new THREE.Group();
           this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.texture, windowTexture);
+          this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.alphaTexture, windowTexture);
         });
-        window.updateTexture(window.depth, windowTexture, null);
+        window.updateTexture(window.depth, windowTexture, window.alphaTexture);
       }
     }
   }

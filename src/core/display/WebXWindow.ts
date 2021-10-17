@@ -13,7 +13,7 @@ export class WebXWindow {
   private readonly _mesh: THREE.Mesh;
   private _texture: THREE.Texture;
   private _depth: number;
-
+  private _alphaTexture: THREE.Texture;
   private _x: number;
   private _y: number;
   private _z: number;
@@ -34,6 +34,10 @@ export class WebXWindow {
 
   public get texture(): Texture {
     return this._texture;
+  }
+
+  public get alphaTexture(): Texture {
+    return this._alphaTexture;
   }
 
   public get textureValid(): boolean {
@@ -141,7 +145,7 @@ export class WebXWindow {
       // TODO Dispose of previous texture?
       this._depth = depth;
       this._texture = texture;
-
+      this._alphaTexture = alphaTexture;
       this._texture.minFilter = LinearFilter;
       this._texture.repeat.set(this._width / this._texture.image.width, this._height / this._texture.image.height);
 
@@ -149,7 +153,10 @@ export class WebXWindow {
       this._material.map = texture;
       this._material.visible = true;
       this._material.needsUpdate = true;
-      this._material.alphaMap = alphaTexture;
+
+      if(this._alphaTexture) {
+        this._material.alphaMap = alphaTexture;
+      }
       // this._mesh.material = this._material;
     }
   }

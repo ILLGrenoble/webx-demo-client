@@ -47,20 +47,26 @@ export class DemoBasicMessageHandler extends WebXMessageHandler {
     if (message.type === WebXMessageType.IMAGE) {
       const imageMessage = message as WebXImageMessage;
       const size = WebXFileSize.humanFileSize(imageMessage.size);
-      const { width, height } = imageMessage.texture.image;
+      const { width, height } = imageMessage.colorMap.image;
       return `${width} x ${height} (${size})`;
+
     } else if (message.type === WebXMessageType.SUBIMAGES) {
       const subImagesMessage = message as WebXSubImagesMessage;
-      return `count = ${subImagesMessage.subImages.length}`;
+      const size = WebXFileSize.humanFileSize(subImagesMessage.size);
+      return `count = ${subImagesMessage.subImages.length} (${size})`;
+
     } else if (message.type === WebXMessageType.MOUSE) {
       const mouseMessage = message as WebXMouseMessage;
       return `x = ${mouseMessage.x}, y = ${mouseMessage.y}, cursorId = ${mouseMessage.cursorId}`;
+
     } else if (message.type === WebXMessageType.SCREEN) {
       const screenMessage = message as WebXScreenMessage;
       return `${screenMessage.screenSize.width} x ${screenMessage.screenSize.height}`;
+
     } else if (message.type === WebXMessageType.WINDOWS) {
       const windowsMessage = message as WebXWindowsMessage;
       return `count = ${windowsMessage.windows.length}`;
+
     } else {
       return `${WebXMessageType[message.type]}`;
     }

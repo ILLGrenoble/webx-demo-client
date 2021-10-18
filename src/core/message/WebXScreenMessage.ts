@@ -6,7 +6,7 @@ export class WebXScreenMessage extends WebXMessage {
     return this._screenSize;
   }
 
-  constructor(private _screenSize: { width: number; height: number }, commandId?: number) {
+  constructor(private _screenSize: { width: number; height: number }, commandId: number) {
     super(WebXMessageType.SCREEN, commandId);
   }
 }

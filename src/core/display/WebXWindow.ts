@@ -11,9 +11,10 @@ export class WebXWindow {
   private readonly _id: number;
   private readonly _material: THREE.MeshBasicMaterial;
   private readonly _mesh: THREE.Mesh;
-  private _texture: THREE.Texture;
+  private _colorMap: THREE.Texture;
+  private _alphaMap: THREE.Texture;
   private _depth: number;
-  private _alphaTexture: THREE.Texture;
+
   private _x: number;
   private _y: number;
   private _z: number;
@@ -32,16 +33,16 @@ export class WebXWindow {
     return this._id;
   }
 
-  public get texture(): Texture {
-    return this._texture;
+  public get colorMap(): Texture {
+    return this._colorMap;
   }
 
-  public get alphaTexture(): Texture {
-    return this._alphaTexture;
+  get alphaMap(): Texture {
+    return this._alphaMap;
   }
 
-  public get textureValid(): boolean {
-    return this._texture != null && this._texture.image.width === this._width && this._texture.image.height === this._height;
+  public get colorMapValid(): boolean {
+    return this._colorMap != null && this._colorMap.image.width === this._width && this._colorMap.image.height === this._height;
   }
 
   public get depth(): number {
@@ -116,7 +117,7 @@ export class WebXWindow {
     this._updatePosition();
 
     WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
-      this.updateTexture(response.depth, response.texture, response.alphaTexture);
+      this.updateTexture(response.depth, response.colorMap, response.alphaMap);
     });
   }
 
@@ -127,11 +128,17 @@ export class WebXWindow {
     this._width = width;
     this._height = height;
 
-    if (this._texture) {
-      this._texture.repeat.set(this._width / this._texture.image.width, this._height / this._texture.image.height);
-      if (this._texture.image.width !== this._width || this._texture.image.height !== this._height) {
+    if (this._colorMap) {
+      this._colorMap.repeat.set(this._width / this._colorMap.image.width, this._height / this._colorMap.image.height);
+
+      if (this._alphaMap) {
+        this._alphaMap.repeat.set(this._width / this._alphaMap.image.width, this._height / this._alphaMap.image.height);
+      }
+
+      // Force reload of image of dimensions differ
+      if (this._colorMap.image.width !== this._width || this._colorMap.image.height !== this._height) {
         WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
-          this.updateTexture(response.depth, response.texture, response.alphaTexture);
+          this.updateTexture(response.depth, response.colorMap, response.alphaMap);
         });
       }
     }
@@ -140,25 +147,28 @@ export class WebXWindow {
     this._updatePosition();
   }
 
-  public updateTexture(depth: number, texture: Texture, alphaTexture: Texture): void {
-    if (texture != null) {
-      // TODO Dispose of previous texture?
-      this._depth = depth;
-      this._texture = texture;
-      this._alphaTexture = alphaTexture;
-      this._texture.minFilter = LinearFilter;
-      this._texture.repeat.set(this._width / this._texture.image.width, this._height / this._texture.image.height);
+  public updateTexture(depth: number, colorMap: Texture, alphaMap: Texture): void {
+    // TODO Dispose of previous textures?
+    this._depth = depth;
+    this._colorMap = colorMap;
+    this._material.map = colorMap;
+    this._alphaMap = alphaMap;
+    this._material.alphaMap = alphaMap;
 
-      this._material.transparent = depth === 32;
-      this._material.map = texture;
+    if (this._colorMap) {
+      this._colorMap.minFilter = LinearFilter;
+      this._colorMap.repeat.set(this._width / this._colorMap.image.width, this._height / this._colorMap.image.height);
       this._material.visible = true;
       this._material.needsUpdate = true;
-
-      if(this._alphaTexture) {
-        this._material.alphaMap = alphaTexture;
-      }
-      // this._mesh.material = this._material;
     }
+
+    if (this._alphaMap) {
+      this._alphaMap.minFilter = LinearFilter;
+      this._alphaMap.repeat.set(this._width / this._alphaMap.image.width, this._height / this._alphaMap.image.height);
+      this._material.needsUpdate = true;
+    }
+
+    this._material.transparent = (this._alphaMap != null || depth === 32);
   }
 
   private _updateScale(): void {

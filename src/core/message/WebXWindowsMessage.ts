@@ -7,7 +7,7 @@ export class WebXWindowsMessage extends WebXMessage {
     return this._windows;
   }
 
-  constructor(private _windows: Array<WebXWindowProperties>, commandId?: number) {
+  constructor(private _windows: Array<WebXWindowProperties>, commandId: number) {
     super(WebXMessageType.WINDOWS, commandId);
   }
 }

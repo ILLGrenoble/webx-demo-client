@@ -59,9 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
         display.updateWindows(windows);
       };
 
-      client.onImage = (windowId, depth, texture, alphaTexture) => {
+      client.onImage = (windowId, depth, colorMap, alphaMap) => {
         // console.log(`Updating image ${windowId} [${texture.image.width}, ${texture.image.height}]\n`);
-        display.updateImage(windowId, depth, texture, alphaTexture);
+        display.updateImage(windowId, depth, colorMap, alphaMap);
       };
 
       client.onSubImages = (windowId: number, subImages: WebXSubImage[]) => {

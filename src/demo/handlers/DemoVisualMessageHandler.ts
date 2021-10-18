@@ -30,7 +30,7 @@ export class DemoVisualMessageHandler extends WebXMessageHandler {
     if (message.type === WebXMessageType.IMAGE) {
       const imageMessage = message as WebXImageMessage;
       const window = this._display.getWindow(imageMessage.windowId);
-      const { width, height } = imageMessage.texture.image;
+      const { width, height } = imageMessage.colorMap.image;
 
       this._createMesh(window.x, window.y, width, height, WebXColourGenerator.indexedColour(window.colorIndex));
 

@@ -14,7 +14,7 @@ export class WebXMouseMessage extends WebXMessage {
     return this._cursorId;
   }
 
-  constructor(private _x: number, private _y: number, private _cursorId: number, commandId?: number) {
+  constructor(private _x: number, private _y: number, private _cursorId: number, commandId: number) {
     super(WebXMessageType.MOUSE, commandId);
   }
 }

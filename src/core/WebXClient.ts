@@ -15,7 +15,7 @@ const noop = function() {};
 export class WebXClient {
 
   private _onWindows: (windows: Array<WebXWindowProperties>) => void = null;
-  private _onImage: (windowId: number, depth: number, texture: Texture, alphaTexture: Texture) => void = null;
+  private _onImage: (windowId: number, depth: number, colorMap: Texture, alphaMap: Texture) => void = null;
   private _onSubImages: (windowId: number, subImages: WebXSubImage[]) => void = null;
   private _onMouse: (x: number, y: number, cursorId: number) => void = null;
   private _tracers: Map<string, WebXMessageHandler | WebXInstructionHandler> = new Map();
@@ -28,11 +28,11 @@ export class WebXClient {
     this._onWindows = func;
   }
 
-  get onImage(): (windowId: number, depth: number, texture: Texture, alphaTexture: Texture) => void {
+  get onImage(): (windowId: number, depth: number, colorMap: Texture, alphaMap: Texture) => void {
     return this._onImage ? this._onImage : noop;
   }
 
-  set onImage(func: (windowId: number, depth: number, texture: Texture, alphaTexture: Texture) => void) {
+  set onImage(func: (windowId: number, depth: number, colorMap: Texture, alphaMap: Texture) => void) {
     this._onImage = func;
   }
 
@@ -116,7 +116,7 @@ export class WebXClient {
 
     } else if (message.type === WebXMessageType.IMAGE) {
       const imageMessage = message as WebXImageMessage;
-      this.onImage(imageMessage.windowId, imageMessage.depth, imageMessage.texture, imageMessage.alphaTexture);
+      this.onImage(imageMessage.windowId, imageMessage.depth, imageMessage.colorMap, imageMessage.alphaMap);
 
     } else if (message.type === WebXMessageType.SUBIMAGES) {
       const subImagesMessage = message as WebXSubImagesMessage;

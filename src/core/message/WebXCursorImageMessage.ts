@@ -28,7 +28,7 @@ export class WebXCursorImageMessage extends WebXMessage {
     return this._texture;
   }
 
-  constructor(private _x: number, private _y: number, private _xHot: number, private _yHot: number, private _cursorId: number, private _texture: Texture, commandId?: number) {
+  constructor(private _x: number, private _y: number, private _xHot: number, private _yHot: number, private _cursorId: number, private _texture: Texture, commandId: number) {
     super(WebXMessageType.CURSOR_IMAGE, commandId);
   }
 }

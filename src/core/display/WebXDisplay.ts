@@ -161,24 +161,28 @@ export class WebXDisplay {
     });
   }
 
-  updateImage(windowId: number, depth: number, texture: Texture, alphaTexture: Texture): void {
+  updateImage(windowId: number, depth: number, colorMap: Texture, alphaMap: Texture): void {
     const window: WebXWindow = this.getWindow(windowId);
-    if (window != null && texture != null) {
-      window.updateTexture(depth, texture, alphaTexture);
+    if (window != null && !(colorMap == null && alphaMap == null)) {
+      window.updateTexture(depth, colorMap, alphaMap);
     }
   }
 
   updateSubImages(windowId: number, subImages: WebXSubImage[]): void {
     const window: WebXWindow = this.getWindow(windowId);
-    if (window != null && window.textureValid) {
-      const windowTexture = window.texture;
-      if (windowTexture != null) {
-        subImages.forEach(subImage => {
-          this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.texture, windowTexture);
-          this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.alphaTexture, windowTexture);
-        });
-        window.updateTexture(window.depth, windowTexture, window.alphaTexture);
-      }
+    if (window != null && window.colorMapValid) {
+      const colorMap = window.colorMap;
+      const alphaMap = window.alphaMap;
+
+      subImages.forEach(subImage => {
+        if (colorMap && subImage.colorMap) {
+          this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.colorMap, colorMap);
+        }
+        if (alphaMap && subImage.alphaMap) {
+          this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.alphaMap, alphaMap);
+        }
+      });
+      window.updateTexture(window.depth, colorMap, alphaMap);
     }
   }
 

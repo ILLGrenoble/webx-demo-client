@@ -9,7 +9,7 @@ import {
   WebXSubImagesMessage,
   WebXWindowsMessage
 } from '../message';
-import { WebXSubImage, WebXWindowProperties } from '../display';
+import {WebXSubImage, WebXTextureFactory, WebXWindowProperties} from '../display';
 import { LinearFilter, Texture } from 'three';
 
 export class WebXJsonSerializer implements WebXSerializer {
@@ -38,19 +38,11 @@ export class WebXJsonSerializer implements WebXSerializer {
         const imageData = json.data;
         const windowId = json.windowId;
         const depth = json.depth;
-        if (imageData != null && imageData !== '') {
-          const image: HTMLImageElement = new Image();
-          const texture: Texture = new Texture(image);
-          image.onload = () => {
-            texture.needsUpdate = true;
-            texture.flipY = false;
 
-            resolve(new WebXImageMessage(windowId, depth, texture, null, json.commandId, imageData.length));
-          };
-          image.src = imageData;
-        } else {
-          resolve(new WebXImageMessage(windowId, depth, null, null, json.commandId, 0));
-        }
+        WebXTextureFactory.instance().createTextureFromBase64Array(imageData)
+          .then(colorMap => {
+            resolve(new WebXImageMessage(windowId, depth, colorMap, null, json.commandId, data.length));
+          });
 
       } else if (json.type === 'subimages') {
         const windowId = json.windowId;
@@ -63,22 +55,18 @@ export class WebXJsonSerializer implements WebXSerializer {
           const depth = subImage.depth;
           const imageData = subImage.data;
 
-          const imagePromise = new Promise<WebXSubImage>((innerResolve) => {
-            const image: HTMLImageElement = new Image();
-            const texture: Texture = new Texture(image);
-            image.onload = () => {
-              texture.needsUpdate = true;
-              texture.flipY = false;
-
-              innerResolve(new WebXSubImage({ x, y, width, height, depth, texture, alphaTexture: null }));
-            };
-            image.src = imageData;
+          const imagePromise = new Promise<WebXSubImage>((innerResolve, innerReject) => {
+            WebXTextureFactory.instance().createTextureFromBase64Array(imageData)
+              .then(colorMap => {
+                innerResolve(new WebXSubImage({x, y, width, height, depth, colorMap, alphaMap: null}));
+              });
           });
+
           imagePromises.push(imagePromise);
         });
 
         Promise.all(imagePromises).then((webXSubImages: WebXSubImage[]) => {
-          resolve(new WebXSubImagesMessage(windowId, webXSubImages));
+          resolve(new WebXSubImagesMessage(windowId, webXSubImages, json.commandId, data.length));
         });
 
       } else if (json.type === 'mouse') {
@@ -86,21 +74,11 @@ export class WebXJsonSerializer implements WebXSerializer {
 
       } else if (json.type === 'cursorimage') {
         const imageData = json.data;
-        if (data != null && data !== '') {
-          const image: HTMLImageElement = new Image();
-          const texture: Texture = new Texture(image);
-          image.onload = () => {
-            texture.needsUpdate = true;
-            texture.flipY = false;
-            texture.minFilter = LinearFilter;
 
+        WebXTextureFactory.instance().createTextureFromBase64Array(imageData)
+          .then(texture => {
             resolve(new WebXCursorImageMessage(json.x, json.y, json.xHot, json.yHot, json.name, texture, json.commandId));
-          };
-          image.src = imageData;
-
-        } else {
-          resolve(new WebXCursorImageMessage(json.x, json.y, json.xHot, json.yHot, json.id, null, json.commandId));
-        }
+          });
 
       } else {
         resolve(null);

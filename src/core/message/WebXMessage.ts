@@ -9,5 +9,5 @@ export class WebXMessage {
     return this._commandId;
   }
 
-  constructor(private _messageType: WebXMessageType, private _commandId?: number) {}
+  constructor(private _messageType: WebXMessageType, private _commandId: number) {}
 }

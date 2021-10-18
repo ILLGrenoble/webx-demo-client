@@ -11,7 +11,11 @@ export class WebXSubImagesMessage extends WebXMessage {
     return this._subImages;
   }
 
-  constructor(private _windowId: number, private _subImages: WebXSubImage[], commandId?: number) {
+  get size(): number {
+    return this._size;
+  }
+
+  constructor(private _windowId: number, private _subImages: WebXSubImage[], commandId: number, private _size: number) {
     super(WebXMessageType.SUBIMAGES, commandId);
   }
 }

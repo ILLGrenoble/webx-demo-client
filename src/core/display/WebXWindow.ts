@@ -160,15 +160,13 @@ export class WebXWindow {
       this._material.needsUpdate = true;
     }
 
-    if (this._alphaMap) {
-      // Only update alpha if it has been sent
-      if (alphaMap) {
-        this._alphaMap = alphaMap;
-        this._material.alphaMap = alphaMap;
-        this._alphaMap.minFilter = LinearFilter;
-        this._alphaMap.repeat.set(this._width / this._alphaMap.image.width, this._height / this._alphaMap.image.height);
-        this._material.needsUpdate = true;
-      }
+    // Only update alpha if it has been sent
+    if (alphaMap) {
+      this._alphaMap = alphaMap;
+      this._material.alphaMap = alphaMap;
+      this._alphaMap.minFilter = LinearFilter;
+      this._alphaMap.repeat.set(this._width / this._alphaMap.image.width, this._height / this._alphaMap.image.height);
+      this._material.needsUpdate = true;
     }
 
     this._material.transparent = (this._alphaMap != null || depth === 32);

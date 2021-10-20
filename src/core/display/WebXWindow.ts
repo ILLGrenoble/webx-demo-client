@@ -167,6 +167,9 @@ export class WebXWindow {
       this._alphaMap.minFilter = LinearFilter;
       this._alphaMap.repeat.set(this._width / this._alphaMap.image.width, this._height / this._alphaMap.image.height);
       this._material.needsUpdate = true;
+
+    } else if (depth == 24) {
+      this._alphaMap = null;
     }
 
     this._material.transparent = (this._alphaMap != null || depth === 32);

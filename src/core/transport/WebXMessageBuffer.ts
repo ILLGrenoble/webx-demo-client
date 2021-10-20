@@ -1,4 +1,5 @@
-export class WebXBinaryBuffer {
+export class WebXMessageBuffer {
+
   private _messageTypeId: number;
   private _messageId: number;
   private _bufferLength: number;
@@ -57,16 +58,6 @@ export class WebXBinaryBuffer {
     return this._encoder.decode(array);
   }
 
-  private _getNextWriteOffset(sizeOfData: number): number {
-    // Ensure alignment
-    const padding = this._writeOffset % sizeOfData > 0 ? sizeOfData - (this._writeOffset % sizeOfData) : 0;
-    const position = this._writeOffset + padding;
-
-    this._writeOffset += sizeOfData + padding;
-
-    return position;
-  }
-
   private _getNextReadOffset(sizeOfData: number): number {
     // Ensure alignment
     const padding = this._readOffset % sizeOfData > 0 ? sizeOfData - (this._readOffset % sizeOfData) : 0;
@@ -76,4 +67,5 @@ export class WebXBinaryBuffer {
 
     return position;
   }
+
 }

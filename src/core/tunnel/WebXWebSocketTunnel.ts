@@ -1,14 +1,12 @@
 import { WebXTunnel } from './WebXTunnel';
-import { WebXInstruction, WebXInstructionResponse } from '../instruction';
-import { WebXSerializer } from './WebXSerializer';
-import { WebXJsonSerializer } from './WebXJsonSerializer';
+import { WebXConnectInstruction, WebXInstruction, WebXInstructionResponse } from '../instruction';
 import { WebXMessage } from '../message';
-import { WebXBinarySerializer } from './WebXBinarySerializer';
+import { WebXDataSerializer } from '../transport';
 
 export class WebXWebSocketTunnel implements WebXTunnel {
   private readonly _url: string;
   private _socket: WebSocket;
-  private _serializer: WebXSerializer;
+  private _serializer: WebXDataSerializer;
 
   private _instructionResponses: Map<number, WebXInstructionResponse<any>> = new Map<number, WebXInstructionResponse<any>>();
 
@@ -21,26 +19,18 @@ export class WebXWebSocketTunnel implements WebXTunnel {
   connect(): Promise<Event> {
     const url = this._url;
     return new Promise((resolve, reject) => {
+      this._serializer = new WebXDataSerializer();
       this._socket = new WebSocket(url);
+      this._socket.binaryType = 'arraybuffer';
       this._socket.onopen = (event: Event) => {
-        this._socket.send('comm');
+        const instruction = new WebXConnectInstruction();
+        const encodedInstruction = this._serializer.serializeInstruction(instruction);
+        this._socket.send(encodedInstruction);
       };
       this._socket.onerror = (event: Event) => reject(event);
       this._socket.onclose = this.handleClose.bind(this);
-      this._socket.onmessage = (message: any) => {
-        if (message.data === 'json') {
-          this._serializer = new WebXJsonSerializer();
-
-        } else if (message.data === 'binary') {
-          this._serializer = new WebXBinarySerializer();
-          this._socket.binaryType = 'arraybuffer';
-        }
-
-        if (this._serializer) {
-          this._socket.onmessage = (aMessage: any) => this.onMessage(aMessage.data);
-          resolve(null);
-        }
-      };
+      this._socket.onmessage = (aMessage: any) => this.onMessage(aMessage.data);
+      resolve(null);
     });
   }
 

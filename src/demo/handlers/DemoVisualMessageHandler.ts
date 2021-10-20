@@ -27,6 +27,7 @@ export class DemoVisualMessageHandler extends WebXMessageHandler {
   }
 
   handle(message: WebXMessage): void {
+
     if (message.type === WebXMessageType.IMAGE) {
       const imageMessage = message as WebXImageMessage;
       const window = this._display.getWindow(imageMessage.windowId);

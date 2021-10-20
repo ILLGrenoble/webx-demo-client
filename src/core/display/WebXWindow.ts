@@ -152,8 +152,6 @@ export class WebXWindow {
     this._depth = depth;
     this._colorMap = colorMap;
     this._material.map = colorMap;
-    this._alphaMap = alphaMap;
-    this._material.alphaMap = alphaMap;
 
     if (this._colorMap) {
       this._colorMap.minFilter = LinearFilter;
@@ -162,10 +160,16 @@ export class WebXWindow {
       this._material.needsUpdate = true;
     }
 
-    if (this._alphaMap) {
+    // Only update alpha if it has been sent
+    if (alphaMap) {
+      this._alphaMap = alphaMap;
+      this._material.alphaMap = alphaMap;
       this._alphaMap.minFilter = LinearFilter;
       this._alphaMap.repeat.set(this._width / this._alphaMap.image.width, this._height / this._alphaMap.image.height);
       this._material.needsUpdate = true;
+
+    } else if (depth == 24) {
+      this._alphaMap = null;
     }
 
     this._material.transparent = (this._alphaMap != null || depth === 32);

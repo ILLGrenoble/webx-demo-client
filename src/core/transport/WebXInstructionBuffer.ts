@@ -6,7 +6,7 @@ export class WebXInstructionBuffer {
   private _offset;
 
   constructor(instruction: WebXInstruction, length: number) {
-    const headerSize = 16;
+    const headerSize = 8;
     this._buffer = new ArrayBuffer(length + headerSize);
     this._offset = 0;
 
@@ -16,11 +16,7 @@ export class WebXInstructionBuffer {
     } else {
       this.putUInt32(instruction.type);
     }
-    this.putUInt32(instruction.id)
-    this.putUInt32(headerSize + length);
-
-    // add some padding
-    this._offset = headerSize;
+    this.putUInt32(instruction.id);
   }
 
   private _getNextOffset(sizeOfData: number): number {

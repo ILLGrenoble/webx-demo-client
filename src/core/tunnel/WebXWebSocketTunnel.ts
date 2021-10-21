@@ -1,12 +1,12 @@
 import { WebXTunnel } from './WebXTunnel';
 import { WebXConnectInstruction, WebXInstruction, WebXInstructionResponse } from '../instruction';
 import { WebXMessage } from '../message';
-import { WebXDataSerializer } from '../transport';
+import { WebXBinarySerializer } from '../transport';
 
 export class WebXWebSocketTunnel implements WebXTunnel {
   private readonly _url: string;
   private _socket: WebSocket;
-  private _serializer: WebXDataSerializer;
+  private _serializer: WebXBinarySerializer;
 
   private _instructionResponses: Map<number, WebXInstructionResponse<any>> = new Map<number, WebXInstructionResponse<any>>();
 
@@ -19,18 +19,15 @@ export class WebXWebSocketTunnel implements WebXTunnel {
   connect(): Promise<Event> {
     const url = this._url;
     return new Promise((resolve, reject) => {
-      this._serializer = new WebXDataSerializer();
+      this._serializer = new WebXBinarySerializer();
       this._socket = new WebSocket(url);
       this._socket.binaryType = 'arraybuffer';
       this._socket.onopen = (event: Event) => {
-        const instruction = new WebXConnectInstruction();
-        const encodedInstruction = this._serializer.serializeInstruction(instruction);
-        this._socket.send(encodedInstruction);
+        resolve(null);
       };
       this._socket.onerror = (event: Event) => reject(event);
       this._socket.onclose = this.handleClose.bind(this);
       this._socket.onmessage = (aMessage: any) => this.onMessage(aMessage.data);
-      resolve(null);
     });
   }
 

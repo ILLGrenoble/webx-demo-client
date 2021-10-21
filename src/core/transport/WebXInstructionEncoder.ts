@@ -13,6 +13,10 @@ import { WebXInstructionBuffer } from '.';
 
 export class WebXInstructionEncoder {
 
+  /**
+   * Convert the given instruction to an array buffer ready to be sent along the wire
+   * @param instruction the instruction to encode
+   */
   public encode(instruction: WebXInstruction): ArrayBuffer {
     if (instruction.type === WebXInstructionType.MOUSE) {
       return this._createMouseInstruction(instruction as WebXMouseInstruction);
@@ -39,8 +43,6 @@ export class WebXInstructionEncoder {
    *   Header: 16 bytes
    *    type: 4 bytes
    *    id: 4 bytes
-   *    length: 4 bytes
-   *    padding: 4 bytes
    *   Content: 4 bytes
    *    x: 4 bytes
    *    y: 4 bytes
@@ -63,8 +65,6 @@ export class WebXInstructionEncoder {
    *   Header: 16 bytes
    *    type: 4 bytes
    *    id: 4 bytes
-   *    length: 4 bytes
-   *    padding: 4 bytes
    *   Content: 4 bytes
    *    cursorId: 4 bytes
    */
@@ -83,8 +83,6 @@ export class WebXInstructionEncoder {
    *   Header: 16 bytes
    *    type: 4 bytes
    *    id: 4 bytes
-   *    length: 4 bytes
-   *    padding: 4 bytes
    *   Content: 4 bytes
    *    windowId: 4 bytes
    */
@@ -103,8 +101,6 @@ export class WebXInstructionEncoder {
    *   Header: 16 bytes
    *    type: 4 bytes
    *    id: 4 bytes
-   *    length: 4 bytes
-   *    padding: 4 bytes
    *   Content: 8 bytes
    *    key (the keyboard key code): 4 bytes
    *    pressed: 4 bytes
@@ -125,8 +121,6 @@ export class WebXInstructionEncoder {
    *   Header: 16 bytes
    *    type: 4 bytes
    *    id: 4 bytes
-   *    length: 4 bytes
-   *    padding: 4 bytes
    */
   private _createScreenInstruction(instruction: WebXScreenInstruction): ArrayBuffer {
     const encoder = new WebXInstructionBuffer(instruction, 0);
@@ -139,14 +133,11 @@ export class WebXInstructionEncoder {
    *   Header: 16 bytes
    *    type: 4 bytes
    *    id: 4 bytes
-   *    length: 4 bytes
-   *    padding: 4 bytes
    * @param instruction the windows instruction to encode
    */
   private _createWindowsInstruction(instruction: WebXWindowsInstruction): ArrayBuffer {
     const encoder = new WebXInstructionBuffer(instruction, 0);
-    return encoder
-      .buffer();
+    return encoder.buffer();
   }
 
   /**
@@ -156,13 +147,10 @@ export class WebXInstructionEncoder {
    *   Header: 16 bytes
    *    type: 4 bytes
    *    id: 4 bytes
-   *    length: 4 bytes
-   *    padding: 4 bytes
    */
   private _createConnectInstruction(instruction: WebXConnectInstruction): ArrayBuffer {
-    const encoder = new WebXInstructionBuffer(instruction, 4);
-    return encoder
-      .buffer();
+    const encoder = new WebXInstructionBuffer(instruction, 0);
+    return encoder.buffer();
   }
 
 

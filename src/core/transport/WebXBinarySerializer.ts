@@ -2,7 +2,7 @@ import { WebXInstruction } from '../instruction';
 import { WebXMessage } from '../message';
 import { WebXInstructionEncoder, WebXMessageBuffer, WebXMessageDecoder } from '.';
 
-export class WebXDataSerializer {
+export class WebXBinarySerializer {
 
   private readonly _instructionEncoder;
   private readonly _messageDecoder;

@@ -1,5 +1,3 @@
-import { WebXSerializer } from './WebXSerializer';
-import { WebXInstruction } from '../instruction';
 import {
   WebXCursorImageMessage,
   WebXImageMessage,
@@ -10,26 +8,12 @@ import {
   WebXSubImagesMessage,
   WebXWindowsMessage
 } from '../message';
-import { WebXBinaryBuffer } from '../utils';
-import {WebXSubImage, WebXTextureFactory, WebXWindowProperties} from '../display';
+import { WebXSubImage, WebXTextureFactory, WebXWindowProperties } from '../display';
+import { WebXMessageBuffer } from './WebXMessageBuffer';
 
-export class WebXBinarySerializer implements WebXSerializer {
+export class WebXMessageDecoder {
 
-  serializeInstruction(command: WebXInstruction): string {
-    return command.toJsonString();
-  }
-
-  deserializeMessage(data: any): Promise<WebXMessage> {
-    const arrayBuffer = data as ArrayBuffer;
-    if (arrayBuffer.byteLength === 0) {
-      console.warn('Got a zero length message');
-      return new Promise<WebXMessage>((resolve, reject) => {
-        resolve(null);
-      });
-    }
-
-    const buffer: WebXBinaryBuffer = new WebXBinaryBuffer(arrayBuffer);
-    const {messageTypeId} = buffer;
+  decode(messageTypeId: WebXMessageType, buffer: WebXMessageBuffer): Promise<WebXMessage> {
 
     /*if (buffer.messageTypeId === WebXMessageType.CONNECTION) {
     } else */
@@ -54,16 +38,15 @@ export class WebXBinarySerializer implements WebXSerializer {
   }
 
   private _determineMimeType(imageType: string): string {
-    if(imageType.substr(0, 3) === 'jpg')  {
+    if (imageType.substr(0, 3) === 'jpg') {
       return 'image/jpeg';
-    }
-    else if(imageType.substr(0,3) === 'png') {
-        return 'image/png';
+    } else if (imageType.substr(0, 3) === 'png') {
+      return 'image/png';
     }
     return 'image/bmp';
   }
 
-  private _createImageMessage(buffer: WebXBinaryBuffer): Promise<WebXImageMessage> {
+  private _createImageMessage(buffer: WebXMessageBuffer): Promise<WebXImageMessage> {
     return new Promise<WebXImageMessage>((resolve) => {
       const commandId: number = buffer.getUint32();
       const windowId = buffer.getUint32();
@@ -79,13 +62,13 @@ export class WebXBinarySerializer implements WebXSerializer {
       const alphaMapPromise = WebXTextureFactory.instance().createTextureFromArray(alphaData, mimetype);
 
       Promise.all([colorMapPromise, alphaMapPromise])
-        .then(([colorMap,alphaMap]) => {
+        .then(([colorMap, alphaMap]) => {
           resolve(new WebXImageMessage(windowId, depth, colorMap, alphaMap, commandId, buffer.bufferLength));
         });
     });
   }
 
-  private _createSubImagesMessage(buffer: WebXBinaryBuffer): Promise<WebXSubImagesMessage> {
+  private _createSubImagesMessage(buffer: WebXMessageBuffer): Promise<WebXSubImagesMessage> {
     return new Promise<WebXSubImagesMessage>((resolve) => {
       const commandId: number = buffer.getUint32();
       const windowId = buffer.getUint32();
@@ -109,8 +92,8 @@ export class WebXBinarySerializer implements WebXSerializer {
           const alphaMapPromise = WebXTextureFactory.instance().createTextureFromArray(alphaData, mimetype);
 
           Promise.all([colorMapPromise, alphaMapPromise])
-            .then(([colorMap,alphaMap]) => {
-              innerResolve(new WebXSubImage({x, y, width, height, depth, colorMap, alphaMap}));
+            .then(([colorMap, alphaMap]) => {
+              innerResolve(new WebXSubImage({ x, y, width, height, depth, colorMap, alphaMap }));
             })
             .catch(innerReject);
         });
@@ -124,7 +107,7 @@ export class WebXBinarySerializer implements WebXSerializer {
     });
   }
 
-  private _createMouseMessage(buffer: WebXBinaryBuffer): Promise<WebXMouseMessage> {
+  private _createMouseMessage(buffer: WebXMessageBuffer): Promise<WebXMouseMessage> {
     return new Promise<WebXMouseMessage>((resolve) => {
       const commandId: number = buffer.getUint32();
       const x = buffer.getInt32();
@@ -134,7 +117,7 @@ export class WebXBinarySerializer implements WebXSerializer {
     });
   }
 
-  private _createWindowsMessage(buffer: WebXBinaryBuffer): Promise<WebXWindowsMessage> {
+  private _createWindowsMessage(buffer: WebXMessageBuffer): Promise<WebXWindowsMessage> {
     return new Promise<WebXWindowsMessage>((resolve) => {
       const commandId: number = buffer.getUint32();
       const numberOfWindows: number = buffer.getUint32();
@@ -152,7 +135,7 @@ export class WebXBinarySerializer implements WebXSerializer {
     });
   }
 
-  private _createCursorImageMessage(buffer: WebXBinaryBuffer): Promise<WebXCursorImageMessage> {
+  private _createCursorImageMessage(buffer: WebXMessageBuffer): Promise<WebXCursorImageMessage> {
     return new Promise<WebXCursorImageMessage>((resolve) => {
       const commandId: number = buffer.getUint32();
       const x = buffer.getInt32();
@@ -173,7 +156,7 @@ export class WebXBinarySerializer implements WebXSerializer {
     });
   }
 
-  private _createScreenMessage(buffer: WebXBinaryBuffer): Promise<WebXScreenMessage> {
+  private _createScreenMessage(buffer: WebXMessageBuffer): Promise<WebXScreenMessage> {
     return new Promise<WebXScreenMessage>((resolve) => {
       const commandId: number = buffer.getUint32();
       const screenWidth: number = buffer.getInt32();

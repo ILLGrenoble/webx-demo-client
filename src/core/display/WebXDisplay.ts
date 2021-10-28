@@ -131,34 +131,61 @@ export class WebXDisplay {
     }
   }
 
-  updateWindows(windows: Array<WebXWindowProperties>): void {
-    // Get windows to remove
-    const deadWindows = this._windows.filter(existingWindow => windows.find(window => window.id === existingWindow.id) == null);
+  updateWindows(windows: Array<WebXWindowProperties>): Promise<void> {
+    return new Promise((resolve) => {
+      // Get windows to remove
+      const deadWindows = this._windows.filter(existingWindow => windows.find(window => window.id === existingWindow.id) == null);
 
-    // Remove windows that no longer exist
-    deadWindows.forEach(deadWindow => this.removeWindow(deadWindow));
+      // Remove windows that no longer exist
+      deadWindows.forEach(deadWindow => this.removeWindow(deadWindow));
 
-    // Update and add windows
-    windows.forEach((window, index) => {
-      let webXWindow = this.getWindow(window.id);
-      if (webXWindow == null) {
-        // Add a new window
-        webXWindow = new WebXWindow({
-          id: window.id,
-          x: window.x,
-          y: window.y,
-          z: index,
-          width: window.width,
-          height: window.height
-        });
+      let hasNewWindows = false;
+      // Update and add windows
+      windows.forEach((window, index) => {
+        let webXWindow = this.getWindow(window.id);
+        if (webXWindow == null) {
+          hasNewWindows = true;
 
-        this.addWindow(webXWindow);
+          // Add a new window
+          webXWindow = new WebXWindow({
+            id: window.id,
+            x: window.x,
+            y: window.y,
+            z: index,
+            width: window.width,
+            height: window.height
+          });
 
-      } else {
-        // Update window
-        webXWindow.setRectangle(window.x, window.y, index, window.width, window.height);
+          this.addWindow(webXWindow);
+
+          webXWindow.loadWindowImage()
+            .then(() => {
+              // When all windows are visible then callback. This is only really needed for the startup
+              if (this.checkVisibility(windows.map(window => window.id))) {
+                resolve();
+              }
+            })
+
+        } else {
+          // Update window
+          webXWindow.setRectangle(window.x, window.y, index, window.width, window.height);
+        }
+      });
+
+      if (!hasNewWindows) {
+        resolve();
       }
-    });
+    })
+  }
+
+  checkVisibility(windowIds: number[]): boolean {
+    const allVisible = windowIds
+      .map(id => this.getWindow(id))
+      .filter(window => window != null)
+      .map(window => window.visible)
+      .reduce((allVisible, visible) => allVisible && visible, true);
+
+    return allVisible;
   }
 
   updateImage(windowId: number, depth: number, colorMap: Texture, alphaMap: Texture): void {

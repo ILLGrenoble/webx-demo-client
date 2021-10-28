@@ -35,6 +35,12 @@ export class WebXWindow {
     return this._material.visible;
   }
 
+  private set visible(visible: boolean) {
+    if (this._material.visible !== visible) {
+      this._material.visible = visible;
+    }
+  }
+
   public get colorMap(): Texture {
     return this._material.map;
   }
@@ -112,7 +118,7 @@ export class WebXWindow {
     // this._material = new THREE.MeshBasicMaterial( { color: WebXColourGenerator.indexedColour(this._colorIndex) } );
     this._material = new THREE.MeshBasicMaterial({ transparent: true });
     this._material.side = THREE.BackSide;
-    this._material.visible = APP_CONFIG().showWindowsBeforeImage;
+    this.visible = APP_CONFIG().showWindowsBeforeImage;
 
     const { id, x, y, z, width, height } = configuration;
     this._id = id;
@@ -125,10 +131,16 @@ export class WebXWindow {
     this._height = height;
     this._updateScale();
     this._updatePosition();
+  }
 
-    WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
-      this.updateTexture(response.depth, response.colorMap, response.alphaMap);
-    });
+  public loadWindowImage(): Promise<void> {
+    return new Promise((resolve) => {
+        WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
+          this.updateTexture(response.depth, response.colorMap, response.alphaMap);
+
+          resolve();
+        });
+    })
   }
 
   public setRectangle(x: number, y: number, z: number, width: number, height: number): void {
@@ -161,20 +173,24 @@ export class WebXWindow {
     this._depth = depth;
 
     // Dispose of previous texture
-    this._disposeColorMap();
-    this.colorMap = colorMap;
+    if (colorMap != this.colorMap) {
+      this._disposeColorMap();
+      this.colorMap = colorMap;
+    }
 
     if (colorMap) {
       colorMap.minFilter = LinearFilter;
       this.colorMap.repeat.set(this._width / this.colorMap.image.width, this._height / this.colorMap.image.height);
-      this._material.visible = true;
+      this.visible = true;
       this._material.needsUpdate = true;
     }
 
     // Only update alpha if it has been sent
     if (alphaMap) {
-      this._disposeAlphaMap();
-      this.alphaMap = alphaMap;
+      if (alphaMap != this.alphaMap) {
+        this._disposeAlphaMap();
+        this.alphaMap = alphaMap;
+      }
       this.alphaMap.minFilter = LinearFilter;
       this.alphaMap.repeat.set(this._width / this.alphaMap.image.width, this._height / this.alphaMap.image.height);
       this._material.needsUpdate = true;

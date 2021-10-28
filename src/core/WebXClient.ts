@@ -1,66 +1,47 @@
 import { WebXTunnel } from './tunnel';
-import { WebXInstruction, WebXKeyboardInstruction, WebXMouseInstruction, WebXScreenInstruction } from './instruction';
 import {
-  WebXImageMessage,
-  WebXMessage,
+  WebXInstruction,
+  WebXScreenInstruction,
+  WebXKeyboardInstruction,
+  WebXMouseInstruction,
+  WebXWindowsInstruction
+} from './instruction';
+import {
   WebXMessageType,
-  WebXMouseMessage,
-  WebXScreenMessage,
+  WebXMessage,
+  WebXWindowsMessage,
+  WebXImageMessage,
   WebXSubImagesMessage,
-  WebXWindowsMessage
+  WebXMouseMessage,
+  WebXScreenMessage
 } from './message';
-import { WebXDisplay, WebXSubImage, WebXTextureFactory, WebXWindowProperties } from './display';
-import { Texture } from 'three';
+import { WebXDisplay, WebXCursorFactory, WebXTextureFactory } from './display';
 import { WebXKeyboard, WebXMouse, WebXMouseState } from './input';
 import { WebXConfiguration } from './WebXConfiguration';
 import { WebXHandler, WebXInstructionHandler, WebXMessageHandler, WebXStatsHandler } from './tracer';
-import { WebXCursorFactory } from './display';
-
-const noop = function() {
-};
 
 export class WebXClient {
 
-  private _onWindows: (windows: Array<WebXWindowProperties>) => void = null;
-  private _onImage: (windowId: number, depth: number, colorMap: Texture, alphaMap: Texture) => void = null;
-  private _onSubImages: (windowId: number, subImages: WebXSubImage[]) => void = null;
-  private _onMouse: (x: number, y: number, cursorId: number) => void = null;
   private _tracers: Map<string, WebXHandler> = new Map();
 
-  get onWindows(): (windows: Array<WebXWindowProperties>) => void {
-    return this._onWindows ? this._onWindows : noop;
-  }
-
-  set onWindows(func: (windows: Array<WebXWindowProperties>) => void) {
-    this._onWindows = func;
-  }
-
-  get onImage(): (windowId: number, depth: number, colorMap: Texture, alphaMap: Texture) => void {
-    return this._onImage ? this._onImage : noop;
-  }
-
-  set onImage(func: (windowId: number, depth: number, colorMap: Texture, alphaMap: Texture) => void) {
-    this._onImage = func;
-  }
-
-  get onSubImages(): (windowId: number, subImages: WebXSubImage[]) => void {
-    return this._onSubImages ? this._onSubImages : noop;
-  }
-
-  set onSubImages(func: (windowId: number, subImages: WebXSubImage[]) => void) {
-    this._onSubImages = func;
-  }
-
-  get onMouse(): (x: number, y: number, cursorId: number) => void {
-    return this._onMouse ? this._onMouse : noop;
-  }
-
-  set onMouse(func: (x: number, y: number, cursorId: number) => void) {
-    this._onMouse = func;
-  }
+  private _display: WebXDisplay;
+  private _mouse: WebXMouse;
+  private _keyboard: WebXKeyboard;
 
   get tracers(): Map<string, WebXHandler> {
     return this._tracers;
+  }
+
+  get display(): WebXDisplay {
+    return this._display;
+  }
+
+  get mouse(): WebXMouse {
+    return this._mouse;
+  }
+
+  get keyboard(): WebXKeyboard {
+    return this._keyboard;
   }
 
   constructor(private _tunnel: WebXTunnel, private _config: WebXConfiguration) {
@@ -68,14 +49,47 @@ export class WebXClient {
     WebXCursorFactory.initInstance(this._tunnel);
   }
 
-  connect(): Promise<WebXScreenMessage> {
-    return this._tunnel.connect().then(data => {
-      this._tunnel.handleMessage = this.handleMessage.bind(this);
-      this._tunnel.handleReceivedBytes = this.handleReceivedBytes.bind(this);
-      this._tunnel.handleSentBytes = this.handleSentBytes.bind(this);
-      // When connect get configuration from server
-      return this.sendRequest(new WebXScreenInstruction()) as Promise<WebXScreenMessage>;
-    });
+  async connect(): Promise<void> {
+    await this._tunnel.connect();
+
+    this._tunnel.handleMessage = this._handleMessage.bind(this);
+    this._tunnel.handleReceivedBytes = this._handleReceivedBytes.bind(this);
+    this._tunnel.handleSentBytes = this._handleSentBytes.bind(this);
+  }
+
+  /**
+   *
+   * @param containerElement The main container
+   * @param screenWidth  the screen width
+   * @param screenHeight the screen height
+   */
+  async initialise(containerElement: HTMLElement): Promise<WebXDisplay> {
+    // Connect to websocket
+    await this.connect();
+
+    // Request 1. : Get screen size
+    const screenMessage = await this._sendRequest(new WebXScreenInstruction()) as WebXScreenMessage;
+    const { width, height } = screenMessage.screenSize;
+
+    // Initialise the display
+    this._display = this.createDisplay(containerElement, width, height);
+
+    // Request 2. : Get visible windows
+    // Sec request for visible windows
+    const windowsMessage = await this._sendRequest(new WebXWindowsInstruction()) as WebXWindowsMessage;
+
+    // Requests 3. - N : Initialise all windows and wait for them to be visible (requests for window images)
+    await this._display.updateWindows(windowsMessage.windows);
+
+    // Create mouse and add listeners
+    this._mouse = this.createMouse(containerElement);
+    this._addMouseListeners();
+
+    // Create keyboard and add listeners
+    this._keyboard = this.createKeyboard(document.body);
+    this._addKeyboardListeners();
+
+    return this._display;
   }
 
   /**
@@ -104,68 +118,13 @@ export class WebXClient {
     return new WebXKeyboard(element);
   }
 
-  sendInstruction(command: WebXInstruction): void {
-    this._tunnel.sendInstruction(command);
-    this._tracers.forEach((value, key) => {
-      if (value instanceof WebXInstructionHandler) {
-        value.handle(command);
-      }
-    });
-  }
-
-  sendRequest(command: WebXInstruction): Promise<WebXMessage> {
-    return this._tunnel.sendRequest(command);
-  }
-
-  handleReceivedBytes(data: ArrayBuffer): void {
-    this._tracers.forEach((value, key) => {
-      if (value instanceof WebXStatsHandler) {
-        value.handle({ received: data.byteLength, sent: 0 });
-      }
-    });
-  }
-
-  handleSentBytes(data: ArrayBuffer): void {
-    this._tracers.forEach((value, key) => {
-      if (value instanceof WebXStatsHandler) {
-        value.handle({ received: 0, sent: data.byteLength });
-      }
-    });
-  }
-
-
-  handleMessage(message: WebXMessage): void {
-    if (message.type === WebXMessageType.WINDOWS) {
-      const windows = (message as WebXWindowsMessage).windows;
-      this.onWindows(windows);
-
-    } else if (message.type === WebXMessageType.IMAGE) {
-      const imageMessage = message as WebXImageMessage;
-      this.onImage(imageMessage.windowId, imageMessage.depth, imageMessage.colorMap, imageMessage.alphaMap);
-
-    } else if (message.type === WebXMessageType.SUBIMAGES) {
-      const subImagesMessage = message as WebXSubImagesMessage;
-      this.onSubImages(subImagesMessage.windowId, subImagesMessage.subImages);
-
-    } else if (message.type === WebXMessageType.MOUSE) {
-      const mouseMessage = message as WebXMouseMessage;
-      this.onMouse(mouseMessage.x, mouseMessage.y, mouseMessage.cursorId);
-    }
-
-    this._tracers.forEach((value, key) => {
-      if (value instanceof WebXMessageHandler) {
-        value.handle(message);
-      }
-    });
-
-  }
 
   /**
    * Sends a mouse event having the properties provided by the given mouse state
    * @param mouseState the state of the mouse to send in the mouse event
    */
-  sendMouse(mouseState: WebXMouseState): void {
-    this.sendInstruction(new WebXMouseInstruction(mouseState.x, mouseState.y, mouseState.getButtonMask()));
+  private sendMouse(mouseState: WebXMouseState): void {
+    this._sendInstruction(new WebXMouseInstruction(mouseState.x, mouseState.y, mouseState.getButtonMask()));
   }
 
   /**
@@ -173,15 +132,15 @@ export class WebXClient {
    * @param pressed {Boolean} Whether the key is pressed (true) or released (false)
    * @param key {number} the key to send
    */
-  sendKeyEvent(key: number, pressed: boolean): void {
-    this.sendInstruction(new WebXKeyboardInstruction(key, pressed));
+  private sendKeyEvent(key: number, pressed: boolean): void {
+    this._sendInstruction(new WebXKeyboardInstruction(key, pressed));
   }
 
   /**
    * Sends a key down event
    * @param key {number} the key to send
    */
-  sendKeyDown(key: number): void {
+  private sendKeyDown(key: number): void {
     this.sendKeyEvent(key, true);
   }
 
@@ -189,7 +148,7 @@ export class WebXClient {
    * Sends a key up event
    * @param key {number} the key to send
    */
-  sendKeyUp(key: number): void {
+  private sendKeyUp(key: number): void {
     this.sendKeyEvent(key, false);
   }
 
@@ -215,4 +174,87 @@ export class WebXClient {
     }
   }
 
+  private _sendInstruction(command: WebXInstruction): void {
+    this._tunnel.sendInstruction(command);
+    this._tracers.forEach((value, key) => {
+      if (value instanceof WebXInstructionHandler) {
+          value.handle(command);
+        }
+    });
+  }
+
+  private _sendRequest(command: WebXInstruction): Promise<WebXMessage> {
+    return this._tunnel.sendRequest(command);
+  }
+
+  private _handleMessage(message: WebXMessage): void {
+    if (!this._display) {
+      return;
+    }
+
+    if (message.type === WebXMessageType.WINDOWS) {
+      const windows = (message as WebXWindowsMessage).windows;
+      this._display.updateWindows(windows);
+
+    } else if (message.type === WebXMessageType.IMAGE) {
+      const imageMessage = message as WebXImageMessage;
+      // console.log(`Updating image ${windowId} [${texture.image.width}, ${texture.image.height}]\n`);
+      this._display.updateImage(imageMessage.windowId, imageMessage.depth, imageMessage.colorMap, imageMessage.alphaMap);
+
+    } else if (message.type === WebXMessageType.SUBIMAGES) {
+      const subImagesMessage = message as WebXSubImagesMessage;
+      // console.log(`Updating sub images ${windowId}\n`);
+      this._display.updateSubImages(subImagesMessage.windowId, subImagesMessage.subImages);
+
+    } else if (message.type === WebXMessageType.MOUSE) {
+      const mouseMessage = message as WebXMouseMessage;
+      this._display.updateMouse(mouseMessage.x, mouseMessage.y, mouseMessage.cursorId);
+    }
+
+    this._tracers.forEach((value, key) => {
+      if (value instanceof WebXMessageHandler) {
+        value.handle(message);
+      }
+    });
+  }
+
+  private _handleReceivedBytes(data: ArrayBuffer): void {
+    this._tracers.forEach((value, key) => {
+      if (value instanceof WebXStatsHandler) {
+        value.handle({ received: data.byteLength, sent: 0 });
+      }
+    });
+  }
+
+  private _handleSentBytes(data: ArrayBuffer): void {
+    this._tracers.forEach((value, key) => {
+      if (value instanceof WebXStatsHandler) {
+        value.handle({ received: 0, sent: data.byteLength });
+      }
+    });
+  }
+
+  private _addMouseListeners(): void {
+    this._mouse.onMouseMove = this._mouse.onMouseOut = (mouseState: WebXMouseState) => {
+      const scale = this._display.scale;
+      mouseState.x = mouseState.x / scale;
+      mouseState.y = mouseState.y / scale;
+      this.sendMouse(mouseState);
+      this._display.updateMousePosition(mouseState.x, mouseState.y);
+    };
+
+    this._mouse.onMouseDown = this._mouse.onMouseUp = (mouseState: WebXMouseState) => {
+      this.sendMouse(mouseState);
+    };
+  }
+
+  private _addKeyboardListeners(): void {
+    this._keyboard.onKeyDown = key => {
+      this.sendKeyDown(key);
+    };
+
+    this._keyboard.onKeyUp = key => {
+      this.sendKeyUp(key);
+    };
+  }
 }

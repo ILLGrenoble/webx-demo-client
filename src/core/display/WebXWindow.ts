@@ -11,8 +11,6 @@ export class WebXWindow {
   private readonly _id: number;
   private readonly _material: THREE.MeshBasicMaterial;
   private readonly _mesh: THREE.Mesh;
-  private _colorMap: THREE.Texture;
-  private _alphaMap: THREE.Texture;
   private _depth: number;
 
   private _x: number;
@@ -33,16 +31,28 @@ export class WebXWindow {
     return this._id;
   }
 
+  public get visible(): boolean {
+    return this._material.visible;
+  }
+
   public get colorMap(): Texture {
-    return this._colorMap;
+    return this._material.map;
+  }
+
+  private set colorMap(colorMap: Texture) {
+    this._material.map = colorMap;
   }
 
   get alphaMap(): Texture {
-    return this._alphaMap;
+    return this._material.alphaMap;
+  }
+
+  private set alphaMap(alphaMap: Texture) {
+    this._material.alphaMap = alphaMap;
   }
 
   public get colorMapValid(): boolean {
-    return this._colorMap != null && this._colorMap.image.width === this._width && this._colorMap.image.height === this._height;
+    return this.colorMap != null && this.colorMap.image.width === this._width && this.colorMap.image.height === this._height;
   }
 
   public get depth(): number {
@@ -128,15 +138,15 @@ export class WebXWindow {
     this._width = width;
     this._height = height;
 
-    if (this._colorMap) {
-      this._colorMap.repeat.set(this._width / this._colorMap.image.width, this._height / this._colorMap.image.height);
+    if (this.colorMap) {
+      this.colorMap.repeat.set(this._width / this.colorMap.image.width, this._height / this.colorMap.image.height);
 
-      if (this._alphaMap) {
-        this._alphaMap.repeat.set(this._width / this._alphaMap.image.width, this._height / this._alphaMap.image.height);
+      if (this.alphaMap) {
+        this.alphaMap.repeat.set(this._width / this.alphaMap.image.width, this._height / this.alphaMap.image.height);
       }
 
       // Force reload of image of dimensions differ
-      if (this._colorMap.image.width !== this._width || this._colorMap.image.height !== this._height) {
+      if (this.colorMap.image.width !== this._width || this.colorMap.image.height !== this._height) {
         WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
           this.updateTexture(response.depth, response.colorMap, response.alphaMap);
         });
@@ -148,31 +158,32 @@ export class WebXWindow {
   }
 
   public updateTexture(depth: number, colorMap: Texture, alphaMap: Texture): void {
-    // TODO Dispose of previous textures?
     this._depth = depth;
-    this._colorMap = colorMap;
-    this._material.map = colorMap;
 
-    if (this._colorMap) {
-      this._colorMap.minFilter = LinearFilter;
-      this._colorMap.repeat.set(this._width / this._colorMap.image.width, this._height / this._colorMap.image.height);
+    // Dispose of previous texture
+    this._disposeColorMap();
+    this.colorMap = colorMap;
+
+    if (colorMap) {
+      colorMap.minFilter = LinearFilter;
+      this.colorMap.repeat.set(this._width / this.colorMap.image.width, this._height / this.colorMap.image.height);
       this._material.visible = true;
       this._material.needsUpdate = true;
     }
 
     // Only update alpha if it has been sent
     if (alphaMap) {
-      this._alphaMap = alphaMap;
-      this._material.alphaMap = alphaMap;
-      this._alphaMap.minFilter = LinearFilter;
-      this._alphaMap.repeat.set(this._width / this._alphaMap.image.width, this._height / this._alphaMap.image.height);
+      this._disposeAlphaMap();
+      this.alphaMap = alphaMap;
+      this.alphaMap.minFilter = LinearFilter;
+      this.alphaMap.repeat.set(this._width / this.alphaMap.image.width, this._height / this.alphaMap.image.height);
       this._material.needsUpdate = true;
 
     } else if (depth == 24) {
-      this._alphaMap = null;
+      this._disposeAlphaMap();
     }
 
-    this._material.transparent = (this._alphaMap != null || depth === 32);
+    this._material.transparent = (this.alphaMap != null || depth === 32);
   }
 
   private _updateScale(): void {
@@ -181,5 +192,19 @@ export class WebXWindow {
 
   private _updatePosition(): void {
     this._mesh.position.set(this._x + 0.5 * this._width, this._y + 0.5 * this._height, this._z);
+  }
+
+  private _disposeColorMap(): void {
+    if (this.colorMap) {
+      this.colorMap.dispose();
+      this.colorMap = null;
+    }
+  }
+
+  private _disposeAlphaMap(): void {
+    if (this.alphaMap) {
+      this.alphaMap.dispose();
+      this.alphaMap = null;
+    }
   }
 }

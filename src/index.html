@@ -37,6 +37,10 @@
           </div>
           <ul class='devtools__events__tools__togglers'>
             <li>
+              <input type='checkbox' id='toggle-stats-debugger' name='toggle-stats-debugger'>
+              <label for='toggle-stats-debugger'>Stats</label>
+            </li>
+            <li>
               <input type='checkbox' id='toggle-visual-debugger' name='toggle-visual-debugger'>
               <label for='toggle-visual-debugger'>Visual</label>
             </li>
@@ -51,6 +55,22 @@
           </ul>
         </div>
         <div class='devtools__events__panels'>
+          <div class='devtools__events__panel devtools__events__panel__stats'>
+            <div class='devtools__events__header'>Stats</div>
+            <div class='devtools__events__content'>
+              <table class='devtools__stats__table'>
+                <thead>
+                <tr>
+                  <th>Data received</th>
+                  <th>Sent data</th>
+                </tr>
+                </thead>
+                <tbody id='stats'>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
           <div class='devtools__events__panel' id='debug-messages-panel'>
             <div class='devtools__events__header'>Messages</div>
             <div class='devtools__events__content'>

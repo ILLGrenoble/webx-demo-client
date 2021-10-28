@@ -1,4 +1,9 @@
-import { DemoBasicInstructionHandler, DemoBasicMessageHandler, DemoVisualMessageHandler } from './handlers';
+import {
+  DemoBasicInstructionHandler,
+  DemoBasicMessageHandler,
+  DemoBasicStatsHandler,
+  DemoVisualMessageHandler
+} from './handlers';
 import { WebXClient, WebXDisplay } from '../core';
 
 export class WebXDemoDevTools {
@@ -17,6 +22,7 @@ export class WebXDemoDevTools {
     this._initialiseMessageDebugger();
     this._initialiseInstructionsDebugger();
     this._initialiseVisualDebugger();
+    this._initialiseStatsDebugger();
   }
 
   private _bind(): void {
@@ -25,6 +31,7 @@ export class WebXDemoDevTools {
     this._element('toggle-messages-debugger').addEventListener('change', (e: any) => this._handleMessagesDebugger(e.target.checked));
     this._element('toggle-instructions-debugger').addEventListener('change', (e: any) => this._handleInstructionsDebugger(e.target.checked));
     this._element('toggle-visual-debugger').addEventListener('change', (e: any) => this._handleVisualDebugger(e.target.checked));
+    this._element('toggle-stats-debugger').addEventListener('change', (e: any) => this._handleStatsDebugger(e.target.checked));
   }
 
   private _initialiseMessageDebugger(): void {
@@ -46,6 +53,13 @@ export class WebXDemoDevTools {
     const element = this._element('toggle-visual-debugger') as HTMLInputElement;
     element.checked = enabled;
     this._handleVisualDebugger(enabled);
+  }
+
+  private _initialiseStatsDebugger(): void {
+    const enabled = localStorage.getItem('devtools.debugger.stats.enabled') === 'true';
+    const element = this._element('toggle-stats-debugger') as HTMLInputElement;
+    element.checked = enabled;
+    this._handleStatsDebugger(enabled);
   }
 
   private _element(id: string): HTMLElement {
@@ -77,6 +91,15 @@ export class WebXDemoDevTools {
       this._client.registerTracer('instruction', new DemoBasicInstructionHandler());
     } else {
       this._client.unregisterTracer('instruction');
+    }
+  }
+
+  private _handleStatsDebugger(enabled: boolean): void {
+    localStorage.setItem('devtools.debugger.stats.enabled', enabled ? 'true' : 'false');
+    if (enabled) {
+      this._client.registerTracer('stats', new DemoBasicStatsHandler());
+    } else {
+      this._client.unregisterTracer('stats');
     }
   }
 

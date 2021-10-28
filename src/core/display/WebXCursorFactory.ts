@@ -1,6 +1,6 @@
 import { WebXTunnel } from '../tunnel';
 import { WebXCursorImageMessage } from '../message';
-import { WebXCursorImageInstruction } from '../instruction/WebXCursorImageInstruction';
+import { WebXCursorImageInstruction } from '../instruction';
 import { Texture } from 'three';
 
 export interface WebXCursorData {

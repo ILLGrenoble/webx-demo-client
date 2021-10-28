@@ -2,6 +2,7 @@
  * The state of all supported keyboard modifiers
  */
 export class WebXKeyboardModifierState {
+  
   /**
    * Whether shift is currently pressed.
    */
@@ -89,7 +90,10 @@ export class WebXKeyboardModifierState {
     this._meta = event.metaKey;
 
     if (event.getModifierState) {
-      this.hyper = event.getModifierState('OS') || event.getModifierState('Super') || event.getModifierState('Hyper') || event.getModifierState('Win');
+      this.hyper = event.getModifierState('OS')
+        || event.getModifierState('Super')
+        || event.getModifierState('Hyper')
+        || event.getModifierState('Win');
     }
 
 

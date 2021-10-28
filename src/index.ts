@@ -75,14 +75,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Resize the display when the window is resized
       window.addEventListener('resize', () => display.resize());
+      window.addEventListener('blur', () => {
+          mouse.reset();
+          keyboard.reset();
+      });
 
       document.addEventListener('visibilitychange', () => {
         mouse.reset();
+        keyboard.reset();
       });
 
       // Enter into full screen mode
       document.getElementById('btn-fullscreen').addEventListener('click', () => {
         display.containerElement.requestFullscreen().then(() => {
+          // @ts-ignore
+          if (navigator.keyboard) {
+            // @ts-ignore
+            navigator.keyboard.lock();
+          }
           display.resize();
         });
       });

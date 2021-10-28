@@ -4,4 +4,3 @@ export * from './WebXKeyPressEvent';
 export * from './WebXKeydownEvent';
 export * from './WebXKeyboardUtils';
 export * from './WebXKeyUpEvent';
-export * from './WebXKeyMapper';

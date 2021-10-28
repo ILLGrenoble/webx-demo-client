@@ -1,16 +1,17 @@
 import {
+  WebXFileSize,
+  WebXHandler,
   WebXImageMessage,
   WebXMessage,
+  WebXMessageHandler,
   WebXMessageType,
   WebXMouseMessage,
   WebXScreenMessage,
   WebXSubImagesMessage,
-  WebXWindowsMessage,
-  WebXFileSize,
-  WebXMessageHandler
+  WebXWindowsMessage
 } from '../../core';
 
-export class DemoBasicMessageHandler extends WebXMessageHandler {
+export class DemoBasicMessageHandler extends WebXMessageHandler implements WebXHandler {
 
   private _messages: WebXMessage[] = [];
   private _el: HTMLElement;
@@ -20,17 +21,6 @@ export class DemoBasicMessageHandler extends WebXMessageHandler {
     super();
     this._el = document.getElementById('messages');
     this._fragment = document.createDocumentFragment();
-  }
-
-  handle(message: WebXMessage): void {
-    this._messages.push(message);
-    if (this._messages.length > 25) {
-      this._messages.shift();
-    }
-    const els = this._messages.map(m => this._createMessageElement(m));
-    this._fragment.append(...els);
-    this._el.replaceChildren(this._fragment);
-    this._el.scrollTop = this._el.scrollHeight;
   }
 
   private _createMessageElement(message: WebXMessage): HTMLElement {
@@ -71,4 +61,19 @@ export class DemoBasicMessageHandler extends WebXMessageHandler {
       return `${WebXMessageType[message.type]}`;
     }
   }
+
+  handle(message: WebXMessage): void {
+    this._messages.push(message);
+    if (this._messages.length > 25) {
+      this._messages.shift();
+    }
+    const els = this._messages.map(m => this._createMessageElement(m));
+    this._fragment.append(...els);
+    this._el.replaceChildren(this._fragment);
+    this._el.scrollTop = this._el.scrollHeight;
+  }
+
+  destroy(): void {
+  }
+
 }

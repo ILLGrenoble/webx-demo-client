@@ -3,7 +3,6 @@ import {
   WebXKeyboardUtils,
   WebXKeydownEvent,
   WebXKeyEvent,
-  WebXKeyMapper,
   WebXKeyPressEvent,
   WebXKeyUpEvent
 } from './keyboard';
@@ -41,14 +40,14 @@ export class WebXKeyboard {
     capsLockKeyupUnreliable: false
   };
 
-  private _keyboardId: number;
+  private readonly _keyboardId: number;
 
-  private _eventMarker: string;
+  private readonly _eventMarker: string;
 
   /**
    * The element to use to provide keyboard events
    */
-  private _element: HTMLElement;
+  private readonly _element: HTMLElement;
 
   /**
    * The state of every key, indexed by keysym. If a particular key is
@@ -64,8 +63,6 @@ export class WebXKeyboard {
    * implicitlyPressed for that keysym will be true. If a key
    * is not currently implicitly pressed (the key is not pressed OR the state
    * of the key is explicitly known), it will not be defined.
-   *
-   * @type {Object.<Number, Boolean>}
    */
   private _implicitlyPressed: { [index: number]: boolean } = {};
 
@@ -74,15 +71,12 @@ export class WebXKeyboard {
    * by keysym. This is used to prevent/allow default actions for key events,
    * even when the onkeydown handler cannot be called again because the key
    * is (theoretically) still pressed.
-   *
    */
   private _lastKeydownResult: { [index: number]: boolean } = {};
 
   /**
    * The keysym most recently associated with a given keycode when keydown
    * fired. This object maps keycodes to keysyms.
-   *
-   * @type {Object.<Number, Number>}
    */
   private _recentKeysym: { [index: number]: number } = {};
 
@@ -98,6 +92,10 @@ export class WebXKeyboard {
   private _keyRepeatInterval: number = null;
 
   private _events: Array<WebXKeyEvent> = [];
+
+  public get pressed() {
+    return this._pressed;
+  }
 
   /**
    * Create a new keyboard instance
@@ -155,15 +153,9 @@ export class WebXKeyboard {
     }
 
     const keyCode = event.which;
-    // if (window.event) {
-    //   keyCode = window.event.keyCode;
-    // }
-    // else if (event.which) {
-    //   keyCode = event.which;
-    // }
 
     // Fix modifier states
-    const keydownEvent = new WebXKeydownEvent(keyCode, event.key, event.key, this._getEventLocation(event));
+    const keydownEvent = new WebXKeydownEvent(keyCode, event.key, event.key, WebXKeyboard._getEventLocation(event));
 
     this._recentKeysym[keydownEvent.keyCode] = keydownEvent.keysym;
 
@@ -226,11 +218,16 @@ export class WebXKeyboard {
     event.preventDefault();
 
     const keyCode = event.which;
-    // if (window.event) keyCode = window.event.keyCode;
-    // else if (event.which) keyCode = event.which;
 
     // Fix modifier states
-    const keyupEvent = new WebXKeyUpEvent(keyCode, event.key, event.key, this._getEventLocation(event));
+    const keyupEvent = new WebXKeyUpEvent(keyCode, event.key, event.key, WebXKeyboard._getEventLocation(event));
+
+    // Fall back to the most recently pressed keysym associated with the
+    // keyCode if the inferred key doesn't seem to actually be pressed
+    if (!this.pressed[keyupEvent.keysym]) {
+      keyupEvent.keysym = this._recentKeysym[keyCode] || keyupEvent.keysym;
+    }
+
 
     // Fall back to the most recently pressed keysym associated with the
     // keyCode if the inferred key doesn't seem to actually be pressed
@@ -250,29 +247,20 @@ export class WebXKeyboard {
    * keyboard event. The location differentiates key events which otherwise
    * have the same keycode, such as left shift vs. right shift.
    *
-   * @param {KeyboardEvent} event
-   *     A JavaScript keyboard event, as received through the DOM via a
-   *     "keydown", "keyup", or "keypress" handler.
+   * @param event A JavaScript keyboard event, as received through the DOM via a "keydown", "keyup", or "keypress" handler.
    *
    * @returns {number}
    *     The location of the key event on the keyboard, as defined at:
    *     http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
    */
-  private _getEventLocation(event: KeyboardEvent): number {
-
+  private static _getEventLocation(event: KeyboardEvent): number {
     // Use standard location, if possible
     if ('location' in event) {
       return event.location;
     }
 
-    // Failing that, attempt to use deprecated keyLocation
-    // if ('keyLocation' in event) {
-    //   return event.keyLocation;
-    // }
-
     // If no location is available, assume left side
     return 0;
-
   }
 
   /**
@@ -280,11 +268,8 @@ export class WebXKeyboard {
    * keyboard. If the Event has already been marked as handled,
    * false is returned.
    *
-   * @param {Event} event
-   *     The Event to mark.
-   *
-   * @returns {boolean}
-   *     true if the given Event was successfully marked, false if the given
+   * @param event The Event to mark.
+   * @returns true if the given Event was successfully marked, false if the given
    *     Event was already marked.
    */
   private _markEvent(event: any): boolean {
@@ -305,8 +290,7 @@ export class WebXKeyboard {
    * when the corresponding true key presses are known (or as known as they
    * can be).
    *
-   * @return {boolean} Whether the default action of the latest event should
-   *                   be prevented.
+   * @return Whether the default action of the latest event should be prevented.
    */
   private _interpretEvents(): boolean {
     // Do not prevent default if no event could be interpreted
@@ -420,7 +404,7 @@ export class WebXKeyboard {
       return this._events.shift();
 
     }
-      // Ignore any other type of event (keypress by itself is invalid, and
+    // Ignore any other type of event (keypress by itself is invalid, and
     // unreliable keyup events should simply be dumped)
     else {
       return this._events.shift();
@@ -435,7 +419,7 @@ export class WebXKeyboard {
    * Releases Ctrl+Alt, if both are currently pressed and the given keysym
    * looks like a key that may require AltGr.
    *
-   * @param {Number} keysym The key that was just pressed.
+   * @param keysym The key that was just pressed.
    */
   private _releaseSimulatedAltgr(keysym: number) {
 
@@ -495,12 +479,9 @@ export class WebXKeyboard {
    * key state based on the modifier flags within the event. This function
    * pays no attention to keycodes.
    *
-   * @param {KeyboardEvent} event
-   *     The keyboard event containing the flags to update.
+   * @param event The keyboard event containing the flags to update.
    *
-   * @param {WebXKeyEvent} keyEvent
-   *     Current best interpretation of the key event being
-   *     processed.
+   * @param keyEvent Current best interpretation of the key event being processed.
    */
   private _syncModifierStates(event: KeyboardEvent, keyEvent: WebXKeyEvent): void {
 
@@ -548,19 +529,11 @@ export class WebXKeyboard {
    * remote state of that key with the local state through pressing or
    * releasing keysyms.
    *
-   * @param {boolean} remoteState
-   *     Whether the key is currently pressed remotely.
-   *
-   * @param {boolean} localState
-   *     Whether the key is currently pressed locally. If the state
-   *     of the key is not known, this may be undefined.
-   *
-   * @param {number[]} keysyms
-   *     The keysyms which represent the key being updated.
-   *
-   * @param {WebXKeyEvent} keyEvent
-   *     Best interpretation of the key event being
-   *     processed.
+   * @param remoteState Whether the key is currently pressed remotely.
+   * @param localState  Whether the key is currently pressed locally. If the state
+   *                    of the key is not known, this may be undefined.
+   * @param keysyms     The keysyms which represent the key being updated.
+   * @param keyEvent    Best interpretation of the key event being processed.
    */
   private _updateModifierState(remoteState: boolean, localState: boolean, keysyms: number[], keyEvent: WebXKeyEvent) {
 
@@ -601,7 +574,6 @@ export class WebXKeyboard {
         this._implicitlyPressed[keysym] = true;
       }
       this.press(keysym);
-
     }
   }
 
@@ -637,6 +609,7 @@ export class WebXKeyboard {
     for (const keysym in this._pressed) {
       this.release(parseInt(keysym));
     }
+
   }
 
   /**
@@ -682,7 +655,7 @@ export class WebXKeyboard {
         window.clearInterval(this._keyRepeatInterval);
 
         // Repeat after a delay as long as pressed
-        if (!WebXKeyMapper.isKeyRepeatable(keysym))
+        if (!WebXKeyboardUtils.isKeyRepeatable(keysym))
           this._keyRepeatTimeout = window.setTimeout(() => {
             this._keyRepeatInterval = window.setInterval(() => {
               this.onKeyUp(keysym);
@@ -734,6 +707,5 @@ export class WebXKeyboard {
    * @param key The key being released
    */
   public onKeyUp: (key: any) => void = null;
-
 
 }

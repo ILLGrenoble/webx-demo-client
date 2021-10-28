@@ -98,6 +98,9 @@ body {
   &__panel {
     overflow: hidden;
     flex: 1 0 0;
+    &.devtools__events__panel__stats {
+      flex: 85px 0 0;
+    }
   }
 
   &__toolbar {
@@ -179,6 +182,7 @@ body {
     font-family: monospace;
   }
 
+
   &__table {
     width: 100%;
     position: relative;
@@ -196,6 +200,7 @@ body {
       border-style: solid;
       border-width: 0;
     }
+
 
     tbody tr td:first-child {
       width: 8em;
@@ -229,7 +234,7 @@ body {
   }
 
   &__content {
-    overflow-y: scroll;
+    overflow-y: auto;
     height: calc(100% - 30px);
   }
 
@@ -276,5 +281,47 @@ body {
     line-height: 16px;
     outline: none;
     border: 1px solid #28a745;
+  }
+}
+
+
+.devtools__stats__table {
+  width: 100%;
+  position: relative;
+  border-spacing: 0;
+  vertical-align: top;
+  text-align: left;
+  table-layout: fixed;
+  thead,
+  tbody,
+  tfoot,
+  tr,
+  td,
+  th {
+    border-color: inherit;
+    border-style: solid;
+    border-width: 0;
+  }
+
+  tbody tr td:nth-child(2) {
+    //font-family: monospace;
+  }
+
+  td {
+    padding: 5px;
+    font-size: 10pt;
+  }
+
+  thead {
+    vertical-align: top;
+  }
+
+  th {
+    padding: 5px;
+    font-size: 10pt;
+    background-color: #f5f6f7;
+    border-bottom: 2px solid #d4d4d4;
+    position: sticky;
+    top: 0;
   }
 }

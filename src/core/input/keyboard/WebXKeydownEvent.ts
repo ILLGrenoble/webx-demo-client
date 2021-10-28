@@ -9,7 +9,6 @@ export class WebXKeydownEvent extends WebXKeyEvent {
   private _key: string;
   private _location: number;
 
-
   public get keyCode(): number {
     return this._keyCode;
   }
@@ -84,7 +83,7 @@ export class WebXKeydownEvent extends WebXKeyEvent {
     // never be sent in Chrome (bug #108404)
     if (WebXKeyboard.modifiers.meta && this._keysym !== 0xFFE7 && this._keysym !== 0xFFE8) {
       this._keyupReliable = false;
-    } else if(this.keysym === 0xFFE5 && WebXKeyboard.quirks.capsLockKeyupUnreliable) {
+    } else if (this.keysym === 0xFFE5 && WebXKeyboard.quirks.capsLockKeyupUnreliable) {
       this._keyupReliable = false;
     }
 
@@ -97,10 +96,10 @@ export class WebXKeydownEvent extends WebXKeyEvent {
     // We must rely on the (potentially buggy) keyIdentifier if preventing
     // the default action is important
     if ((preventCtrl && WebXKeyboard.modifiers.ctrl)
-      || (preventAlt  && WebXKeyboard.modifiers.alt)
+      || (preventAlt && WebXKeyboard.modifiers.alt)
       || WebXKeyboard.modifiers.meta
       || WebXKeyboard.modifiers.hyper) {
-        this.reliable = true;
+      this.reliable = true;
     }
 
   }

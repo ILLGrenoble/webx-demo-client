@@ -1,5 +1,5 @@
 import { WebXTunnel } from './WebXTunnel';
-import { WebXConnectInstruction, WebXInstruction, WebXInstructionResponse } from '../instruction';
+import { WebXInstruction, WebXInstructionResponse } from '../instruction';
 import { WebXMessage } from '../message';
 import { WebXBinarySerializer } from '../transport';
 
@@ -14,6 +14,11 @@ export class WebXWebSocketTunnel implements WebXTunnel {
     const parameters = new URLSearchParams(options);
     this._url = `${url}?${parameters}`;
     this._serializer = null;
+  }
+
+  send(data: ArrayBuffer): void {
+    this._socket.send(data);
+    this.handleSentBytes(data);
   }
 
   connect(): Promise<Event> {
@@ -32,6 +37,7 @@ export class WebXWebSocketTunnel implements WebXTunnel {
   }
 
   onMessage(data: any): void {
+    this.handleReceivedBytes(data);
     this._serializer.deserializeMessage(data).then((message: WebXMessage) => {
       if (message != null) {
         // Handle any blocking requests
@@ -52,7 +58,15 @@ export class WebXWebSocketTunnel implements WebXTunnel {
     throw new Error('Method not implemented.');
   }
 
-  handleClose(event: CloseEvent): void{
+  handleReceivedBytes(data: ArrayBuffer): void {
+    throw new Error('Method not implemented.');
+  }
+
+  handleSentBytes(data: ArrayBuffer): void {
+    throw new Error('Method not implemented');
+  }
+
+  handleClose(event: CloseEvent): void {
     console.log(`Websocket closed`);
   }
 
@@ -67,7 +81,7 @@ export class WebXWebSocketTunnel implements WebXTunnel {
   sendInstruction(command: WebXInstruction): void {
     // console.log(`Sending command: `, command);
     const message = this._serializer.serializeInstruction(command);
-    this._socket.send(message);
+    this.send(message);
   }
 
   sendRequest(command: WebXInstruction): Promise<WebXMessage> {
@@ -77,8 +91,7 @@ export class WebXWebSocketTunnel implements WebXTunnel {
     this._instructionResponses.set(command.id, response);
     return new Promise((resolve, reject) => {
       const message = this._serializer.serializeInstruction(command);
-      this._socket.send(message);
-
+      this.send(message);
       response
         .then(aMessage => resolve(aMessage))
         .timeout(5000, () => {
@@ -87,4 +100,5 @@ export class WebXWebSocketTunnel implements WebXTunnel {
         });
     });
   }
+
 }

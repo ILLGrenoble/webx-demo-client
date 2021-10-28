@@ -11,7 +11,7 @@ export abstract class WebXKeyEvent {
  * Map of known JavaScript keyidentifiers which do not map to typable
  * characters to their unshifted X11 keysym equivalents.
  */
-  public static keyidentifierKeysym: { [index: string]: Array<number> } = {
+  public static keyidentifier_keysym: { [index: string]: Array<number> } = {
     Again: [0xff66],
     AllCandidates: [0xff3d],
     Alphanumeric: [0xff30],
@@ -126,7 +126,7 @@ export abstract class WebXKeyEvent {
  * Map of known JavaScript keycodes which do not map to typable characters
  * to their X11 keysym equivalents.
  */
-  public static KEYCODE_KEY_SYMS: { [index: number]: Array<number> } = {
+  public static keycodeKeysyms: { [index: number]: Array<number> } = {
     8: [0xff08], // backspace
     9: [0xff09], // tab
     12: [0xff0b, 0xff0b, 0xff0b, 0xffb5], // clear       / KP 5
@@ -272,7 +272,7 @@ export abstract class WebXKeyEvent {
   }
 
   public keysymFromKeycode(keyCode: number, location: number): number{
-    return this.getKeysym(WebXKeyEvent.KEYCODE_KEY_SYMS[keyCode], location);
+    return this.getKeysym(WebXKeyEvent.keycodeKeysyms[keyCode], location);
   }
 
 
@@ -307,7 +307,7 @@ export abstract class WebXKeyEvent {
 
     // Otherwise, look up corresponding keysym
     else {
-      return this.getKeysym(WebXKeyEvent.keyidentifierKeysym[identifier], location);
+      return this.getKeysym(WebXKeyEvent.keyidentifier_keysym[identifier], location);
     }
 
     // Alter case if necessary

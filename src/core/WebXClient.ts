@@ -1,16 +1,23 @@
 import { WebXTunnel } from './tunnel';
-import { WebXInstruction, WebXScreenInstruction, WebXKeyboardInstruction, WebXMouseInstruction } from './instruction';
-import { WebXMessageType, WebXMessage, WebXWindowsMessage, WebXImageMessage, WebXSubImagesMessage, WebXMouseMessage  } from './message';
-import { WebXWindowProperties, WebXSubImage, WebXDisplay } from './display';
-import { WebXTextureFactory } from './display';
+import { WebXInstruction, WebXKeyboardInstruction, WebXMouseInstruction, WebXScreenInstruction } from './instruction';
+import {
+  WebXImageMessage,
+  WebXMessage,
+  WebXMessageType,
+  WebXMouseMessage,
+  WebXScreenMessage,
+  WebXSubImagesMessage,
+  WebXWindowsMessage
+} from './message';
+import { WebXDisplay, WebXSubImage, WebXTextureFactory, WebXWindowProperties } from './display';
 import { Texture } from 'three';
-import { WebXScreenMessage } from './message';
-import { WebXMouseState, WebXMouse, WebXKeyboard } from './input';
+import { WebXKeyboard, WebXMouse, WebXMouseState } from './input';
 import { WebXConfiguration } from './WebXConfiguration';
-import { WebXMessageHandler, WebXInstructionHandler } from './tracer';
-import { WebXCursorFactory } from './display/WebXCursorFactory';
+import { WebXHandler, WebXInstructionHandler, WebXMessageHandler, WebXStatsHandler } from './tracer';
+import { WebXCursorFactory } from './display';
 
-const noop = function() {};
+const noop = function() {
+};
 
 export class WebXClient {
 
@@ -18,7 +25,7 @@ export class WebXClient {
   private _onImage: (windowId: number, depth: number, colorMap: Texture, alphaMap: Texture) => void = null;
   private _onSubImages: (windowId: number, subImages: WebXSubImage[]) => void = null;
   private _onMouse: (x: number, y: number, cursorId: number) => void = null;
-  private _tracers: Map<string, WebXMessageHandler | WebXInstructionHandler> = new Map();
+  private _tracers: Map<string, WebXHandler> = new Map();
 
   get onWindows(): (windows: Array<WebXWindowProperties>) => void {
     return this._onWindows ? this._onWindows : noop;
@@ -52,7 +59,7 @@ export class WebXClient {
     this._onMouse = func;
   }
 
-  get tracers(): Map<string,WebXMessageHandler | WebXInstructionHandler> {
+  get tracers(): Map<string, WebXHandler> {
     return this._tracers;
   }
 
@@ -64,7 +71,8 @@ export class WebXClient {
   connect(): Promise<WebXScreenMessage> {
     return this._tunnel.connect().then(data => {
       this._tunnel.handleMessage = this.handleMessage.bind(this);
-
+      this._tunnel.handleReceivedBytes = this.handleReceivedBytes.bind(this);
+      this._tunnel.handleSentBytes = this.handleSentBytes.bind(this);
       // When connect get configuration from server
       return this.sendRequest(new WebXScreenInstruction()) as Promise<WebXScreenMessage>;
     });
@@ -88,7 +96,7 @@ export class WebXClient {
     return new WebXMouse(element);
   }
 
-    /**
+  /**
    * Create a new keyboard and bind it to an element
    * @param element the element to attach the keyboard to
    */
@@ -99,15 +107,32 @@ export class WebXClient {
   sendInstruction(command: WebXInstruction): void {
     this._tunnel.sendInstruction(command);
     this._tracers.forEach((value, key) => {
-      if(value instanceof WebXInstructionHandler) {
-          value.handle(command);
-        }
+      if (value instanceof WebXInstructionHandler) {
+        value.handle(command);
+      }
     });
   }
 
   sendRequest(command: WebXInstruction): Promise<WebXMessage> {
     return this._tunnel.sendRequest(command);
   }
+
+  handleReceivedBytes(data: ArrayBuffer): void {
+    this._tracers.forEach((value, key) => {
+      if (value instanceof WebXStatsHandler) {
+        value.handle({ received: data.byteLength, sent: 0 });
+      }
+    });
+  }
+
+  handleSentBytes(data: ArrayBuffer): void {
+    this._tracers.forEach((value, key) => {
+      if (value instanceof WebXStatsHandler) {
+        value.handle({ received: 0, sent: data.byteLength });
+      }
+    });
+  }
+
 
   handleMessage(message: WebXMessage): void {
     if (message.type === WebXMessageType.WINDOWS) {
@@ -128,7 +153,7 @@ export class WebXClient {
     }
 
     this._tracers.forEach((value, key) => {
-      if(value instanceof WebXMessageHandler) {
+      if (value instanceof WebXMessageHandler) {
         value.handle(message);
       }
     });
@@ -173,7 +198,7 @@ export class WebXClient {
    * @param name the name of the tracer (must be unique)
    * @param handler the tracer handler
    */
-  registerTracer(name: string, handler: WebXMessageHandler | WebXInstructionHandler): void {
+  registerTracer(name: string, handler: WebXHandler): void {
     this._tracers.set(name, handler);
   }
 
@@ -182,7 +207,10 @@ export class WebXClient {
    * @param name the name of the tracer
    */
   unregisterTracer(name: string): void {
-    if(this._tracers.has(name)) {
+    const tracer = this._tracers.get(name);
+    if (tracer) {
+      // perform cleanup
+      tracer.destroy();
       this._tracers.delete(name);
     }
   }

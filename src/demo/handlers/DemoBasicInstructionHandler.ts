@@ -25,7 +25,7 @@ export class DemoBasicInstructionHandler extends WebXInstructionHandler implemen
       return `x = ${mouseInstruction.x}, y = ${mouseInstruction.y}`;
     } else if (instruction.type === WebXInstructionType.KEYBOARD) {
       const keyboardInstruction = instruction as WebXKeyboardInstruction;
-      return `key = ${keyboardInstruction.key} (#${keyboardInstruction.key.toString(16)}), pressed = ${keyboardInstruction.pressed}`;
+      return `key = ${keyboardInstruction.key} (0x${keyboardInstruction.key.toString(16)}), pressed = ${keyboardInstruction.pressed}`;
     } else {
       return `No details`;
     }

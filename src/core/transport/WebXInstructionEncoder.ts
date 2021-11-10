@@ -109,7 +109,7 @@ export class WebXInstructionEncoder {
     const encoder = new WebXInstructionBuffer(instruction, 8);
     return encoder
       // write the contents
-      .putInt32(instruction.key)
+      .putUInt32(instruction.key)
       .putBoolean(instruction.pressed)
       .buffer();
   }

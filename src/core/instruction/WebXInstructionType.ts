@@ -7,3 +7,24 @@ export enum WebXInstructionType {
   KEYBOARD = 6,
   CURSOR_IMAGE = 7,
 }
+
+export namespace WebXInstructionType {
+  export function fromString(value: string): WebXInstructionType {
+    switch (value) {
+      case 'CONNECT':
+        return WebXInstructionType.CONNECT;
+      case 'WINDOWS':
+        return WebXInstructionType.WINDOWS;
+      case 'IMAGE':
+        return WebXInstructionType.IMAGE;
+      case 'SCREEN':
+        return WebXInstructionType.SCREEN;
+      case 'MOUSE':
+        return WebXInstructionType.MOUSE;
+      case 'KEYBOARD':
+        return WebXInstructionType.KEYBOARD;
+      case 'CURSOR_IMAGE':
+        return WebXInstructionType.CURSOR_IMAGE;
+    }
+  }
+}

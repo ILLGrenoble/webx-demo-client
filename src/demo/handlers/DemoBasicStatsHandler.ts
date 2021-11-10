@@ -8,13 +8,15 @@ export class DemoBasicStatsHandler extends WebXStatsHandler implements WebXHandl
   private _messagesReceived: number = 0;
   private _instructionsSent: number = 0;
   private readonly _renderInterval: number;
-  private readonly _fragment: DocumentFragment;
   private _messages: { received: number, sent: number, time: number }[] = [];
+  private _networkElement: HTMLElement;
+  private _statsElement: HTMLElement;
 
   constructor() {
     super();
     this._el = document.getElementById('devtools__stats__content');
-    this._fragment = document.createDocumentFragment();
+    this._networkElement = document.getElementById('devtools__stats__network');
+    this._statsElement = document.getElementById('devtools__stats__data');
     this._renderInterval = window.setInterval(() => {
       this._render();
       this._flushMessages();
@@ -22,9 +24,9 @@ export class DemoBasicStatsHandler extends WebXStatsHandler implements WebXHandl
   }
 
   private _render(): void {
-    const element = this._createMessageElement();
-    this._fragment.replaceChildren(element);
-    this._el.replaceChildren(this._fragment);
+    this._renderNetwork();
+    this._renderStats();
+    // this._el.replaceChildren(this._fragment);
   }
 
   private _calculateReceivedBytesPerSecond(): number {
@@ -54,8 +56,17 @@ export class DemoBasicStatsHandler extends WebXStatsHandler implements WebXHandl
     });
   }
 
-  private _createMessageElement(): HTMLElement {
-    const el = document.createElement('div');
+  private _renderStats(): void {
+    const el = document.createElement('tr');
+    el.innerHTML = `
+      <td>${this._messagesReceived}</td>
+      <td>${this._instructionsSent}</td>
+    `;
+    this._statsElement.replaceChildren(el);
+  }
+
+  private _renderNetwork(): void {
+    const el = document.createElement('tr');
     const totalReceivedBytesPerSecond = this._calculateReceivedBytesPerSecond();
     const totalSentBytesPerSecond = this._calculateSentBytesPerSecond();
     const humanTotalReceivedBytes = WebXFileSize.humanFileSize(this._totalReceivedBytes);
@@ -63,34 +74,10 @@ export class DemoBasicStatsHandler extends WebXStatsHandler implements WebXHandl
     const humanTotalReceivedBytesPerSecond = WebXFileSize.humanFileSize(totalReceivedBytesPerSecond);
     const humanTotalSentBytesPerSecond = WebXFileSize.humanFileSize(totalSentBytesPerSecond);
     el.innerHTML = `
-         <table class='devtools__stats__table'>
-            <thead>
-              <tr>
-                  <th>Data received</th>
-                  <th>Data sent</th>
-              </tr>
-            </thead>
-            <tbody>
-                <td>${humanTotalReceivedBytes} (${humanTotalReceivedBytesPerSecond}/s)</td>
-                <td>${humanTotalSentBytes} (${humanTotalSentBytesPerSecond}/s)</td>
-            </tbody>
-          </table>
-          <table class='devtools__stats__table'>
-            <thead>
-              <tr>
-                <th>Messages received</th>
-                <th>Instructions sent</th>
-              </tr>
-            </thead>
-            <tbody id='stats'>
-              <td>${this._messagesReceived}</td>
-              <td>${this._instructionsSent}</td>
-            </tbody>
-          </table>
-
-
+      <td>${humanTotalReceivedBytes} (${humanTotalReceivedBytesPerSecond}/s)</td>
+      <td>${humanTotalSentBytes} (${humanTotalSentBytesPerSecond}/s)</td>
     `;
-    return el;
+    this._networkElement.replaceChildren(el);
   }
 
   handle(stats: { received: number, sent: number }): void {
@@ -98,10 +85,10 @@ export class DemoBasicStatsHandler extends WebXStatsHandler implements WebXHandl
     this._messages.push({ received, sent, time: Date.now() });
     this._totalReceivedBytes += received;
     this._totalSentBytes += sent;
-    if(sent) {
+    if (sent) {
       this._instructionsSent += 1;
     }
-    if(received) {
+    if (received) {
       this._messagesReceived += 1;
     }
   }

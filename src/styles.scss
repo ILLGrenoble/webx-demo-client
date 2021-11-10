@@ -169,11 +169,22 @@ body {
     height: 30px;
     background-color: #212526;
     padding-left: 5px;
+    padding-right: 5px;
     align-items: center;
     display: flex;
     font-size: 11pt;
     font-weight: 600;
     color: #ffffff;
+    justify-content: space-between;
+    label {
+      margin-right: 5px;
+
+    }
+    select {
+      &:focus {
+        outline: none;
+      }
+    }
   }
 
   &__message {

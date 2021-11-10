@@ -58,7 +58,28 @@
           <div class='devtools__events__panel devtools__events__panel__stats'>
             <div class='devtools__events__header'>Stats</div>
             <div class='devtools__events__content' id='devtools__stats__content'>
+              <table class='devtools__stats__table'>
+                <thead>
+                <tr>
+                  <th>Data received</th>
+                  <th>Data sent</th>
+                </tr>
+                </thead>
+                <tbody id='devtools__stats__network'>
 
+                </tbody>
+              </table>
+              <table class='devtools__stats__table'>
+                <thead>
+                <tr>
+                  <th>Messages received</th>
+                  <th>Instructions sent</th>
+                </tr>
+                </thead>
+                <tbody id='devtools__stats__data'>
+
+                </tbody>
+              </table>
             </div>
           </div>
           <div class='devtools__events__panel' id='debug-messages-panel'>
@@ -77,7 +98,22 @@
             </div>
           </div>
           <div class='devtools__events__panel' id='debug-instructions-panel'>
-            <div class='devtools__events__header'>Instructions</div>
+            <div class='devtools__events__header'>
+              <div>Instructions</div>
+              <div>
+                <label for='instructions-filter'>Filter</label><select name='instructions-filter'
+                                                                       id='instructions-filter'>
+                <option value=''>All</option>
+                <option value='CONNECT'>Connect</option>
+                <option value='WINDOWS'>Windows</option>
+                <option value='IMAGE'>Image</option>
+                <option value='SCREEN'>Screen</option>
+                <option value='MOUSE'>Mouse</option>
+                <option value='KEYBOARD'>Keyboard</option>
+                <option value='CURSOR_IMAGE'>Cursor image</option>
+              </select>
+              </div>
+            </div>
             <div class='devtools__events__content'>
               <table class='devtools__events__table'>
                 <thead>

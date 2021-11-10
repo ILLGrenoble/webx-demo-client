@@ -12,11 +12,24 @@ export class DemoBasicInstructionHandler extends WebXInstructionHandler implemen
   private _instructions: WebXInstruction[] = [];
   private _el: HTMLElement;
   private readonly _fragment: DocumentFragment;
+  private readonly _filterEl: HTMLElement;
+  private _filterBy: WebXInstructionType = null;
 
   constructor() {
     super();
     this._el = document.getElementById('instructions');
+    this._filterEl = document.getElementById('instructions-filter');
     this._fragment = document.createDocumentFragment();
+    this._filterEl.addEventListener('change', this._handleFilter.bind(this));
+  }
+
+  private _handleFilter(event: { target: HTMLSelectElement; }): void {
+    const value = (<HTMLSelectElement>event.target).value;
+    if (value === '') {
+      this._filterBy = null;
+    } else {
+      this._filterBy = WebXInstructionType.fromString(value);
+    }
   }
 
   private _createInstructionText(instruction: WebXInstruction): string {
@@ -32,10 +45,9 @@ export class DemoBasicInstructionHandler extends WebXInstructionHandler implemen
   }
 
   handle(instruction: WebXInstruction): void {
-    // if (instruction.type === WebXInstructionType.KEYBOARD) {
-    //   this._instructions.push(instruction);
-    // }
-    this._instructions.push(instruction);
+    if ((instruction.type === this._filterBy) || this._filterBy === null) {
+      this._instructions.push(instruction);
+    }
 
     if (this._instructions.length > 25) {
       this._instructions.shift();

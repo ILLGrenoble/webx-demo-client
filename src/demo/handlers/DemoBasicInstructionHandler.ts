@@ -25,14 +25,18 @@ export class DemoBasicInstructionHandler extends WebXInstructionHandler implemen
       return `x = ${mouseInstruction.x}, y = ${mouseInstruction.y}`;
     } else if (instruction.type === WebXInstructionType.KEYBOARD) {
       const keyboardInstruction = instruction as WebXKeyboardInstruction;
-      return `key = ${keyboardInstruction.key} (0x${keyboardInstruction.key.toString(16)}), pressed = ${keyboardInstruction.pressed}`;
+      return `key = ${keyboardInstruction.key} (0x${keyboardInstruction.key.toString(16)}, '${String.fromCharCode(keyboardInstruction.key)}', pressed = ${keyboardInstruction.pressed}`;
     } else {
       return `No details`;
     }
   }
 
   handle(instruction: WebXInstruction): void {
+    // if (instruction.type === WebXInstructionType.KEYBOARD) {
+    //   this._instructions.push(instruction);
+    // }
     this._instructions.push(instruction);
+
     if (this._instructions.length > 25) {
       this._instructions.shift();
     }

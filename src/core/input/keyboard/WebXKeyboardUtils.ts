@@ -16,7 +16,8 @@ export class WebXKeyboardUtils {
 
     // Keysyms for Unicode
     if (codepoint >= 0x0100 && codepoint <= 0x10ffff) {
-      return 0x01000000 | codepoint;
+      // return 0x01000000 | codepoint;
+      return codepoint;
     }
 
     return null;

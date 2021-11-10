@@ -398,7 +398,8 @@ export class WebXKeyboard {
       // Otherwise, fall back to releasing all keys
       else {
         this.reset();
-        return first;
+        // TODO: fix why this is needed and why the code is in an infinite loop
+        // return first;
       }
 
       return this._events.shift();

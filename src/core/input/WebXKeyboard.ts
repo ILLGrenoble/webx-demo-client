@@ -78,7 +78,7 @@ export class WebXKeyboard {
    * The keysym most recently associated with a given keycode when keydown
    * fired. This object maps keycodes to keysyms.
    */
-  private _recentKeysym: { [index: number]: number } = {};
+  private _recentKeysym: { [key: string]: number } = {};
 
   /**
    * Timeout before key repeat starts.
@@ -152,20 +152,22 @@ export class WebXKeyboard {
       return;
     }
 
-    const keyCode = event.which;
-
     // Fix modifier states
-    const keydownEvent = new WebXKeydownEvent(keyCode, event.key, event.key, WebXKeyboard._getEventLocation(event));
+    const keydownEvent = new WebXKeydownEvent(event.key, WebXKeyboard._getEventLocation(event));
 
-    this._recentKeysym[keydownEvent.keyCode] = keydownEvent.keysym;
+    if (keydownEvent.keysym == null) {
+      return;
+    }
+
+    this._recentKeysym[event.key] = keydownEvent.keysym;
 
     this._syncModifierStates(event, keydownEvent);
 
     // Ignore (but do not prevent) the "composition" keycode sent by some
     // browsers when an IME is in use (see: http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html)
-    if (keyCode === 229) {
-      return;
-    }
+    // if (keyCode === 229) {
+    //   return;
+    // }
 
     this._addEvent(keydownEvent);
 
@@ -188,10 +190,13 @@ export class WebXKeyboard {
       return;
     }
 
-    const charCode = event.which;
-
     // Fix modifier states
-    const keypressEvent = new WebXKeyPressEvent(charCode);
+    const keypressEvent = new WebXKeyPressEvent(event.key, WebXKeyboard._getEventLocation(event));
+
+    if (keypressEvent.keysym == null) {
+      return;
+    }
+
     this._syncModifierStates(event, keypressEvent);
 
     // Log event
@@ -217,15 +222,17 @@ export class WebXKeyboard {
 
     event.preventDefault();
 
-    const keyCode = event.which;
-
     // Fix modifier states
-    const keyupEvent = new WebXKeyUpEvent(keyCode, event.key, event.key, WebXKeyboard._getEventLocation(event));
+    const keyupEvent = new WebXKeyUpEvent(event.key, WebXKeyboard._getEventLocation(event));
+
+    if (keyupEvent.keysym == null) {
+      return;
+    }
 
     // Fall back to the most recently pressed keysym associated with the
     // keyCode if the inferred key doesn't seem to actually be pressed
     if (!this.pressed[keyupEvent.keysym]) {
-      keyupEvent.keysym = this._recentKeysym[keyCode] || keyupEvent.keysym;
+      keyupEvent.keysym = this._recentKeysym[event.key] || keyupEvent.keysym;
     }
 
 
@@ -366,7 +373,7 @@ export class WebXKeyboard {
           // Fire event
           this._releaseSimulatedAltgr(keysym);
           const defaultPrevented = !this.press(keysym);
-          this._recentKeysym[first.keyCode] = keysym;
+          this._recentKeysym[first.key] = keysym;
 
           // Release the key now if we cannot rely on the associated
           // keyup event
@@ -398,8 +405,6 @@ export class WebXKeyboard {
       // Otherwise, fall back to releasing all keys
       else {
         this.reset();
-        // TODO: fix why this is needed and why the code is in an infinite loop
-        // return first;
       }
 
       return this._events.shift();

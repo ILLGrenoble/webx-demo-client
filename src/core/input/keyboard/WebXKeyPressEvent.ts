@@ -7,20 +7,23 @@ import { WebXKeyboardUtils } from './WebXKeyboardUtils';
  * information within this object is browser-dependent.
  */
 export class WebXKeyPressEvent extends WebXKeyEvent {
-  private _charCode: number;
+  private _key: string;
+  private readonly _location: number;
 
-  public get charCode(): number {
-    return this._charCode;
+  get key(): string {
+    return this._key;
   }
 
-  public set charCode(charCode: number) {
-    this._charCode = charCode;
+  get location(): number {
+    return this._location;
   }
 
-  constructor(charCode: number) {
+  constructor(key: string, location: number) {
     super();
-    this.charCode = charCode;
-    this.keysym = WebXKeyboardUtils.keysymFromCharCode(charCode);
+    this._key = key;
+    this._location = location;
+    this._keysym = this.keysymFromKeyIdentifier(key, location);
+
     this.reliable = true;
   }
 }

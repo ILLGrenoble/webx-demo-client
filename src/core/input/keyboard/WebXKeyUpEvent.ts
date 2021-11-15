@@ -23,13 +23,11 @@ export class WebXKeyUpEvent extends WebXKeyEvent {
     return this._keyIdentifier;
   }
 
-  constructor(keyCode: number, keyIdentifier: string, key: string, location: number) {
+  constructor(key: string, location: number) {
     super();
-    this._keyCode = keyCode;
     this._key = key;
     this._location = location;
-    this._keyIdentifier = keyIdentifier;
-    this._keysym = this.keysymFromKeycode(keyCode, location) || this.keysymFromKeyIdentifier(key, location);
+    this._keysym = this.keysymFromKeyIdentifier(key, location);
 
     // Keyup is as reliable as it will ever be
     this.reliable = true;

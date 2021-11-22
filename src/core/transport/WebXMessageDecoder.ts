@@ -3,7 +3,7 @@ import {
   WebXImageMessage,
   WebXMessage,
   WebXMessageType,
-  WebXMouseMessage,
+  WebXMouseMessage, WebXPollMessage,
   WebXScreenMessage,
   WebXSubImagesMessage,
   WebXWindowsMessage
@@ -34,6 +34,9 @@ export class WebXMessageDecoder {
 
     } else if (messageTypeId === WebXMessageType.CURSOR_IMAGE) {
       return this._createCursorImageMessage(buffer);
+
+    } else if (messageTypeId === WebXMessageType.POLL) {
+      return this._createPollMessage(buffer);
     }
   }
 
@@ -162,6 +165,12 @@ export class WebXMessageDecoder {
       const screenWidth: number = buffer.getInt32();
       const screenHeight: number = buffer.getInt32();
       resolve(new WebXScreenMessage({ width: screenWidth, height: screenHeight }, commandId));
+    });
+  }
+
+  private _createPollMessage(buffer: WebXMessageBuffer): Promise<WebXPollMessage> {
+    return new Promise<WebXPollMessage>((resolve) => {
+      resolve(new WebXPollMessage());
     });
   }
 

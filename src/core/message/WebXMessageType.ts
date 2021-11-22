@@ -5,5 +5,6 @@ export enum WebXMessageType {
   SCREEN = 4,
   SUBIMAGES = 5,
   MOUSE = 6,
-  CURSOR_IMAGE = 7
+  CURSOR_IMAGE = 7,
+  POLL = 8
 }

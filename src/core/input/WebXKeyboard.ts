@@ -172,10 +172,10 @@ export class WebXKeyboard {
     this._addEvent(keydownEvent);
 
     // Interpret as many events as possible, prevent default if indicated
-    if (this._interpretEvents()) {
-      event.preventDefault();
-    }
+    this._interpretEvents();
 
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   private _bindKeyPressListener(event: KeyboardEvent) {
@@ -203,10 +203,10 @@ export class WebXKeyboard {
     this._addEvent(keypressEvent);
 
     // Interpret as many events as possible, prevent default if indicated
-    if (this._interpretEvents()) {
-      event.preventDefault();
-    }
+    this._interpretEvents();
 
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   private _bindKeyUpListener(event: KeyboardEvent) {
@@ -297,14 +297,13 @@ export class WebXKeyboard {
    * when the corresponding true key presses are known (or as known as they
    * can be).
    *
-   * @return Whether the default action of the latest event should be prevented.
    */
-  private _interpretEvents(): boolean {
+  private _interpretEvents(): void {
     // Do not prevent default if no event could be interpreted
     let handledEvent = this._interpretEvent();
 
     if (!handledEvent) {
-      return false;
+      return;
     }
 
     // Interpret as much as possible
@@ -319,8 +318,6 @@ export class WebXKeyboard {
     if (this._isStateImplicit()) {
       this.reset();
     }
-
-    return lastEvent.defaultPrevented;
   }
 
   /**

@@ -1,7 +1,7 @@
 import { WebXInstructionType } from './WebXInstructionType';
 
 export class WebXInstruction {
-  private static _INSTRUCTION_COUNTER = 0;
+  private static _INSTRUCTION_COUNTER = 1;
   private readonly _id: number;
   private _synchronous = false;
 

@@ -22,11 +22,11 @@ export class WebXMessageBuffer {
   }
 
   constructor(private _buffer: ArrayBuffer) {
-    this._readOffset = 0;
+    this._readOffset = 16;
     this._messageTypeId = this.getUint32();
     this._messageId = this.getUint32();
     this._bufferLength = this.getUint32();
-    this._readOffset = 16;
+    this._readOffset = 32;
   }
 
   public getInt32(): number {

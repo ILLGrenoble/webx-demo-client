@@ -178,8 +178,8 @@ export class WebXClient {
     this._tunnel.sendInstruction(command);
     this._tracers.forEach((value, key) => {
       if (value instanceof WebXInstructionHandler) {
-          value.handle(command);
-        }
+        value.handle(command);
+      }
     });
   }
 

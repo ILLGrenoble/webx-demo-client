@@ -5,10 +5,15 @@ export class WebXInstructionBuffer {
   private readonly _buffer: ArrayBuffer;
   private _offset;
 
-  constructor(instruction: WebXInstruction, length: number) {
-    const headerSize = 8;
+  constructor(sessionId: Uint8Array, instruction: WebXInstruction, length: number) {
+    const headerSize = 24;
     this._buffer = new ArrayBuffer(length + headerSize);
-    this._offset = 0;
+
+    // Copy sessionId
+    const bufferAsUint8 = new Uint8Array(this._buffer);
+    bufferAsUint8.set([...sessionId]);
+
+    this._offset = 16;
 
     // add the header
     if (instruction.synchronous) {

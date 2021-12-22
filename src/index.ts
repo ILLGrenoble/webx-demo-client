@@ -5,8 +5,15 @@ import { WebXDemoDevTools } from './demo';
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  // Pass all params to the relay (except the url)
+  const tunnelOptions: any = {};
   const urlParams = new URLSearchParams(window.location.search);
-  const tunnel = new WebXWebSocketTunnel(urlParams.get('url') || 'ws://localhost:8080');
+  urlParams.forEach((value, key) => {
+    if (key !== 'url') {
+      tunnelOptions[key] = value;
+    }
+  })
+  const tunnel = new WebXWebSocketTunnel(urlParams.get('url') || 'ws://localhost:8080', tunnelOptions);
 
   const client = new WebXClient(tunnel, {});
 

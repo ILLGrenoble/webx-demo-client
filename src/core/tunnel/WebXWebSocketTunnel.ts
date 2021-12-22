@@ -24,35 +24,16 @@ export class WebXWebSocketTunnel implements WebXTunnel {
   connect(): Promise<Event> {
     const url = this._url;
     return new Promise((resolve, reject) => {
+      this._serializer = new WebXBinarySerializer();
       this._socket = new WebSocket(url);
       this._socket.binaryType = 'arraybuffer';
       this._socket.onopen = (event: Event) => {
-        this._socket.onmessage = (aMessage: any) => this.onInitMessage(aMessage.data, resolve);
-        // Wait for sessionId before acknowledging connection
-        // resolve(null);
+        resolve(null);
       };
       this._socket.onerror = (event: Event) => reject(event);
       this._socket.onclose = this.handleClose.bind(this);
-    });
-  }
-
-  onInitMessage(data:any, resolve: (value: Event | PromiseLike<Event>) => void): void {
-    const arrayBuffer = data as ArrayBuffer;
-    if (arrayBuffer.byteLength == 16) {
-      const sessionId = new Uint8Array(arrayBuffer, 0, 16);
-      const sessionIdString = [...sessionId]
-        .map(x => x.toString(16).padStart(2, '0'))
-        .join('');
-
-      console.log("Got session Id " + sessionIdString);
-
-      this._serializer = new WebXBinarySerializer(sessionId);
       this._socket.onmessage = (aMessage: any) => this.onMessage(aMessage.data);
-      resolve(null);
-
-    } else {
-      console.error("Received non standard init error of length " + arrayBuffer.byteLength);
-    }
+    });
   }
 
   onMessage(data: any): void {

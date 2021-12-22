@@ -5,13 +5,9 @@ export class WebXInstructionBuffer {
   private readonly _buffer: ArrayBuffer;
   private _offset;
 
-  constructor(sessionId: Uint8Array, instruction: WebXInstruction, length: number) {
-    const headerSize = 24;
+  constructor(instruction: WebXInstruction, length: number) {
+    const headerSize = 24; // 16 for sessionID place holder (set by the relay) and 8 for the instruction type and id
     this._buffer = new ArrayBuffer(length + headerSize);
-
-    // Copy sessionId
-    const bufferAsUint8 = new Uint8Array(this._buffer);
-    bufferAsUint8.set([...sessionId]);
 
     this._offset = 16;
 

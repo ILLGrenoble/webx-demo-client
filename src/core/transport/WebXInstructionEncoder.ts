@@ -13,11 +13,6 @@ import { WebXInstructionBuffer } from '.';
 
 export class WebXInstructionEncoder {
 
-  private readonly _sessionId: Uint8Array;
-  constructor(sessionId: Uint8Array) {
-    this._sessionId = sessionId;
-  }
-
   /**
    * Convert the given instruction to an array buffer ready to be sent along the wire
    * @param instruction the instruction to encode
@@ -61,7 +56,7 @@ export class WebXInstructionEncoder {
    *    buttonMask: 4 bytes
    */
   private _createMouseInstruction(instruction: WebXMouseInstruction): ArrayBuffer {
-    const encoder = new WebXInstructionBuffer(this._sessionId, instruction, 12);
+    const encoder = new WebXInstructionBuffer(instruction, 12);
     return encoder
       // write the contents
       .putInt32(instruction.x)
@@ -82,7 +77,7 @@ export class WebXInstructionEncoder {
    *    cursorId: 4 bytes
    */
   private _createCursorImageInstruction(instruction: WebXCursorImageInstruction): ArrayBuffer {
-    const encoder = new WebXInstructionBuffer(this._sessionId, instruction, 4);
+    const encoder = new WebXInstructionBuffer(instruction, 4);
     return encoder
       // write the contents
       .putInt32(instruction.cursorId)
@@ -101,7 +96,7 @@ export class WebXInstructionEncoder {
    *    windowId: 4 bytes
    */
   private _createImageInstruction(instruction: WebXImageInstruction): ArrayBuffer {
-    const encoder = new WebXInstructionBuffer(this._sessionId, instruction, 4);
+    const encoder = new WebXInstructionBuffer(instruction, 4);
     return encoder
       // write the contents
       .putUInt32(instruction.windowId)
@@ -121,7 +116,7 @@ export class WebXInstructionEncoder {
    *    pressed: 4 bytes
    */
   private _createKeyboardInstruction(instruction: WebXKeyboardInstruction): ArrayBuffer {
-    const encoder = new WebXInstructionBuffer(this._sessionId, instruction, 8);
+    const encoder = new WebXInstructionBuffer(instruction, 8);
     return encoder
       // write the contents
       .putUInt32(instruction.key)
@@ -139,7 +134,7 @@ export class WebXInstructionEncoder {
    *    id: 4 bytes
    */
   private _createScreenInstruction(instruction: WebXScreenInstruction): ArrayBuffer {
-    const encoder = new WebXInstructionBuffer(this._sessionId, instruction, 0);
+    const encoder = new WebXInstructionBuffer(instruction, 0);
     return encoder.buffer();
   }
 
@@ -153,7 +148,7 @@ export class WebXInstructionEncoder {
    * @param instruction the windows instruction to encode
    */
   private _createWindowsInstruction(instruction: WebXWindowsInstruction): ArrayBuffer {
-    const encoder = new WebXInstructionBuffer(this._sessionId, instruction, 0);
+    const encoder = new WebXInstructionBuffer(instruction, 0);
     return encoder.buffer();
   }
 
@@ -167,7 +162,7 @@ export class WebXInstructionEncoder {
    *    id: 4 bytes
    */
   private _createConnectInstruction(instruction: WebXConnectInstruction): ArrayBuffer {
-    const encoder = new WebXInstructionBuffer(this._sessionId, instruction, 0);
+    const encoder = new WebXInstructionBuffer(instruction, 0);
     return encoder.buffer();
   }
 

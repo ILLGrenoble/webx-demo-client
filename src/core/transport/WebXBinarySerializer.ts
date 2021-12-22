@@ -7,8 +7,8 @@ export class WebXBinarySerializer {
   private readonly _instructionEncoder;
   private readonly _messageDecoder;
 
-  constructor(sessionId: Uint8Array) {
-    this._instructionEncoder = new WebXInstructionEncoder(sessionId);
+  constructor() {
+    this._instructionEncoder = new WebXInstructionEncoder();
     this._messageDecoder = new WebXMessageDecoder();
   }
 

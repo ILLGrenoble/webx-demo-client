@@ -7,6 +7,8 @@ import { WebXSubImage } from './WebXSubImage';
 import { WebXWebGLRenderer } from '../utils/WebXWebGLRenderer';
 import { WebXCursor } from './WebXCursor';
 import * as TWEEN from "@tweenjs/tween.js";
+import { WebXTextureFactory } from './WebXTextureFactory';
+import { WebXCursorFactory } from './WebXCursorFactory';
 
 export class WebXDisplay {
 
@@ -17,11 +19,13 @@ export class WebXDisplay {
   private readonly _screenWidth;
   private readonly _screenHeight;
 
+  private readonly _textureFactory: WebXTextureFactory;
+
   private readonly _containerElement: HTMLElement;
 
   private _windows: WebXWindow[] = [];
 
-  private _cursor: WebXCursor = new WebXCursor();
+  private _cursor: WebXCursor;
 
   private _scale: number = 1;
 
@@ -53,10 +57,12 @@ export class WebXDisplay {
     return this._scene;
   }
 
-  constructor(containerElement: HTMLElement, screenWidth: number, screenHeight: number) {
+  constructor(containerElement: HTMLElement, screenWidth: number, screenHeight: number, textureFactory: WebXTextureFactory, cursorFactory: WebXCursorFactory) {
     this._containerElement = containerElement;
     this._screenWidth = screenWidth;
     this._screenHeight = screenHeight;
+    this._textureFactory = textureFactory;
+    this._cursor = new WebXCursor(cursorFactory);
 
     this._scene = new THREE.Scene();
 
@@ -77,6 +83,16 @@ export class WebXDisplay {
     this.resize();
   }
 
+  dispose(): void {
+    this._clearElements();
+  }
+
+  private _clearElements(): void {
+    while (this._containerElement.firstChild) {
+      this._containerElement.removeChild(this._containerElement.firstChild);
+    }
+  }
+
   private _createDisplayElement(): HTMLElement {
     const element = document.createElement('div');
     element.style.width = `${this._screenWidth}px`;
@@ -95,6 +111,7 @@ export class WebXDisplay {
    * Render the display to the screen
    */
   private _render(): void {
+    this._clearElements();
     this._displayElement = this._createDisplayElement();
     this._boundsElement = this._createDisplayBoundingElement();
     this._containerElement.appendChild(this._boundsElement);
@@ -154,7 +171,7 @@ export class WebXDisplay {
             z: index,
             width: window.width,
             height: window.height
-          });
+          }, this._textureFactory);
 
           this.addWindow(webXWindow);
 

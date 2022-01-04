@@ -15,14 +15,19 @@ import {
   WebXMouseMessage,
   WebXScreenMessage
 } from './message';
-import { WebXDisplay, WebXCursorFactory, WebXTextureFactory } from './display';
+import { WebXDisplay, WebXCursorFactory, WebXTextureFactory, WebXCursor } from './display';
 import { WebXKeyboard, WebXMouse, WebXMouseState } from './input';
 import { WebXConfiguration } from './WebXConfiguration';
 import { WebXHandler, WebXInstructionHandler, WebXMessageHandler, WebXStatsHandler } from './tracer';
+import { WebXBinarySerializer } from './transport';
 
 export class WebXClient {
 
+  private readonly _textureFactory: WebXTextureFactory;
+  private readonly _cursorFactory: WebXCursorFactory;
+
   private _tracers: Map<string, WebXHandler> = new Map();
+  private _onCloseCallback: () => void;
 
   private _display: WebXDisplay;
   private _mouse: WebXMouse;
@@ -45,16 +50,18 @@ export class WebXClient {
   }
 
   constructor(private _tunnel: WebXTunnel, private _config: WebXConfiguration) {
-    WebXTextureFactory.initInstance(this._tunnel);
-    WebXCursorFactory.initInstance(this._tunnel);
+    this._textureFactory = new WebXTextureFactory(this._tunnel);
+    this._cursorFactory = new WebXCursorFactory(this._tunnel);
   }
 
-  async connect(): Promise<void> {
-    await this._tunnel.connect();
+  async connect(onCloseCallback: () => void): Promise<void> {
+    this._onCloseCallback = onCloseCallback;
+    await this._tunnel.connect(new WebXBinarySerializer(this._textureFactory));
 
     this._tunnel.handleMessage = this._handleMessage.bind(this);
     this._tunnel.handleReceivedBytes = this._handleReceivedBytes.bind(this);
     this._tunnel.handleSentBytes = this._handleSentBytes.bind(this);
+    this._tunnel.onClosed = this._onTunnelClosed.bind(this);
   }
 
   /**
@@ -64,32 +71,38 @@ export class WebXClient {
    * @param screenHeight the screen height
    */
   async initialise(containerElement: HTMLElement): Promise<WebXDisplay> {
-    // Connect to websocket
-    await this.connect();
-
     // Request 1. : Get screen size
-    const screenMessage = await this._sendRequest(new WebXScreenInstruction()) as WebXScreenMessage;
-    const { width, height } = screenMessage.screenSize;
+    try {
+      const screenMessage = await this._sendRequest(new WebXScreenInstruction()) as WebXScreenMessage;
+      const { width, height } = screenMessage.screenSize;
 
-    // Initialise the display
-    this._display = this.createDisplay(containerElement, width, height);
+      // Initialise the display
+      this._display = this.createDisplay(containerElement, width, height);
 
-    // Request 2. : Get visible windows
-    // Sec request for visible windows
-    const windowsMessage = await this._sendRequest(new WebXWindowsInstruction()) as WebXWindowsMessage;
+      // Request 2. : Get visible windows
+      // Sec request for visible windows
+      const windowsMessage = await this._sendRequest(new WebXWindowsInstruction()) as WebXWindowsMessage;
 
-    // Requests 3. - N : Initialise all windows and wait for them to be visible (requests for window images)
-    await this._display.updateWindows(windowsMessage.windows);
+      // Requests 3. - N : Initialise all windows and wait for them to be visible (requests for window images)
+      await this._display.updateWindows(windowsMessage.windows);
 
-    // Create mouse and add listeners
-    this._mouse = this.createMouse(containerElement);
-    this._addMouseListeners();
+      // Create mouse and add listeners
+      this._mouse = this.createMouse(containerElement);
+      this._addMouseListeners();
 
-    // Create keyboard and add listeners
-    this._keyboard = this.createKeyboard(document.body);
-    this._addKeyboardListeners();
+      // Create keyboard and add listeners
+      this._keyboard = this.createKeyboard(document.body);
+      this._addKeyboardListeners();
 
-    return this._display;
+      return this._display;
+
+    } catch (error) {
+      if (this._display) {
+        this._display.dispose();
+      }
+
+      throw new Error('Failed to initialise display');
+    }
   }
 
   /**
@@ -99,7 +112,7 @@ export class WebXClient {
    * @param screenHeight the screen height
    */
   createDisplay(containerElement: HTMLElement, screenWidth: number, screenHeight: number): WebXDisplay {
-    return new WebXDisplay(containerElement, screenWidth, screenHeight);
+    return new WebXDisplay(containerElement, screenWidth, screenHeight, this._textureFactory, this._cursorFactory);
   }
 
   /**
@@ -232,6 +245,16 @@ export class WebXClient {
         value.handle({ received: 0, sent: data.byteLength });
       }
     });
+  }
+
+  private _onTunnelClosed(): void {
+    if (this._display) {
+      this._display.dispose();
+    }
+
+    if (this._onCloseCallback) {
+      this._onCloseCallback();
+    }
   }
 
   private _addMouseListeners(): void {

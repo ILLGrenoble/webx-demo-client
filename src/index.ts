@@ -1,55 +1,63 @@
 import './styles.scss';
 
 import { WebXClient, WebXDisplay, WebXWebSocketTunnel } from './core';
-import { WebXDemoDevTools } from './demo';
+import { Login, WebXDemoDevTools } from './demo';
 
 document.addEventListener('DOMContentLoaded', () => {
-
-  // Pass all params to the relay (except the url)
-  const tunnelOptions: any = {};
   const urlParams = new URLSearchParams(window.location.search);
-  urlParams.forEach((value, key) => {
-    if (key !== 'url') {
-      tunnelOptions[key] = value;
+
+  const login = new Login();
+  login.onLogin((remoteHost: string, username: string, password: string) => {
+    const tunnelOptions = {
+      webxhost: remoteHost,
+      webxport: 5555,
+      username: username,
+      password: password
     }
-  })
-  const tunnel = new WebXWebSocketTunnel(urlParams.get('url') || 'ws://localhost:8080', tunnelOptions);
 
-  const client = new WebXClient(tunnel, {});
+    const tunnel = new WebXWebSocketTunnel(urlParams.get('url') || 'ws://localhost:8080', tunnelOptions);
 
-  const container = document.getElementById('display-container');
+    const client = new WebXClient(tunnel, {});
+    const container = document.getElementById('display-container');
 
-  client.initialise(container)
-    .then((display: WebXDisplay) => {
+    client.connect(() => login.onDisconnected())
+      .then(() => {
+        client.initialise(container)
+          .then((display: WebXDisplay) => {
+            // Start animating the display once everything has been initialised
+            display.animate();
 
-      // Start animating the display once everything has been initialised
-      display.animate();
+            // Resize the display when the window is resized
+            window.addEventListener('resize', () => display.resize());
+            window.addEventListener('blur', () => {
+              client.mouse.reset();
+              client.keyboard.reset();
+            });
 
-      // Resize the display when the window is resized
-      window.addEventListener('resize', () => display.resize());
-      window.addEventListener('blur', () => {
-          client.mouse.reset();
-        client.keyboard.reset();
-      });
+            document.addEventListener('visibilitychange', () => {
+              client.mouse.reset();
+              client.keyboard.reset();
+            });
 
-      document.addEventListener('visibilitychange', () => {
-        client.mouse.reset();
-        client.keyboard.reset();
-      });
+            // Enter into full screen mode
+            document.getElementById('btn-fullscreen').addEventListener('click', () => {
+              display.containerElement.requestFullscreen().then(() => {
+                // @ts-ignore
+                if (navigator.keyboard) {
+                  // @ts-ignore
+                  navigator.keyboard.lock();
+                }
+                display.resize();
+              });
+            });
 
-      // Enter into full screen mode
-      document.getElementById('btn-fullscreen').addEventListener('click', () => {
-        display.containerElement.requestFullscreen().then(() => {
-          // @ts-ignore
-          if (navigator.keyboard) {
-            // @ts-ignore
-            navigator.keyboard.lock();
-          }
-          display.resize();
-        });
-      });
+            new WebXDemoDevTools(client, display);
+          })
+          .catch(err => console.error(err));
+      })
+      .catch(error => {
+        console.error(error);
+      })
+  });
 
-      new WebXDemoDevTools(client, display);
-    })
-    .catch(err => console.error(err));
 });

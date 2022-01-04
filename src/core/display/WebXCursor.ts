@@ -7,8 +7,8 @@ export class WebXCursor {
 
   private _cursorId: number;
   private _texture: THREE.Texture;
-  private _material: THREE.MeshBasicMaterial;
-  private _mesh: THREE.Mesh;
+  private readonly _material: THREE.MeshBasicMaterial;
+  private readonly _mesh: THREE.Mesh;
 
   private _x: number;
   private _y: number;
@@ -39,7 +39,7 @@ export class WebXCursor {
     this._updatePosition();
   }
 
-  constructor() {
+  constructor(private _cursorFactory: WebXCursorFactory) {
     this._material = new THREE.MeshBasicMaterial({ transparent: true });
     this._material.side = THREE.BackSide;
     this._material.transparent = true;
@@ -57,7 +57,7 @@ export class WebXCursor {
     this._updateScale();
     this._updatePosition();
 
-    WebXCursorFactory.instance().getCursor().then(cursorData => {
+    this._cursorFactory.getCursor().then(cursorData => {
       const cursor = cursorData.cursor;
       if (this._cursorId === 0 || this._cursorId === cursor.cursorId)
       this.update(cursorData.x, cursorData.y, cursor.xHot, cursor.yHot, cursor.cursorId, cursor.texture);
@@ -75,7 +75,7 @@ export class WebXCursor {
     this._x = x;
     this._y = y;
     this._cursorId = cursorId;
-    WebXCursorFactory.instance().getCursor(cursorId).then(cursorData => {
+    this._cursorFactory.getCursor(cursorId).then(cursorData => {
       const cursor = cursorData.cursor;
 
       if (this._cursorId === 0 || this._cursorId === cursor.cursorId)

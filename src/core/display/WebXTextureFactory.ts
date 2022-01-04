@@ -4,20 +4,8 @@ import {LinearFilter, Texture} from 'three';
 import { WebXImageMessage } from '../message';
 
 export class WebXTextureFactory {
-  private static _INSTANCE: WebXTextureFactory;
 
-  private constructor(private _tunnel: WebXTunnel) {}
-
-  public static initInstance(tunnel: WebXTunnel): WebXTextureFactory {
-    if (WebXTextureFactory._INSTANCE == null) {
-      WebXTextureFactory._INSTANCE = new WebXTextureFactory(tunnel);
-    }
-    return WebXTextureFactory._INSTANCE;
-  }
-
-  public static instance(): WebXTextureFactory {
-    return WebXTextureFactory._INSTANCE;
-  }
+  constructor(private _tunnel: WebXTunnel) {}
 
   public getWindowTexture(windowId: number): Promise<{ depth: number; colorMap: Texture; alphaMap: Texture }> {
     return new Promise<{ depth: number; colorMap: Texture; alphaMap: Texture }>((resolve) => {

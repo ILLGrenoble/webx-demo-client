@@ -1,15 +1,16 @@
 import { WebXInstruction } from '../instruction';
 import { WebXMessage } from '../message';
 import { WebXInstructionEncoder, WebXMessageBuffer, WebXMessageDecoder } from '.';
+import { WebXTextureFactory } from '../display';
 
 export class WebXBinarySerializer {
 
   private readonly _instructionEncoder;
   private readonly _messageDecoder;
 
-  constructor() {
+  constructor(textureFactory: WebXTextureFactory) {
     this._instructionEncoder = new WebXInstructionEncoder();
-    this._messageDecoder = new WebXMessageDecoder();
+    this._messageDecoder = new WebXMessageDecoder(textureFactory);
   }
 
   serializeInstruction(instruction: WebXInstruction): ArrayBuffer {

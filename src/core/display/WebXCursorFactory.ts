@@ -11,22 +11,9 @@ export interface WebXCursorData {
 }
 
 export class WebXCursorFactory {
-  private static _INSTANCE: WebXCursorFactory;
-
   private _cursorMap: Map<number, WebXCursorData> = new Map();
 
-  private constructor(private _tunnel: WebXTunnel) {}
-
-  public static initInstance(tunnel: WebXTunnel): WebXCursorFactory {
-    if (WebXCursorFactory._INSTANCE == null) {
-      WebXCursorFactory._INSTANCE = new WebXCursorFactory(tunnel);
-    }
-    return WebXCursorFactory._INSTANCE;
-  }
-
-  public static instance(): WebXCursorFactory {
-    return WebXCursorFactory._INSTANCE;
-  }
+  constructor(private _tunnel: WebXTunnel) {}
 
   public getCursor(cursorId?: number): Promise<{x?: number; y?: number; cursor: WebXCursorData}> {
     return new Promise<{ x?: number; y?: number; cursor: WebXCursorData }>((resolve) => {

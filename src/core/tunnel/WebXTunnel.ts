@@ -1,8 +1,9 @@
 import { WebXInstruction } from '../instruction';
 import { WebXMessage } from '../message';
+import { WebXBinarySerializer } from '../transport';
 
 export interface WebXTunnel {
-  connect(): Promise<Event>;
+  connect(serializer: WebXBinarySerializer): Promise<Event>;
 
   disconnect(): void;
 
@@ -19,4 +20,6 @@ export interface WebXTunnel {
   send(data: ArrayBuffer): void;
 
   isConnected(): boolean;
+
+  onClosed(): void;
 }

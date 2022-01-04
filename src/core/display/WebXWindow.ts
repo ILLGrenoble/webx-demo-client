@@ -7,6 +7,7 @@ export class WebXWindow {
   private static _PLANE_GEOMETRY: THREE.PlaneGeometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
   private static _COLOR_INDEX = 0;
 
+  private readonly _textureFactory: WebXTextureFactory;
   private readonly _colorIndex: number;
   private readonly _id: number;
   private readonly _material: THREE.MeshBasicMaterial;
@@ -112,7 +113,8 @@ export class WebXWindow {
     this._updatePosition();
   }
 
-  constructor(configuration: { id: number; x: number; y: number; z: number; width: number; height: number }) {
+  constructor(configuration: { id: number; x: number; y: number; z: number; width: number; height: number }, textureFactory: WebXTextureFactory) {
+    this._textureFactory = textureFactory;
     this._colorIndex = WebXWindow._COLOR_INDEX++;
 
     // this._material = new THREE.MeshBasicMaterial( { color: WebXColourGenerator.indexedColour(this._colorIndex) } );
@@ -135,7 +137,7 @@ export class WebXWindow {
 
   public loadWindowImage(): Promise<void> {
     return new Promise((resolve) => {
-        WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
+        this._textureFactory.getWindowTexture(this._id).then(response => {
           this.updateTexture(response.depth, response.colorMap, response.alphaMap);
 
           resolve();
@@ -159,7 +161,7 @@ export class WebXWindow {
 
       // Force reload of image of dimensions differ
       if (this.colorMap.image.width !== this._width || this.colorMap.image.height !== this._height) {
-        WebXTextureFactory.instance().getWindowTexture(this._id).then(response => {
+        this._textureFactory.getWindowTexture(this._id).then(response => {
           this.updateTexture(response.depth, response.colorMap, response.alphaMap);
         });
       }

@@ -93,6 +93,10 @@ export class WebXKeyboard {
 
   private _events: Array<WebXKeyEvent> = [];
 
+  private _keyDownHandler = this._bindKeyDownListener.bind(this);
+  private _keyPressHandler = this._bindKeyPressListener.bind(this);
+  private _keyUpHandler = this._bindKeyUpListener.bind(this);
+
   public get pressed() {
     return this._pressed;
   }
@@ -107,6 +111,10 @@ export class WebXKeyboard {
     this._eventMarker = '_WEBX_KEYBOARD_HANDLED_BY_' + this._keyboardId;
     this._handleQuirks();
     this._bindListeners();
+  }
+
+  dispose(): void {
+    this._unbindListeners();
   }
 
   /**
@@ -136,9 +144,16 @@ export class WebXKeyboard {
    */
   private _bindListeners(): void {
     const element = this._element;
-    element.addEventListener('keydown', this._bindKeyDownListener.bind(this), true);
-    element.addEventListener('keypress', this._bindKeyPressListener.bind(this), true);
-    element.addEventListener('keyup', this._bindKeyUpListener.bind(this), true);
+    element.addEventListener('keydown', this._keyDownHandler, true);
+    element.addEventListener('keypress', this._keyPressHandler, true);
+    element.addEventListener('keyup', this._keyUpHandler, true);
+  }
+
+  private _unbindListeners(): void {
+    const element = this._element;
+    element.removeEventListener('keydown', this._keyDownHandler, true);
+    element.removeEventListener('keypress', this._keyPressHandler, true);
+    element.removeEventListener('keyup', this._keyUpHandler, true);
   }
 
   private _bindKeyDownListener(event: KeyboardEvent) {

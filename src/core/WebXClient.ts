@@ -97,9 +97,7 @@ export class WebXClient {
       return this._display;
 
     } catch (error) {
-      if (this._display) {
-        this._display.dispose();
-      }
+      this._dispose();
 
       throw new Error('Failed to initialise display');
     }
@@ -248,12 +246,22 @@ export class WebXClient {
   }
 
   private _onTunnelClosed(): void {
-    if (this._display) {
-      this._display.dispose();
-    }
+    this._dispose();
 
     if (this._onCloseCallback) {
       this._onCloseCallback();
+    }
+  }
+
+  private _dispose(): void {
+    if (this._display) {
+      this._display.dispose();
+    }
+    if (this._mouse) {
+      this._mouse.dispose();
+    }
+    if (this._keyboard) {
+      this._keyboard.dispose();
     }
   }
 

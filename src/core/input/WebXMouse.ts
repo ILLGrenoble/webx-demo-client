@@ -8,6 +8,13 @@ export class WebXMouse {
    */
   private _currentState: WebXMouseState;
 
+  private _contextMenuHandler = this._handleContextMenu.bind(this);
+  private _mouseMoveHandler = this._handleMouseMove.bind(this);
+  private _mouseDownHandler = this._handleMouseDown.bind(this);
+  private _mouseUpHandler = this._handleMouseUp.bind(this);
+  private _mouseOutHandler = this._handleMouseOut.bind(this);
+  private _mouseWheelHandler = this._handleMouseWheel.bind(this);
+
   /**
    * Provides cross-browser mouse events for a given element
    * @param _element The element to use to provide mouse events
@@ -15,6 +22,10 @@ export class WebXMouse {
   constructor(private _element: HTMLElement) {
     this._bindListeners();
     this._createDefaultState();
+  }
+
+  dispose(): void {
+    this._unbindListeners();
   }
 
   /**
@@ -34,13 +45,26 @@ export class WebXMouse {
    */
   private _bindListeners(): void {
     const element = this._element;
-    element.addEventListener('contextmenu', this._handleContextMenu.bind(this), false);
-    element.addEventListener('mousemove', this._handleMouseMove.bind(this));
-    element.addEventListener('mousedown', this._handleMouseDown.bind(this));
-    element.addEventListener('mouseup', this._handleMouseUp.bind(this));
-    element.addEventListener('mouseout', this._handleMouseOut.bind(this));
+    element.addEventListener('contextmenu', this._contextMenuHandler, false);
+    element.addEventListener('mousemove', this._mouseMoveHandler);
+    element.addEventListener('mousedown', this._mouseDownHandler);
+    element.addEventListener('mouseup', this._mouseUpHandler);
+    element.addEventListener('mouseout', this._mouseOutHandler);
     ['DOMMouseScroll', 'mousewheel', 'wheel'].forEach(listener => {
-      element.addEventListener(listener, this._handleMouseWheel.bind(this));
+      element.addEventListener(listener, this._mouseWheelHandler);
+    });
+    this.reset = this.reset.bind(this);
+  }
+
+  private _unbindListeners(): void {
+    const element = this._element;
+    element.removeEventListener('contextmenu', this._contextMenuHandler, false);
+    element.removeEventListener('mousemove', this._mouseMoveHandler);
+    element.removeEventListener('mousedown', this._mouseDownHandler);
+    element.removeEventListener('mouseup', this._mouseUpHandler);
+    element.removeEventListener('mouseout', this._mouseOutHandler);
+    ['DOMMouseScroll', 'mousewheel', 'wheel'].forEach(listener => {
+      element.removeEventListener(listener, this._mouseWheelHandler);
     });
     this.reset = this.reset.bind(this);
   }

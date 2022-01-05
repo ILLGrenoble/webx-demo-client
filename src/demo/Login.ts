@@ -13,7 +13,7 @@ export class Login {
     this._callback = callback;
   }
 
-  onDisconnected(): void {
+  show(): void {
     this._showPanel();
   }
 

@@ -2,7 +2,7 @@ export class Login {
 
   private _remoteHost: string;
   private _username: string;
-  private _password: string;
+  private _password: string = '';
   private _callback: (remoteHost: string, username: string, password: string) => void;
 
   constructor() {
@@ -20,6 +20,7 @@ export class Login {
   private _initialise(): void {
     this._initialiseRemoteHost();
     this._initialiseUsername();
+    this._initialisePassword();
     this._bind();
     this._showPanel();
   }
@@ -28,6 +29,7 @@ export class Login {
     this._element('btn-login').addEventListener('click', this._handleLogin.bind(this));
     this._element('login-remote-host').addEventListener('change', (e: any) => this._handleRemoteHostChange(e.target.value));
     this._element('login-username').addEventListener('change', (e: any) => this._handleUsernameChange(e.target.value));
+    this._element('login-password').addEventListener('change', (e: any) => this._handlePasswordChange(e.target.value));
   }
 
   private _element(id: string): HTMLElement {
@@ -48,6 +50,12 @@ export class Login {
     this._username = username;
   }
 
+  private _initialisePassword(): void {
+    const element = this._element('login-password') as HTMLInputElement;
+    element.value = '';
+    this._password = '';
+  }
+
   private _handleRemoteHostChange(value: string): void {
     this._remoteHost = value;
     localStorage.setItem('login.remote-host', value);
@@ -58,6 +66,10 @@ export class Login {
     localStorage.setItem('login.username', value);
   }
 
+  private _handlePasswordChange(value: string): void {
+    this._password = value;
+  }
+
   private _handleLogin(): void {
     if (this._callback) {
       this._closePanel();
@@ -66,6 +78,7 @@ export class Login {
   }
 
   private _showPanel(): void {
+    this._initialisePassword();
     const el = this._element('login-panel');
     el.classList.add('show');
   }

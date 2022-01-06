@@ -44,7 +44,7 @@ export class Application {
     this._client.connect(this._disconnectedHandler)
       .then(this._connectHandler)
       .catch(error => {
-        console.error(error);
+        console.error(error.message);
         this._onDisconnected();
       })
   }
@@ -68,7 +68,7 @@ export class Application {
         this._devTools = new WebXDemoDevTools(this._client, display);
       })
       .catch(err => {
-        console.error(err);
+        console.error(err.message);
         this._onDisconnected();
       });
   }

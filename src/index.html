@@ -9,15 +9,21 @@
 
 <body>
 <div class='container'>
-  <div class='header'>
+  <div class='header' id='header'>
     <div class='header__left'>
-      <button class='btn-debug-toolbar' id='btn-dev-tools'>Debug Tools</button>
+      <div class='header__btn'>
+        <button class='btn-standard-toolbar' id='btn-dev-tools'>Debug Tools</button>
+      </div>
+      <div class='header__btn'>
+        <button class='btn-standard-toolbar warning' id='btn-disconnect'>Disconnect</button>
+      </div>
     </div>
     <div class='header__content'>WebX Demo</div>
     <div class='header__right'>
-      <button class='btn-fullscreen' id='btn-fullscreen'>Enter full screen</button>
+      <button class='btn-standard-toolbar' id='btn-fullscreen'>Enter full screen</button>
     </div>
   </div>
+
   <div class='content'>
     <div class='viewer'>
       <div class='display'>
@@ -25,23 +31,29 @@
         </div>
       </div>
     </div>
+    <div class='spinner'>
+      <div class='loader' id='loader'>
+      </div>
+    </div>
     <div class='login'>
       <div class='login__content' id='login-panel'>
         <div class='login__content__title'>WebX Login</div>
-        <div class='login__content__elements'>
-          <div class='login__content__element'>
-            <label for='login-remote-host'>Remote host</label>
-            <input type='text' id='login-remote-host' name='remote-host'>
+        <form>
+          <div class='login__content__elements'>
+            <div class='login__content__element'>
+              <label for='login-remote-host'>Remote host</label>
+              <input type='text' id='login-remote-host' name='remote-host'>
+            </div>
+            <div class='login__content__element'>
+              <label for='login-username'>Username</label>
+              <input type='text' id='login-username' name='username'>
+            </div>
+            <div class='login__content__element'>
+              <label for='login-password'>Password</label>
+              <input type='password' id='login-password' name='password'>
+            </div>
           </div>
-          <div class='login__content__element'>
-            <label for='login-username'>Username</label>
-            <input type='text' id='login-username' name='username'>
-          </div>
-          <div class='login__content__element'>
-            <label for='login-password'>Password</label>
-            <input type='password' id='login-password' name='password'>
-          </div>
-        </div>
+        </form>
         <div class='login__content__submit'>
           <button class='btn-login' id='btn-login'>Login</button>
         </div>

@@ -14,7 +14,8 @@ export class Application {
   private readonly _fullscreenHandler = this._handleFullscreen.bind(this);
 
   private readonly _connectHandler = this._onConnected.bind(this);
-  private readonly _disconnectHandler = this._onDisconnected.bind(this);
+  private readonly _disconnectHandler = this._handleDisconnect.bind(this);
+  private readonly _disconnectedHandler = this._onDisconnected.bind(this);
 
   private _client: WebXClient;
 
@@ -36,8 +37,11 @@ export class Application {
       password: password
     }
 
+    const loaderElement = document.getElementById('loader');
+    loaderElement.classList.add('show');
+
     this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions), {});
-    this._client.connect(this._disconnectHandler)
+    this._client.connect(this._disconnectedHandler)
       .then(this._connectHandler)
       .catch(error => {
         console.error(error);
@@ -55,17 +59,25 @@ export class Application {
 
         this._bindListeners();
 
+        const headerElement = document.getElementById('header');
+        headerElement.classList.add('show');
+
+        const loaderElement = document.getElementById('loader');
+        loaderElement.classList.remove('show');
+
         this._devTools = new WebXDemoDevTools(this._client, display);
       })
       .catch(err => {
         console.error(err);
         this._onDisconnected();
       });
-
   }
 
   private _onDisconnected(): void {
     this._unbindListeners();
+
+    const headerElement = document.getElementById('header');
+    headerElement.classList.remove('show');
 
     if (this._devTools) {
       this._devTools.dispose();
@@ -81,6 +93,7 @@ export class Application {
     document.addEventListener('visibilitychange', this._visibilityChangeHandler);
 
     document.getElementById('btn-fullscreen').addEventListener('click', this._fullscreenHandler);
+    document.getElementById('btn-disconnect').addEventListener('click', this._disconnectHandler);
   };
 
   private _unbindListeners(): void {
@@ -89,6 +102,7 @@ export class Application {
     document.removeEventListener('visibilitychange', this._visibilityChangeHandler);
 
     document.getElementById('btn-fullscreen').removeEventListener('click', this._fullscreenHandler);
+    document.getElementById('btn-disconnect').removeEventListener('click', this._disconnectHandler);
   };
 
   private _handleFullscreen(): void {
@@ -114,6 +128,12 @@ export class Application {
     if (this._client) {
       this._client.mouse.reset();
       this._client.keyboard.reset();
+    }
+  }
+
+  private _handleDisconnect(): void {
+    if (this._client) {
+      this._client.disconnect();
     }
   }
 

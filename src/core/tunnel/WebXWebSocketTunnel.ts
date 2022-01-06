@@ -83,7 +83,9 @@ export class WebXWebSocketTunnel implements WebXTunnel {
   }
 
   disconnect(): void {
-    throw new Error('Method not implemented.');
+    if (this._socket) {
+      this._socket.close()
+    }
   }
 
   sendInstruction(command: WebXInstruction): void {

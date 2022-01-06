@@ -15,7 +15,8 @@ export class WebXTextureFactory {
           colorMap: response.colorMap,
           alphaMap: response.alphaMap,
         });
-      });
+      })
+        .catch(err => console.warn('Failed to get texture: ' + err));
     });
   }
 

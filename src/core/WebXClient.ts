@@ -64,6 +64,10 @@ export class WebXClient {
     this._tunnel.onClosed = this._onTunnelClosed.bind(this);
   }
 
+  disconnect(): void {
+    this._tunnel.disconnect();
+  }
+
   /**
    *
    * @param containerElement The main container
@@ -85,6 +89,7 @@ export class WebXClient {
 
       // Requests 3. - N : Initialise all windows and wait for them to be visible (requests for window images)
       await this._display.updateWindows(windowsMessage.windows);
+      this._display.showScreen();
 
       // Create mouse and add listeners
       this._mouse = this.createMouse(containerElement);

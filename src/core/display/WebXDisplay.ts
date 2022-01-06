@@ -15,6 +15,7 @@ export class WebXDisplay {
   private readonly _scene: THREE.Scene;
   private readonly _camera: THREE.OrthographicCamera;
   private readonly _renderer: WebXWebGLRenderer;
+  private readonly _screen: THREE.Object3D;
 
   private readonly _screenWidth;
   private readonly _screenHeight;
@@ -66,7 +67,10 @@ export class WebXDisplay {
 
     this._scene = new THREE.Scene();
 
-    this._scene.add(this._cursor.mesh);
+    this._screen = new THREE.Object3D();
+    // this._scene.add(this._screen);
+
+    this._screen.add(this._cursor.mesh);
 
     // this._camera = new THREE.OrthographicCamera(0, screenWidth, 0, screenHeight, 0.1, 100);
     this._camera = new THREE.OrthographicCamera(0, screenWidth, 0, screenHeight, 0.1, 10000);
@@ -76,11 +80,24 @@ export class WebXDisplay {
     this._renderer = new THREE.WebGLRenderer() as WebXWebGLRenderer;
     this._renderer.setSize(screenWidth, screenHeight, false);
 
+    const backgroundColor = window.getComputedStyle(this._containerElement).backgroundColor;
+    this._renderer.setClearColor(backgroundColor);
+
     this._render();
     this._bindListeners();
 
     // initial size
     this.resize();
+
+    this._renderer.render(this._scene, this._camera);
+  }
+
+  showScreen(): void {
+    this._scene.add(this._screen);
+  }
+
+  hideScreen(): void {
+    this._scene.remove(this._screen);
   }
 
   dispose(): void {
@@ -136,7 +153,7 @@ export class WebXDisplay {
     if (this._windows.find(existingWindow => existingWindow.id === window.id) == null) {
       // console.log("Adding window ", window.id)
       this._windows.push(window);
-      this._scene.add(window.mesh);
+      this._screen.add(window.mesh);
     }
   }
 
@@ -144,7 +161,7 @@ export class WebXDisplay {
     if (this._windows.find(existingWindow => existingWindow.id === window.id) != null) {
       // console.log("Removing window ", window.id)
       this._windows = this._windows.filter(existingWindow => existingWindow.id !== window.id);
-      this._scene.remove(window.mesh);
+      this._screen.remove(window.mesh);
     }
   }
 

@@ -51,7 +51,7 @@ export class WebXMouse {
     element.addEventListener('mouseup', this._mouseUpHandler);
     element.addEventListener('mouseout', this._mouseOutHandler);
     ['DOMMouseScroll', 'mousewheel', 'wheel'].forEach(listener => {
-      element.addEventListener(listener, this._mouseWheelHandler);
+      element.addEventListener(listener, this._mouseWheelHandler, { passive: false });
     });
     this.reset = this.reset.bind(this);
   }

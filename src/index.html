@@ -40,17 +40,20 @@
         <div class='login__content__title'>WebX Login</div>
         <form>
           <div class='login__content__elements'>
-            <div class='login__content__element'>
-              <label for='login-remote-host'>Remote host</label>
+            <span class='login__content__element host'>
+              <label for='login-remote-host'>Host</label>
               <input type='text' id='login-remote-host' name='remote-host'>
-            </div>
+            </span>
+            <span class='login__content__element port'>
+              <input type='number' id='login-remote-port' name='remote-port' placeholder='port'>
+            </span>
             <div class='login__content__element'>
               <label for='login-username'>Username</label>
               <input type='text' id='login-username' name='username'>
             </div>
             <div class='login__content__element'>
               <label for='login-password'>Password</label>
-              <input type='password' id='login-password' name='password'>
+              <input type='password' id='login-password' name='password' autocomplete='off'>
             </div>
           </div>
         </form>

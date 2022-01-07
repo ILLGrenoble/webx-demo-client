@@ -122,18 +122,44 @@ body {
     line-height: 40px;
 
     label {
-      width: 100px;
+      width: 85px;
       display: inline-block;
       text-align: right;
       padding: 0 8px;
     }
 
-    input[type=text],input[type=password] {
-      width: 200px;
+    input[type=text],input[type=number],input[type=password] {
+      width: 215px;
       padding: 4px 6px;
       font-size: 14px;
       border: none;
       color: #555;
+    }
+
+    &.host {
+      input[type=text] {
+        width: 145px;
+        margin-right: 20px;
+      }
+    }
+
+    &.port {
+      margin-left: -5px;
+
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      input[type=number] {
+        -moz-appearance: textfield;
+        width: 50px;
+      }
+
+      input::placeholder {
+        color: #a0a0a0;
+      }
     }
   }
 

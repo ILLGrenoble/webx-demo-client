@@ -29,10 +29,10 @@ export class Application {
     this._login.onLogin(this._onLogin.bind(this));
   }
 
-  private _onLogin(remoteHost: string, username: string, password: string): void {
+  private _onLogin(host: string, port: number,  username: string, password: string): void {
     const tunnelOptions = {
-      webxhost: remoteHost,
-      webxport: 5555,
+      webxhost: host,
+      webxport: port,
       username: username,
       password: password
     }

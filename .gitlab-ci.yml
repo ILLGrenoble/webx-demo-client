@@ -3,8 +3,8 @@ stages:
 
 build-dev:
   stage: build-dev
-  only:
-    - dev
+#  only:
+#    - dev
   tags:
     - debian
     - dss

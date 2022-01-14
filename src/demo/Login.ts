@@ -6,6 +6,9 @@ export class Login {
   private _password: string = '';
   private _callback: (host: string, port: number,  username: string, password: string) => void;
 
+  private _loginHandler = this._handleLogin.bind(this);
+  private _loginOnEnterKeyHandler = this._handleLoginOnEnterKey.bind(this);
+
   constructor() {
     this._initialise();
   }
@@ -28,12 +31,20 @@ export class Login {
   }
 
   private _bind(): void {
-    this._element('btn-login').addEventListener('click', this._handleLogin.bind(this));
-    this._element('login-password').addEventListener('keyup', this._handleLoginOnEnterKey.bind(this));
     this._element('login-remote-host').addEventListener('change', (e: any) => this._handleHostChange(e.target.value));
     this._element('login-remote-port').addEventListener('change', (e: any) => this._handlePortChange(e.target.value));
     this._element('login-username').addEventListener('change', (e: any) => this._handleUsernameChange(e.target.value));
     this._element('login-password').addEventListener('change', (e: any) => this._handlePasswordChange(e.target.value));
+  }
+
+  private _bindInputEvents(): void {
+    this._element('btn-login').addEventListener('click', this._loginHandler);
+    this._element('login-password').addEventListener('keyup', this._loginOnEnterKeyHandler);
+  }
+
+  private _unbindInputEvents(): void {
+    this._element('btn-login').removeEventListener('click', this._loginHandler);
+    this._element('login-password').removeEventListener('keyup', this._loginOnEnterKeyHandler);
   }
 
   private _element(id: string): HTMLElement {
@@ -110,12 +121,14 @@ export class Login {
   }
 
   private _showPanel(): void {
+    this._bindInputEvents();
     this._initialisePassword();
     const el = this._element('login-panel');
     el.classList.add('show');
   }
 
   private _closePanel(): void {
+    this._unbindInputEvents();
     const el = this._element('login-panel');
     el.classList.remove('show');
   }

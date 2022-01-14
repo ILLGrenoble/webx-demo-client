@@ -212,6 +212,12 @@ export class WebXWindow {
     this._mesh.position.set(this._x + 0.5 * this._width, this._y + 0.5 * this._height, this._z);
   }
 
+  dispose(): void {
+    this._disposeColorMap();
+    this._disposeAlphaMap();
+    this._material.dispose();
+  }
+
   private _disposeColorMap(): void {
     if (this.colorMap) {
       this.colorMap.dispose();

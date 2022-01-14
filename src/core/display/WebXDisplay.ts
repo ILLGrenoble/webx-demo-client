@@ -101,7 +101,16 @@ export class WebXDisplay {
   }
 
   dispose(): void {
+    this.hideScreen();
+
+    for (const window of this._windows) {
+      this._screen.remove(window.mesh);
+      window.dispose();
+    }
+
     this._clearElements();
+
+    this._renderer.dispose();
   }
 
   private _clearElements(): void {

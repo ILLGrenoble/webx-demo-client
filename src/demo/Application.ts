@@ -30,23 +30,25 @@ export class Application {
   }
 
   private _onLogin(host: string, port: number,  username: string, password: string): void {
-    const tunnelOptions = {
-      webxhost: host,
-      webxport: port,
-      username: username,
-      password: password
+    if (!this._client) {
+      const tunnelOptions = {
+        webxhost: host,
+        webxport: port,
+        username: username,
+        password: password
+      }
+      this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions), {});
+
+      const loaderElement = document.getElementById('loader');
+      loaderElement.classList.add('show');
+
+      this._client.connect(this._disconnectedHandler)
+        .then(this._connectHandler)
+        .catch(error => {
+          console.error(error.message);
+          this._onDisconnected();
+        })
     }
-
-    const loaderElement = document.getElementById('loader');
-    loaderElement.classList.add('show');
-
-    this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions), {});
-    this._client.connect(this._disconnectedHandler)
-      .then(this._connectHandler)
-      .catch(error => {
-        console.error(error.message);
-        this._onDisconnected();
-      })
   }
 
   private _onConnected(): void {
@@ -84,6 +86,8 @@ export class Application {
       this._devTools = null;
     }
 
+    this._client = null;
+
     this._login.show();
   }
 
@@ -120,14 +124,13 @@ export class Application {
 
   private _handleResize(): void {
     if (this._client) {
-      this._client.display.resize();
+      this._client.resizeDisplay();
     }
   }
 
   private _handleBlur(): void {
     if (this._client) {
-      this._client.mouse.reset();
-      this._client.keyboard.reset();
+      this._client.resetInputs();
     }
   }
 
@@ -139,8 +142,7 @@ export class Application {
 
   private _handleVisibilityChange(): void {
     if (this._client) {
-      this._client.mouse.reset();
-      this._client.keyboard.reset();
+      this._client.resetInputs();
     }
   }
 

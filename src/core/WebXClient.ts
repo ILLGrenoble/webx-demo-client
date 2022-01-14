@@ -177,6 +177,22 @@ export class WebXClient {
     this._tracers.set(name, handler);
   }
 
+  resetInputs(): void {
+    if (this._mouse) {
+      this._mouse.reset();
+    }
+
+    if (this._keyboard) {
+      this._keyboard.reset();
+    }
+  }
+
+  resizeDisplay(): void {
+    if (this._display) {
+      this._display.resize();
+    }
+  }
+
   /**
    * Unregister a tracer
    * @param name the name of the tracer

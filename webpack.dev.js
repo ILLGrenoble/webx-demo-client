@@ -10,6 +10,17 @@ module.exports = merge(common, {
         logging: 'info',
       },
       compress: true,
-      port: 9000
-    }
+      port: 9000,
+      proxy: {
+        '/ws/relay': {
+          target: 'ws://localhost:8080',
+          secure: false,
+          pathRewrite: {
+            '^/ws/relay': '/'
+          },
+          changeOrigin: true,
+          ws: true,
+        },
+      },
+    },
 });

@@ -1,5 +1,7 @@
 export class Login {
 
+  private static DEFAULT_PORT = 5555;
+
   private _host: string;
   private _port: number = 5555;
   private _username: string;
@@ -52,7 +54,10 @@ export class Login {
   }
 
   private _initialiseHost(): void {
-    const host = localStorage.getItem('login.remote-host');
+    let host = localStorage.getItem('login.remote-host');
+    if (host == null) {
+      host = location.hostname;
+    }
     const element = this._element('login-remote-host') as HTMLInputElement;
     element.value = host;
     this._host = host;
@@ -60,12 +65,13 @@ export class Login {
 
   private _initialisePort(): void {
     const portString = localStorage.getItem('login.remote-port');
-    const port = parseInt(portString);
-    if (!isNaN(port)) {
-      const element = this._element('login-remote-port') as HTMLInputElement;
-      element.value = `${port}`;
-      this._port = port;
+    let port = parseInt(portString);
+    if (isNaN(port)) {
+      port = Login.DEFAULT_PORT;
     }
+    const element = this._element('login-remote-port') as HTMLInputElement;
+    element.value = `${port}`;
+    this._port = port;
   }
 
   private _initialiseUsername(): void {

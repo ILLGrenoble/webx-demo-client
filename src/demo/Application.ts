@@ -25,9 +25,9 @@ export class Application {
     const path = '/ws/relay';
     const host = location.hostname;
     const port = location.port;
-    const protocol = location.protocol === 'https' ? 'wss' : 'ws';
+    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
 
-    this._url = urlParams.get('url') || `${protocol}://${host}:${port}${path}`;
+    this._url = urlParams.get('url') || `${protocol}//${host}:${port}${path}`;
   }
 
   run(): void {

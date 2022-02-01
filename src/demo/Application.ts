@@ -36,11 +36,19 @@ export class Application {
 
   private _onLogin(host: string, port: number,  username: string, password: string): void {
     if (!this._client) {
+
+      const display = document.getElementById('display');
+
+      const width = display.clientWidth;
+      const height = display.clientHeight;
+
       const tunnelOptions = {
         webxhost: host,
         webxport: port,
         username: username,
-        password: password
+        password: password,
+        width: width,
+        height: height
       }
       this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions), {});
 

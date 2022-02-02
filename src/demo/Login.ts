@@ -7,7 +7,8 @@ export class Login {
   private _username: string;
   private _password: string = '';
   private _resolution: {width: number, height: number} = null;
-  private _callback: (host: string, port: number,  username: string, password: string, resolution: {width: number, height: number}) => void;
+  private _keyboardLayout: string = null;
+  private _callback: (host: string, port: number,  username: string, password: string, resolution: {width: number, height: number}, keyboard: string) => void;
 
   private _loginHandler = this._handleLogin.bind(this);
   private _loginOnEnterKeyHandler = this._handleLoginOnEnterKey.bind(this);
@@ -58,7 +59,26 @@ export class Login {
       height: 2160,
     }];
 
-  constructor() {
+  private _keyboardLayouts = [
+    {
+      layout: "gb",
+      name: "English (UK) keyboard",
+    },
+    {
+      layout: "us",
+      name: "English (US) keyboard",
+    },
+    {
+      layout: "fr",
+      name: "French keyboard (azerty)",
+    },
+    {
+      layout: "de",
+      name: "German keyboard (qwertz)",
+    }];
+
+
+    constructor() {
     this._initialise();
   }
 
@@ -76,6 +96,7 @@ export class Login {
     this._initialiseUsername();
     this._initialisePassword();
     this._initialiseResolution();
+    this._initialiseKeyboard();
     this._bind();
     this._showPanel();
   }
@@ -86,6 +107,7 @@ export class Login {
     this._element('login-username').addEventListener('change', (e: any) => this._handleUsernameChange(e.target.value));
     this._element('login-password').addEventListener('change', (e: any) => this._handlePasswordChange(e.target.value));
     this._element('login-resolution').addEventListener('change', (e: any) => this._handleResolutionChange(e.target.value));
+    this._element('login-keyboard').addEventListener('change', (e: any) => this._handleKeyboardChange(e.target.value));
   }
 
   private _bindInputEvents(): void {
@@ -160,6 +182,21 @@ export class Login {
     this._resolution = this._resolutions[currentIndex];
   }
 
+  private _initialiseKeyboard(): void {
+    const element = this._element('login-keyboard') as HTMLSelectElement;
+
+    this._keyboardLayouts.forEach(({layout, name}, index) => {
+      const option = document.createElement("option");
+      option.value = `${index}`;
+      option.text = name;
+      element.add(option);
+    });
+
+    const currentIndex = localStorage.getItem('login.keyboard') == null ? 0 : +localStorage.getItem('login.keyboard');
+    element.selectedIndex = currentIndex;
+    this._keyboardLayout = this._keyboardLayouts[currentIndex].layout;
+  }
+
   private _handleHostChange(value: string): void {
     this._host = value;
     localStorage.setItem('login.remote-host', value);
@@ -184,15 +221,21 @@ export class Login {
 
   private _handleResolutionChange(value: string): void {
     const index = +value;
-    const resolution = this._resolutions[index];
-    this._resolution = resolution;
+    this._resolution = this._resolutions[index];
     localStorage.setItem('login.resolution', value);
+  }
+
+  private _handleKeyboardChange(value: string): void {
+    const index = +value;
+    const keyboard = this._keyboardLayouts[index];
+    this._keyboardLayout = keyboard.layout;
+    localStorage.setItem('login.keyboard', value);
   }
 
   private _handleLogin(): void {
     if (this._callback) {
       this._closePanel();
-      this._callback(this._host, this._port != null ? this._port : 5555, this._username, this._password, this._resolution);
+      this._callback(this._host, this._port != null ? this._port : 5555, this._username, this._password, this._resolution, this._keyboardLayout);
     }
   }
 
@@ -201,7 +244,7 @@ export class Login {
     if (event.keyCode === 13) {
       if (this._callback) {
         this._closePanel();
-        this._callback(this._host, this._port != null ? this._port : 5555, this._username, this._password, this._resolution);
+        this._callback(this._host, this._port != null ? this._port : 5555, this._username, this._password, this._resolution, this._keyboardLayout);
       }
     }
   }

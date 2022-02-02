@@ -69,14 +69,14 @@ body {
 .login {
   display: flex;
   position: absolute;
-  flex: 0 0 400px;
-  height: 450px;
+  flex: 0 0 480px;
+  height: 480px;
   width: 400px;
   flex-direction: column;
   top: 50%;
   left: 50%;
   margin-left: -200px;
-  margin-top: -200px;
+  margin-top: -240px;
   overflow: hidden;
 }
 
@@ -85,7 +85,7 @@ body {
   flex-direction: column;
   align-items: stretch;
   display: flex;
-  height: 400px;
+  height: 430px;
   width: 350px;
   background: #0073b7;
   color: white;

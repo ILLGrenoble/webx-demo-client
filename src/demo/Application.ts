@@ -34,7 +34,7 @@ export class Application {
     this._login.onLogin(this._onLogin.bind(this));
   }
 
-  private _onLogin(host: string, port: number,  username: string, password: string, resolution: {width: number, height: number}): void {
+  private _onLogin(host: string, port: number,  username: string, password: string, resolution: {width: number, height: number}, keyboard: string): void {
     if (!this._client) {
 
       const tunnelOptions = {
@@ -43,7 +43,8 @@ export class Application {
         username: username,
         password: password,
         width: resolution.width,
-        height: resolution.height
+        height: resolution.height,
+        keyboard: keyboard
       }
       this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions), {});
 

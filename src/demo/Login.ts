@@ -6,16 +6,63 @@ export class Login {
   private _port: number = 5555;
   private _username: string;
   private _password: string = '';
-  private _callback: (host: string, port: number,  username: string, password: string) => void;
+  private _resolution: {width: number, height: number} = null;
+  private _callback: (host: string, port: number,  username: string, password: string, resolution: {width: number, height: number}) => void;
 
   private _loginHandler = this._handleLogin.bind(this);
   private _loginOnEnterKeyHandler = this._handleLoginOnEnterKey.bind(this);
+
+  public _resolutions = [{
+      label: '',
+      width: null,
+      height: null,
+    },{
+      label: 'WXGA (1280 x 720) 16:9',
+      width: 1280,
+      height: 720,
+    }, {
+      label: 'WXGA (1280 x 800) 16:10',
+      width: 1280,
+      height: 800,
+    }, {
+      label: 'SXGA (1280 x 1024) 5:4',
+      width: 1280,
+      height: 1024,
+    }, {
+      label: 'WXGA+ (1440 x 900) 16:10',
+      width: 1440,
+      height: 900,
+    }, {
+      label: 'HD+ (1600 x 900) 16:9',
+      width: 1600,
+      height: 900,
+    }, {
+      label: 'WSXGA+ (1680 x 1050) 16:10',
+      width: 1680,
+      height: 1050,
+    }, {
+      label: 'FHD (1920 x 1080) 16:9',
+      width: 1920,
+      height: 1080,
+    }, {
+      label: 'WUXGA (1920 x 1200) 16:10',
+      width: 1920,
+      height: 1200,
+    }, {
+      label: 'QHD (2560 x 1440) 16:9',
+      width: 2560,
+      height: 1440,
+    }, {
+      label: '4K UHD (3840 x 2160) 16:9',
+      width: 3840,
+      height: 2160,
+    }];
 
   constructor() {
     this._initialise();
   }
 
-  onLogin(callback: (host: string, port: number, username: string, password: string) => void) {
+  onLogin(callback: (host: string, port: number, username: string, password: string, resolution: {width: number, height: number}) => void) {
     this._callback = callback;
   }
 
@@ -28,6 +75,7 @@ export class Login {
     this._initialisePort();
     this._initialiseUsername();
     this._initialisePassword();
+    this._initialiseResolution();
     this._bind();
     this._showPanel();
   }
@@ -37,6 +85,7 @@ export class Login {
     this._element('login-remote-port').addEventListener('change', (e: any) => this._handlePortChange(e.target.value));
     this._element('login-username').addEventListener('change', (e: any) => this._handleUsernameChange(e.target.value));
     this._element('login-password').addEventListener('change', (e: any) => this._handlePasswordChange(e.target.value));
+    this._element('login-resolution').addEventListener('change', (e: any) => this._handleResolutionChange(e.target.value));
   }
 
   private _bindInputEvents(): void {
@@ -87,6 +136,30 @@ export class Login {
     this._password = '';
   }
 
+  private _initialiseResolution(): void {
+    const element = this._element('login-resolution') as HTMLSelectElement;
+
+    const width = window.screen.width;
+    const height = window.screen.height;
+
+    this._resolutions[0] = {
+      width: width,
+      height: height,
+      label: `Current (${width}x${height})`
+    };
+
+    this._resolutions.forEach(({width, height, label}, index) => {
+      const option = document.createElement("option");
+      option.value = `${index}`;
+      option.text = label;
+      element.add(option);
+    });
+
+    const currentIndex = localStorage.getItem('login.resolution') == null ? 0 : +localStorage.getItem('login.resolution');
+    element.selectedIndex = currentIndex;
+    this._resolution = this._resolutions[currentIndex];
+  }
+
   private _handleHostChange(value: string): void {
     this._host = value;
     localStorage.setItem('login.remote-host', value);
@@ -109,10 +182,17 @@ export class Login {
     this._password = value;
   }
 
+  private _handleResolutionChange(value: string): void {
+    const index = +value;
+    const resolution = this._resolutions[index];
+    this._resolution = resolution;
+    localStorage.setItem('login.resolution', value);
+  }
+
   private _handleLogin(): void {
     if (this._callback) {
       this._closePanel();
-      this._callback(this._host, this._port != null ? this._port : 5555, this._username, this._password);
+      this._callback(this._host, this._port != null ? this._port : 5555, this._username, this._password, this._resolution);
     }
   }
 
@@ -121,7 +201,7 @@ export class Login {
     if (event.keyCode === 13) {
       if (this._callback) {
         this._closePanel();
-        this._callback(this._host, this._port != null ? this._port : 5555, this._username, this._password);
+        this._callback(this._host, this._port != null ? this._port : 5555, this._username, this._password, this._resolution);
       }
     }
   }

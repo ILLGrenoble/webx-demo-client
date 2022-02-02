@@ -34,21 +34,16 @@ export class Application {
     this._login.onLogin(this._onLogin.bind(this));
   }
 
-  private _onLogin(host: string, port: number,  username: string, password: string): void {
+  private _onLogin(host: string, port: number,  username: string, password: string, resolution: {width: number, height: number}): void {
     if (!this._client) {
-
-      const display = document.getElementById('display');
-
-      const width = display.clientWidth;
-      const height = display.clientHeight;
 
       const tunnelOptions = {
         webxhost: host,
         webxport: port,
         username: username,
         password: password,
-        width: width,
-        height: height
+        width: resolution.width,
+        height: resolution.height
       }
       this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions), {});
 

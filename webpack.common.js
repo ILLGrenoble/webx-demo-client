@@ -1,5 +1,6 @@
 const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
     context: resolve(__dirname, 'src'),
@@ -34,7 +35,10 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js']
+        extensions: ['.tsx', '.ts', '.js'],
+        fallback: {
+          "buffer": require.resolve("buffer")
+        }
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -42,6 +46,11 @@ module.exports = {
           inject: true,
             template: 'index.html',
             minify: false
-        })
+        }),
+        // Work around for Buffer is undefined:
+        // https://github.com/webpack/changelog-v5/issues/10
+        new webpack.ProvidePlugin({
+          Buffer: ['buffer', 'Buffer'],
+        }),
     ]
 };

@@ -16,11 +16,15 @@ module.exports = merge(common, {
           target: 'ws://localhost:8080',
           secure: false,
           pathRewrite: {
-            '^/ws/relay': '/'
+            '^/ws/relay': '/ws'
           },
           changeOrigin: true,
           ws: true,
         },
+        '/api': {
+          target: 'http://localhost:8080',
+          secure: false,
+        }
       },
     },
 });

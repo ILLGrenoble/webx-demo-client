@@ -25,7 +25,7 @@ export class Application {
 
   constructor() {
     const urlParams = new URLSearchParams(window.location.search);
-    const path = '/ws/relay';
+    const path = '/relay/ws';
     const host = location.hostname;
     const port = location.port;
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';

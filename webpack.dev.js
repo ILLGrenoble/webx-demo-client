@@ -12,18 +12,21 @@ module.exports = merge(common, {
       compress: true,
       port: 9000,
       proxy: {
-        '/ws/relay': {
+        '/relay/ws': {
           target: 'ws://localhost:8080',
           secure: false,
           pathRewrite: {
-            '^/ws/relay': '/ws'
+            '^/relay/ws': '/ws'
           },
           changeOrigin: true,
           ws: true,
         },
-        '/api': {
+        '/relay/api': {
           target: 'http://localhost:8080',
           secure: false,
+          pathRewrite: {
+            '^/relay/api': '/api'
+          },
         }
       },
     },

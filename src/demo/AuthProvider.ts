@@ -12,7 +12,7 @@ export class AuthProvider {
       const credentials = `${username}:${password}`;
       const buffer = new Buffer(credentials);
       const authorizationData = buffer.toString('base64');
-      const { data } = await axios.post('/api/auth', {}, {
+      const { data } = await axios.post('/relay/api/auth', {}, {
         headers: {
           'Authorization': `Basic ${authorizationData}`
         }

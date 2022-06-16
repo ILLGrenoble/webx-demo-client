@@ -9,7 +9,7 @@ export interface WebXTunnel {
 
   sendInstruction(command: WebXInstruction): void;
 
-  sendRequest(command: WebXInstruction): Promise<WebXMessage>;
+  sendRequest(command: WebXInstruction, timeout?: number): Promise<WebXMessage>;
 
   handleMessage(message: WebXMessage): void;
 

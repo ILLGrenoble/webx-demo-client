@@ -106,7 +106,10 @@ export class Application {
       this._devTools = null;
     }
 
-    this._client = null;
+    if (this._client) {
+      this._client.disconnect();
+      this._client = null;
+    }
 
     this._login.show();
   }

@@ -77,7 +77,7 @@ export class WebXClient {
   async initialise(containerElement: HTMLElement): Promise<WebXDisplay> {
     // Request 1. : Get screen size
     try {
-      const screenMessage = await this._sendRequest(new WebXScreenInstruction()) as WebXScreenMessage;
+      let screenMessage = await this._getScreenMessage();
       const { width, height } = screenMessage.screenSize;
 
       // Initialise the display
@@ -104,7 +104,7 @@ export class WebXClient {
     } catch (error) {
       this._dispose();
 
-      throw new Error('Failed to initialise display');
+      throw new Error(`Failed to initialise display: ${error.message}`);
     }
   }
 
@@ -206,6 +206,25 @@ export class WebXClient {
     }
   }
 
+  private async _getScreenMessage(): Promise<WebXScreenMessage> {
+    // Perform retries on the first instruction (client can sometimes be activated before the server connection$
+    // has been fully made (difficult to judge when the webx-engine subscribes to the webx-relay instruction publisher
+    let retry = 0;
+    while (retry < 3) {
+      try {
+        return await this._sendRequest(new WebXScreenInstruction(), 2000) as WebXScreenMessage;
+
+      } catch (error) {
+        retry++;
+        console.log(`Failed to initialise screen size: retrying ${retry}/3...`)
+
+        if (retry == 3) {
+          throw new Error(`unable to get screen size: ${error.message}`);
+        }
+      }
+    }
+  }
+
   private _sendInstruction(command: WebXInstruction): void {
     this._tunnel.sendInstruction(command);
     this._tracers.forEach((value, key) => {
@@ -215,8 +234,8 @@ export class WebXClient {
     });
   }
 
-  private _sendRequest(command: WebXInstruction): Promise<WebXMessage> {
-    return this._tunnel.sendRequest(command);
+  private _sendRequest(command: WebXInstruction, timeout?: number): Promise<WebXMessage> {
+    return this._tunnel.sendRequest(command, timeout);
   }
 
   private _handleMessage(message: WebXMessage): void {

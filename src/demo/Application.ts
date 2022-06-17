@@ -1,7 +1,7 @@
 import { Login } from './Login';
 import { WebXClient, WebXDisplay, WebXWebSocketTunnel } from '../core';
 import { WebXDemoDevTools } from './WebXDemoDevTools';
-import { AuthProvider } from './AuthProvider';
+import { WebxRelayProvider } from './WebxRelayProvider';
 
 export class Application {
 
@@ -20,7 +20,7 @@ export class Application {
 
   private _client: WebXClient;
 
-  private _authProvider = new AuthProvider();
+  private _relayProvider = new WebxRelayProvider();
 
 
   constructor() {
@@ -34,14 +34,30 @@ export class Application {
   }
 
   run(): void {
+    this.getConfiguration()
+      .then((configuration) => {
+        this._login.configuration = configuration;
+      })
+
     this._login.onLogin(this._onLogin.bind(this));
+  }
+
+  private async getConfiguration(): Promise<{standaloneHost: string, standalonePort: number}> {
+    const { standaloneHost, standalonePort, error} = await this._relayProvider.getConfiguration();
+
+    if (error) {
+      throw new Error(error);
+    } else {
+      return { standaloneHost, standalonePort }
+    }
+
   }
 
   private async _onLogin(host: string, port: number,  username: string, password: string, resolution: {width: number, height: number}, keyboard: string): Promise<void> {
     if (!this._client) {
 
       // Get authentication token
-      const { token, error } = await this._authProvider.getAuthenticationToken(username, password);
+      const { token, error } = await this._relayProvider.getAuthenticationToken(username, password);
 
       if (token) {
         const tunnelOptions = {

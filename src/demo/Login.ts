@@ -2,6 +2,8 @@ export class Login {
 
   private static DEFAULT_PORT = 5555;
 
+  private _configuration: {standaloneHost: string, standalonePort: number};
+
   private _host: string;
   private _port: number = 5555;
   private _username: string;
@@ -77,8 +79,12 @@ export class Login {
       name: "German keyboard (qwertz)",
     }];
 
+  set configuration(configuration: {standaloneHost: string, standalonePort: number}) {
+    this._configuration = configuration;
+    this._onConfiguration();
+  }
 
-    constructor() {
+  constructor() {
     this._initialise();
   }
 
@@ -122,6 +128,20 @@ export class Login {
 
   private _element(id: string): HTMLElement {
     return document.getElementById(id);
+  }
+
+  private _onConfiguration() {
+    const isStandalone = this._configuration.standalonePort != null && this._configuration.standalonePort != null;
+    if (isStandalone) {
+      const elements = document.getElementsByClassName('not_standalone');
+      for (let i = 0; i < elements.length; i++) {
+        (elements[i] as HTMLElement).style.display = 'none';
+      }
+
+      this._setStandaloneHost(this._configuration.standaloneHost);
+      this._setStandalonePort(this._configuration.standalonePort);
+      this._element('btn-login').textContent = 'Connect';
+    }
   }
 
   private _initialiseHost(): void {
@@ -262,4 +282,20 @@ export class Login {
     el.classList.remove('show');
   }
 
+
+  private _setStandaloneHost(value: string): void {
+    localStorage.setItem('login.remote-host', value);
+    const element = this._element('login-remote-host') as HTMLInputElement;
+    element.value = value;
+    element.disabled = true;
+    this._host = value;
+  }
+
+  private _setStandalonePort(value: number): void {
+    localStorage.setItem('login.remote-host', value.toString());
+    const element = this._element('login-remote-port') as HTMLInputElement;
+    element.value = value.toString();
+    element.disabled = true;
+    this._port = value;
+  }
 }

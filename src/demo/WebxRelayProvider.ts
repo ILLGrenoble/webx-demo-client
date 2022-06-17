@@ -1,7 +1,7 @@
 
 import axios  from 'axios';
 
-export class AuthProvider {
+export class WebxRelayProvider {
 
   constructor() {
   }
@@ -21,6 +21,19 @@ export class AuthProvider {
       return {
         token: data.token
       };
+
+    } catch (error) {
+      return {
+        error: error.message
+      }
+    }
+  }
+
+  async getConfiguration(): Promise<{standaloneHost?: string, standalonePort?: number, error?: string}> {
+    try {
+      const { data } = await axios.get('/relay/api/configuration');
+
+      return data;
 
     } catch (error) {
       return {

@@ -37,6 +37,11 @@ export class Application {
     this.getConfiguration()
       .then((configuration) => {
         this._login.configuration = configuration;
+        this._login.show();
+      })
+      .catch(error => {
+        console.error(`Failed to get relay configuration: ${error.message}`);
+        this._login.show();
       })
 
     this._login.onLogin(this._onLogin.bind(this));
@@ -53,21 +58,28 @@ export class Application {
 
   }
 
-  private async _onLogin(host: string, port: number,  username: string, password: string, resolution: {width: number, height: number}, keyboard: string): Promise<void> {
+  private async _onLogin(config?: {host: string, port: number,  username: string, password: string, width: number, height: number, keyboard: string}): Promise<void> {
     if (!this._client) {
 
       // Get authentication token
-      const { token, error } = await this._relayProvider.getAuthenticationToken(username, password);
+      const { token, error } = config
+        ? await this._relayProvider.getAuthenticationToken(config.username, config.password)
+        : {token: null, error: null};
 
-      if (token) {
-        const tunnelOptions = {
-          webxhost: host,
-          webxport: port,
+      if (error) {
+        console.error(error);
+        this._login.show();
+
+      } else {
+        const tunnelOptions = config ? {
+          webxhost: config.host,
+          webxport: config.port,
           token: token,
-          width: resolution.width,
-          height: resolution.height,
-          keyboard: keyboard
-        }
+          width: config.width,
+          height: config.height,
+          keyboard: config.keyboard
+        } : {};
+
         this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions), {});
 
         const loaderElement = document.getElementById('loader');
@@ -79,10 +91,6 @@ export class Application {
             console.error(error.message);
             this._onDisconnected();
           })
-
-      } else if (error) {
-        console.error(error);
-        this._login.show();
       }
     }
   }

@@ -4,13 +4,14 @@ export class Login {
 
   private _configuration: {standaloneHost: string, standalonePort: number};
 
+  private _isStandalone = false;
   private _host: string;
   private _port: number = 5555;
   private _username: string;
   private _password: string = '';
   private _resolution: {width: number, height: number} = null;
   private _keyboardLayout: string = null;
-  private _callback: (host: string, port: number,  username: string, password: string, resolution: {width: number, height: number}, keyboard: string) => void;
+  private _callback: (config?: {host: string, port: number, username: string, password: string, width: number, height: number, keyboard: string}) => void;
 
   private _loginHandler = this._handleLogin.bind(this);
   private _loginOnEnterKeyHandler = this._handleLoginOnEnterKey.bind(this);
@@ -88,12 +89,16 @@ export class Login {
     this._initialise();
   }
 
-  onLogin(callback: (host: string, port: number, username: string, password: string, resolution: {width: number, height: number}) => void) {
+  onLogin(callback: (config?: {host: string, port: number, username: string, password: string, width: number, height: number, keyboard: string}) => void) {
     this._callback = callback;
   }
 
   show(): void {
     this._showPanel();
+  }
+
+  hide(): void {
+    this._closePanel();
   }
 
   private _initialise(): void {
@@ -104,7 +109,6 @@ export class Login {
     this._initialiseResolution();
     this._initialiseKeyboard();
     this._bind();
-    this._showPanel();
   }
 
   private _bind(): void {
@@ -131,8 +135,8 @@ export class Login {
   }
 
   private _onConfiguration() {
-    const isStandalone = this._configuration.standalonePort != null && this._configuration.standalonePort != null;
-    if (isStandalone) {
+    this._isStandalone = this._configuration.standalonePort != null && this._configuration.standalonePort != null;
+    if (this._isStandalone) {
       const elements = document.getElementsByClassName('not_standalone');
       for (let i = 0; i < elements.length; i++) {
         (elements[i] as HTMLElement).style.display = 'none';
@@ -255,7 +259,7 @@ export class Login {
   private _handleLogin(): void {
     if (this._callback) {
       this._closePanel();
-      this._callback(this._host, this._port != null ? this._port : 5555, this._username, this._password, this._resolution, this._keyboardLayout);
+      this._callback(this._getLoginConfig());
     }
   }
 
@@ -264,7 +268,24 @@ export class Login {
     if (event.keyCode === 13) {
       if (this._callback) {
         this._closePanel();
-        this._callback(this._host, this._port != null ? this._port : 5555, this._username, this._password, this._resolution, this._keyboardLayout);
+        this._callback(this._getLoginConfig());
+      }
+    }
+  }
+
+  private _getLoginConfig(): {host: string, port: number, username: string, password: string, width: number, height: number, keyboard: string} {
+    if (this._isStandalone) {
+      return null;
+
+    } else {
+      return {
+        host: this._host,
+        port: this._port != null ? this._port : 5555,
+        username: this._username,
+        password: this._password,
+        width: this._resolution.width,
+        height: this._resolution.height,
+        keyboard: this._keyboardLayout,
       }
     }
   }
@@ -292,7 +313,7 @@ export class Login {
   }
 
   private _setStandalonePort(value: number): void {
-    localStorage.setItem('login.remote-host', value.toString());
+    localStorage.setItem('login.remote-port', value.toString());
     const element = this._element('login-remote-port') as HTMLInputElement;
     element.value = value.toString();
     element.disabled = true;

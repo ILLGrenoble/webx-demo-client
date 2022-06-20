@@ -135,7 +135,7 @@ export class Login {
   }
 
   private _onConfiguration() {
-    this._isStandalone = this._configuration.standalonePort != null && this._configuration.standalonePort != null;
+    this._isStandalone = this._configuration.standaloneHost != null && this._configuration.standalonePort != null;
     if (this._isStandalone) {
       const elements = document.getElementsByClassName('not_standalone');
       for (let i = 0; i < elements.length; i++) {
@@ -145,6 +145,9 @@ export class Login {
       this._setStandaloneHost(this._configuration.standaloneHost);
       this._setStandalonePort(this._configuration.standalonePort);
       this._element('btn-login').textContent = 'Connect';
+    } else {
+      const element = this._element('login-standalone-text') as HTMLInputElement;
+      element.style.display = 'none';
     }
   }
 

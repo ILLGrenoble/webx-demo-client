@@ -216,7 +216,7 @@ export class WebXClient {
 
       } catch (error) {
         retry++;
-        console.log(`Failed to initialise screen size: retrying ${retry}/3...`)
+        console.log(`Failed to initialise screen size at attempt ${retry}/3...`)
 
         if (retry == 3) {
           throw new Error(`unable to get screen size: ${error.message}`);

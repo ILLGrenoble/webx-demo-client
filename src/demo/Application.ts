@@ -31,6 +31,8 @@ export class Application {
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
 
     this._url = urlParams.get('url') || `${protocol}//${host}:${port}${path}`;
+
+    document.title = `WebX Demo (${host})`;
   }
 
   run(): void {

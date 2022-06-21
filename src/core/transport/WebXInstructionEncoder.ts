@@ -10,6 +10,7 @@ import {
   WebXWindowsInstruction
 } from '../instruction';
 import { WebXInstructionBuffer } from '.';
+import { WebXQualityInstruction } from '../instruction/WebXQualityInstruction';
 
 export class WebXInstructionEncoder {
 
@@ -38,6 +39,9 @@ export class WebXInstructionEncoder {
 
     } else if (instruction.type === WebXInstructionType.WINDOWS) {
       return this._createWindowsInstruction(instruction as WebXWindowsInstruction);
+
+    } else if (instruction.type === WebXInstructionType.QUALITY) {
+      return this._createQualityInstruction(instruction as WebXQualityInstruction);
     }
     return null;
   }
@@ -166,5 +170,24 @@ export class WebXInstructionEncoder {
     return encoder.buffer();
   }
 
+
+  /**
+   * Create a new quality instruction
+   * @param instruction the quality instruction to encode
+   * Structure:
+   *   Header: 24 bytes
+   *    sessionId: 16 bytes
+   *    type: 4 bytes
+   *    id: 4 bytes
+   *   Content: 4 bytes
+   *    qualityIndex: 4 bytes
+   */
+  private _createQualityInstruction(instruction: WebXQualityInstruction): ArrayBuffer {
+    const encoder = new WebXInstructionBuffer(instruction, 4);
+    return encoder
+      // write the contents
+      .putUInt32(instruction.qualityIndex)
+      .buffer();
+  }
 
 }

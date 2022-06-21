@@ -6,6 +6,7 @@ export enum WebXInstructionType {
   MOUSE = 5,
   KEYBOARD = 6,
   CURSOR_IMAGE = 7,
+  QUALITY = 8,
 }
 
 export namespace WebXInstructionType {
@@ -25,6 +26,8 @@ export namespace WebXInstructionType {
         return WebXInstructionType.KEYBOARD;
       case 'CURSOR_IMAGE':
         return WebXInstructionType.CURSOR_IMAGE;
+      case 'QUALITY':
+        return WebXInstructionType.QUALITY;
     }
   }
 }

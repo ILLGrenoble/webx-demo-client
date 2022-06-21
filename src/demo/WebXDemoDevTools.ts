@@ -17,6 +17,7 @@ export class WebXDemoDevTools {
   private readonly _instructionsDebuggerHandler = ((e:any) => { this._handleInstructionsDebugger(e.target.checked) }).bind(this);
   private readonly _visualDebuggerHandler = ((e:any) => { this._handleVisualDebugger(e.target.checked) }).bind(this);
   private readonly _statsDebuggerHandler = ((e:any) => { this._handleStatsDebugger(e.target.checked) }).bind(this);
+  private readonly _qualitySliderHandler = ((e:any) => { this._handleQualitySlider(e.target.value) }).bind(this);
 
   constructor(client: WebXClient, display: WebXDisplay) {
     this._display = display;
@@ -48,6 +49,7 @@ export class WebXDemoDevTools {
     this._element('toggle-instructions-debugger').addEventListener('change', this._instructionsDebuggerHandler);
     this._element('toggle-visual-debugger').addEventListener('change',this._visualDebuggerHandler);
     this._element('toggle-stats-debugger').addEventListener('change', this._statsDebuggerHandler);
+    this._element('quality-slider').addEventListener('input', this._qualitySliderHandler);
   }
 
   private _unbind(): void {
@@ -57,6 +59,7 @@ export class WebXDemoDevTools {
     this._element('toggle-instructions-debugger').removeEventListener('change', this._instructionsDebuggerHandler);
     this._element('toggle-visual-debugger').removeEventListener('change',this._visualDebuggerHandler);
     this._element('toggle-stats-debugger').removeEventListener('change', this._statsDebuggerHandler);
+    this._element('quality-slider').removeEventListener('input', this._qualitySliderHandler);
   }
 
   private _initialiseMessageDebugger(): void {
@@ -135,6 +138,10 @@ export class WebXDemoDevTools {
     } else {
       this._client.unregisterTracer('visual');
     }
+  }
+
+  private _handleQualitySlider(value: number): void {
+    this._client.setQualityIndex(value);
   }
 
 }

@@ -77,16 +77,19 @@
         </div>
       </div>
     </div>
+
     <div class='devtools'>
       <div class='devtools__events' id='devtools-panel'>
         <div class='devtools__events__toolbar'>
           <div class='devtools__events__toolbar__text'>Debug Toolbar</div>
           <button class='devtools__events__toolbar__btn_close' id='btn-dev-tools-close'>Hide</button>
         </div>
+
         <div class='devtools__events__tools'>
           <div class=='devtools__events__tools__text'>
             Tools
           </div>
+
           <ul class='devtools__events__tools__togglers'>
             <li>
               <input type='checkbox' id='toggle-stats-debugger' name='toggle-stats-debugger'>
@@ -106,6 +109,15 @@
             </li>
           </ul>
         </div>
+
+        <div class='devtools__events__quality'>
+          <div class='devtools__events__quality__text'>
+            Quality
+          </div>
+
+          <input type="range" min="1" max="10" value="10" class="devtools__events__quality__slider" id="quality-slider">
+        </div>
+
         <div class='devtools__events__panels'>
           <div class='devtools__events__panel devtools__events__panel__stats'>
             <div class='devtools__events__header'>Stats</div>

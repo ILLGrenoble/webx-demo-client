@@ -20,6 +20,7 @@ import { WebXKeyboard, WebXMouse, WebXMouseState } from './input';
 import { WebXConfiguration } from './WebXConfiguration';
 import { WebXHandler, WebXInstructionHandler, WebXMessageHandler, WebXStatsHandler } from './tracer';
 import { WebXBinarySerializer } from './transport';
+import { WebXQualityInstruction } from './instruction/WebXQualityInstruction';
 
 export class WebXClient {
 
@@ -204,6 +205,11 @@ export class WebXClient {
       tracer.destroy();
       this._tracers.delete(name);
     }
+  }
+
+  setQualityIndex(qualityIndex: number): void {
+    const qualityInstruction = new WebXQualityInstruction(qualityIndex);
+    this._sendInstruction(qualityInstruction);
   }
 
   private async _getScreenMessage(): Promise<WebXScreenMessage> {

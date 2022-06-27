@@ -4,6 +4,7 @@ import { Texture, LinearFilter } from 'three';
 import {APP_CONFIG} from '../utils';
 
 export class WebXWindow {
+  public static WINDOW_REFRESH_TIME_MS = 10000;
   private static _PLANE_GEOMETRY: THREE.PlaneGeometry = new THREE.PlaneGeometry(1.0, 1.0, 2, 2);
   private static _COLOR_INDEX = 0;
 
@@ -19,6 +20,8 @@ export class WebXWindow {
   private _z: number;
   private _width: number = 1;
   private _height: number = 1;
+
+  private _lastWindowUpdateTimeMs = 0;
 
   public get mesh(): THREE.Mesh {
     return this._mesh;
@@ -113,6 +116,15 @@ export class WebXWindow {
     this._updatePosition();
   }
 
+  get lastWindowUpdateTimeMs(): number {
+    return this._lastWindowUpdateTimeMs;
+  }
+
+  set lastWindowUpdateTimeMs(value: number) {
+    this._lastWindowUpdateTimeMs = value;
+  }
+
+
   constructor(configuration: { id: number; x: number; y: number; z: number; width: number; height: number }, textureFactory: WebXTextureFactory) {
     this._textureFactory = textureFactory;
     this._colorIndex = WebXWindow._COLOR_INDEX++;
@@ -135,14 +147,9 @@ export class WebXWindow {
     this._updatePosition();
   }
 
-  public loadWindowImage(): Promise<void> {
-    return new Promise((resolve) => {
-        this._textureFactory.getWindowTexture(this._id).then(response => {
-          this.updateTexture(response.depth, response.colorMap, response.alphaMap);
-
-          resolve();
-        });
-    })
+  public async loadWindowImage(): Promise<void> {
+    const response = await this._textureFactory.getWindowTexture(this._id);
+    this.updateTexture(response.depth, response.colorMap, response.alphaMap, true);
   }
 
   public setRectangle(x: number, y: number, z: number, width: number, height: number): void {
@@ -161,9 +168,7 @@ export class WebXWindow {
 
       // Force reload of image of dimensions differ
       if (this.colorMap.image.width !== this._width || this.colorMap.image.height !== this._height) {
-        this._textureFactory.getWindowTexture(this._id).then(response => {
-          this.updateTexture(response.depth, response.colorMap, response.alphaMap);
-        });
+        this.loadWindowImage().then();
       }
     }
 
@@ -171,7 +176,7 @@ export class WebXWindow {
     this._updatePosition();
   }
 
-  public updateTexture(depth: number, colorMap: Texture, alphaMap: Texture): void {
+  public updateTexture(depth: number, colorMap: Texture, alphaMap: Texture, isFullWindow: boolean): void {
     this._depth = depth;
 
     // Dispose of previous texture
@@ -202,6 +207,15 @@ export class WebXWindow {
     }
 
     this._material.transparent = (this.alphaMap != null || depth === 32);
+
+    if (isFullWindow) {
+      if (this._lastWindowUpdateTimeMs === 0) {
+        this._lastWindowUpdateTimeMs = Date.now() + Math.random() * WebXWindow.WINDOW_REFRESH_TIME_MS;
+
+      } else {
+        this._lastWindowUpdateTimeMs = Date.now();
+      }
+    }
   }
 
   private _updateScale(): void {

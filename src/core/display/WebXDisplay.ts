@@ -34,6 +34,8 @@ export class WebXDisplay {
 
   private _boundsElement: HTMLElement;
 
+  private _disposed = false;
+
   public get renderer(): THREE.WebGLRenderer {
     return this._renderer;
   }
@@ -111,51 +113,20 @@ export class WebXDisplay {
     this._clearElements();
 
     this._renderer.dispose();
-  }
 
-  private _clearElements(): void {
-    while (this._containerElement.firstChild) {
-      this._containerElement.removeChild(this._containerElement.firstChild);
-    }
-  }
-
-  private _createDisplayElement(): HTMLElement {
-    const element = document.createElement('div');
-    element.style.width = `${this._screenWidth}px`;
-    element.style.height = `${this._screenHeight}px`;
-    element.appendChild(this._renderer.domElement);
-    return element;
-  }
-
-  private _createDisplayBoundingElement(): HTMLElement {
-    const element = document.createElement('div');
-    element.appendChild(this._displayElement);
-    return element;
-  }
-
-  /**
-   * Render the display to the screen
-   */
-  private _render(): void {
-    this._clearElements();
-    this._displayElement = this._createDisplayElement();
-    this._boundsElement = this._createDisplayBoundingElement();
-    this._containerElement.appendChild(this._boundsElement);
-  }
-
-  /**
-   * Bind the event listeners
-   */
-  private _bindListeners(): void {
-    this.resize = this.resize.bind(this);
+    this._disposed = true;
   }
 
   animate(): void {
-    requestAnimationFrame((time) => {
-      this.animate();
-      TWEEN.update(time);
-    });
-    this._renderer.render(this._scene, this._camera);
+    if (!this._disposed) {
+      requestAnimationFrame((time) => {
+        this.animate();
+        TWEEN.update(time);
+      });
+      this._handleWindowRefresh(Date.now());
+
+      this._renderer.render(this._scene, this._camera);
+    }
   }
 
   addWindow(window: WebXWindow): void {
@@ -234,7 +205,7 @@ export class WebXDisplay {
   updateImage(windowId: number, depth: number, colorMap: Texture, alphaMap: Texture): void {
     const window: WebXWindow = this.getWindow(windowId);
     if (window != null && !(colorMap == null && alphaMap == null)) {
-      window.updateTexture(depth, colorMap, alphaMap);
+      window.updateTexture(depth, colorMap, alphaMap, true);
     }
   }
 
@@ -252,7 +223,7 @@ export class WebXDisplay {
           this._renderer.copyTextureToTexture(new THREE.Vector2(subImage.x, subImage.y), subImage.alphaMap, alphaMap);
         }
       }
-      window.updateTexture(window.depth, colorMap, alphaMap);
+      window.updateTexture(window.depth, colorMap, alphaMap, false);
     }
   }
 
@@ -299,5 +270,52 @@ export class WebXDisplay {
       this.autoScale();
     }
     element.style.transform = `scale(${this._scale},${this._scale})`;
+  }
+
+
+  private _clearElements(): void {
+    while (this._containerElement.firstChild) {
+      this._containerElement.removeChild(this._containerElement.firstChild);
+    }
+  }
+
+  private _createDisplayElement(): HTMLElement {
+    const element = document.createElement('div');
+    element.style.width = `${this._screenWidth}px`;
+    element.style.height = `${this._screenHeight}px`;
+    element.appendChild(this._renderer.domElement);
+    return element;
+  }
+
+  private _createDisplayBoundingElement(): HTMLElement {
+    const element = document.createElement('div');
+    element.appendChild(this._displayElement);
+    return element;
+  }
+
+  /**
+   * Render the display to the screen
+   */
+  private _render(): void {
+    this._clearElements();
+    this._displayElement = this._createDisplayElement();
+    this._boundsElement = this._createDisplayBoundingElement();
+    this._containerElement.appendChild(this._boundsElement);
+  }
+
+  /**
+   * Bind the event listeners
+   */
+  private _bindListeners(): void {
+    this.resize = this.resize.bind(this);
+  }
+
+  private _handleWindowRefresh(now: number) {
+    this._windows.forEach((window: WebXWindow) => {
+      if (window.lastWindowUpdateTimeMs != null && (now - window.lastWindowUpdateTimeMs) > WebXWindow.WINDOW_REFRESH_TIME_MS) {
+        window.lastWindowUpdateTimeMs = null;
+        window.loadWindowImage().then();
+      }
+    });
   }
 }

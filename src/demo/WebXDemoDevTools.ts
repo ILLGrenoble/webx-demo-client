@@ -40,6 +40,7 @@ export class WebXDemoDevTools {
     this._initialiseInstructionsDebugger();
     this._initialiseVisualDebugger();
     this._initialiseStatsDebugger();
+    this._initialiseQuality();
   }
 
   private _bind(): void {
@@ -88,6 +89,19 @@ export class WebXDemoDevTools {
     const element = this._element('toggle-stats-debugger') as HTMLInputElement;
     element.checked = enabled;
     this._handleStatsDebugger(enabled);
+  }
+
+  private _initialiseQuality(): void {
+    const qualityString = localStorage.getItem('devtools.quality');
+    if (qualityString != null) {
+      try {
+        const quality = parseInt(qualityString);
+        const element = this._element('quality-slider') as HTMLInputElement;
+        element.value = qualityString;
+        this._handleQualitySlider(qualityString);
+      } catch (_) {
+      }
+    }
   }
 
   private _element(id: string): HTMLElement {
@@ -140,8 +154,9 @@ export class WebXDemoDevTools {
     }
   }
 
-  private _handleQualitySlider(value: number): void {
-    this._client.setQualityIndex(value);
+  private _handleQualitySlider(value: string): void {
+    localStorage.setItem('devtools.quality', value);
+    this._client.setQualityIndex(parseInt(value));
   }
 
 }

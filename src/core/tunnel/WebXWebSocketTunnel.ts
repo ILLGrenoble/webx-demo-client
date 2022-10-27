@@ -1,12 +1,15 @@
 import { WebXTunnel } from './WebXTunnel';
 import { WebXInstruction, WebXInstructionResponse } from '../instruction';
 import { WebXMessage } from '../message';
-import { WebXBinarySerializer } from '../transport';
+import { WebXBinarySerializer, WebXMessageBuffer } from '../transport';
+import { WebXQoSHandler } from './WebXQoSHandler';
+import { WebXDefaultQoSHandler } from './WebXDefaultQoSHandler';
 
 export class WebXWebSocketTunnel implements WebXTunnel {
   private readonly _url: string;
   private _socket: WebSocket;
   private _serializer: WebXBinarySerializer;
+  private _qosHandler: WebXQoSHandler = new WebXDefaultQoSHandler(this);
 
   private _instructionResponses: Map<number, WebXInstructionResponse<any>> = new Map<number, WebXInstructionResponse<any>>();
 
@@ -36,22 +39,34 @@ export class WebXWebSocketTunnel implements WebXTunnel {
     });
   }
 
-  onMessage(data: any): void {
+  async onMessage(data: ArrayBuffer): Promise<void> {
     this.handleReceivedBytes(data);
-    this._serializer.deserializeMessage(data).then((message: WebXMessage) => {
-      if (message != null) {
-        // Handle any blocking requests
-        if (message.commandId != null && this._instructionResponses.get(message.commandId) != null) {
-          const instructionResponse = this._instructionResponses.get(message.commandId);
-          this._instructionResponses.delete(message.commandId);
-          instructionResponse.resolve(message);
 
-        } else {
-          // Send async message
-          this.handleMessage(message);
-        }
+    if (data.byteLength === 0) {
+      console.warn('Got a zero length message');
+      return null;
+    } else if (data.byteLength < 32) {
+      console.warn('Message does not contain a valid header');
+      return null;
+    }
+
+    const buffer = new WebXMessageBuffer(data);
+    this._qosHandler.handle(buffer.messageQueueLength);
+
+    const message = await this._serializer.deserializeMessage(buffer);
+    if (message != null) {
+
+      // Handle any blocking requests
+      if (message.commandId != null && this._instructionResponses.get(message.commandId) != null) {
+        const instructionResponse = this._instructionResponses.get(message.commandId);
+        this._instructionResponses.delete(message.commandId);
+        instructionResponse.resolve(message);
+
+      } else {
+        // Send async message
+        this.handleMessage(message);
       }
-    });
+    }
   }
 
   handleMessage(message: WebXMessage): void {
@@ -110,6 +125,14 @@ export class WebXWebSocketTunnel implements WebXTunnel {
           reject(error);
         });
     });
+  }
+
+  setQoSHandler(qosHandler: WebXQoSHandler): void {
+    this._qosHandler = qosHandler;
+  }
+
+  getQoSHandler(): WebXQoSHandler {
+    return this._qosHandler;
   }
 
 }

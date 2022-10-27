@@ -1,10 +1,11 @@
-import { WebXTunnel } from './tunnel';
+import { WebXQoSHandler, WebXTunnel } from './tunnel';
 import {
   WebXInstruction,
   WebXScreenInstruction,
   WebXKeyboardInstruction,
   WebXMouseInstruction,
-  WebXWindowsInstruction
+  WebXWindowsInstruction,
+  WebXQualityInstruction
 } from './instruction';
 import {
   WebXMessageType,
@@ -15,12 +16,11 @@ import {
   WebXMouseMessage,
   WebXScreenMessage
 } from './message';
-import { WebXDisplay, WebXCursorFactory, WebXTextureFactory, WebXCursor } from './display';
+import { WebXDisplay, WebXCursorFactory, WebXTextureFactory } from './display';
 import { WebXKeyboard, WebXMouse, WebXMouseState } from './input';
 import { WebXConfiguration } from './WebXConfiguration';
 import { WebXHandler, WebXInstructionHandler, WebXMessageHandler, WebXStatsHandler } from './tracer';
 import { WebXBinarySerializer } from './transport';
-import { WebXQualityInstruction } from './instruction/WebXQualityInstruction';
 
 export class WebXClient {
 
@@ -210,6 +210,15 @@ export class WebXClient {
   setQualityIndex(qualityIndex: number): void {
     const qualityInstruction = new WebXQualityInstruction(qualityIndex);
     this._sendInstruction(qualityInstruction);
+    this._tunnel.getQoSHandler().setQuality(qualityIndex);
+  }
+
+  setQoSHandler(qosHandler: WebXQoSHandler): void {
+    this._tunnel.setQoSHandler(qosHandler);
+  }
+
+  getQoSHandler(): WebXQoSHandler {
+    return this._tunnel.getQoSHandler();
   }
 
   private async _getScreenMessage(): Promise<WebXScreenMessage> {
@@ -284,6 +293,14 @@ export class WebXClient {
   }
 
   private _handleSentBytes(data: ArrayBuffer): void {
+    this._tracers.forEach((value, key) => {
+      if (value instanceof WebXStatsHandler) {
+        value.handle({ received: 0, sent: data.byteLength });
+      }
+    });
+  }
+
+  private _handleQuality(data: ArrayBuffer): void {
     this._tracers.forEach((value, key) => {
       if (value instanceof WebXStatsHandler) {
         value.handle({ received: 0, sent: data.byteLength });

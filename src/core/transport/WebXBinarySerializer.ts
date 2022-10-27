@@ -16,27 +16,23 @@ export class WebXBinarySerializer {
   serializeInstruction(instruction: WebXInstruction): ArrayBuffer {
     // return instruction.toJsonString();
     const encoded = this._instructionEncoder.encode(instruction);
-    if (encoded) {
-      return encoded;
-    } else {
+    if (encoded == null) {
       console.warn('Could not serialize instruction: Unknown type');
-      return null;
     }
+    return encoded;
   }
 
-  deserializeMessage(data: any): Promise<WebXMessage> {
-    const arrayBuffer = data as ArrayBuffer;
-    if (arrayBuffer.byteLength === 0) {
-      console.warn('Got a zero length message');
-      return new Promise<WebXMessage>((resolve, reject) => {
-        resolve(null);
-      });
+  async deserializeMessage(buffer: WebXMessageBuffer): Promise<WebXMessage> {
+    try {
+      const message = await this._messageDecoder.decode(buffer);
+      if (message == null) {
+        console.error(`Failed to decode message data`);
+      }
+      return message;
+
+    } catch (error) {
+      console.error(`Caught error decoding message data: ${error.message}`);
     }
-
-    const buffer: WebXMessageBuffer = new WebXMessageBuffer(arrayBuffer);
-    const { messageTypeId } = buffer;
-
-    return this._messageDecoder.decode(messageTypeId, buffer);
   }
 
 

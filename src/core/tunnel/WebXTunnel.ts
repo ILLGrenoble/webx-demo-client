@@ -1,6 +1,7 @@
 import { WebXInstruction } from '../instruction';
 import { WebXMessage } from '../message';
 import { WebXBinarySerializer } from '../transport';
+import { WebXQoSHandler } from './WebXQoSHandler';
 
 export interface WebXTunnel {
   connect(serializer: WebXBinarySerializer): Promise<Event>;
@@ -22,4 +23,8 @@ export interface WebXTunnel {
   isConnected(): boolean;
 
   onClosed(): void;
+
+  setQoSHandler(qosHandler: WebXQoSHandler): void;
+
+  getQoSHandler(): WebXQoSHandler;
 }

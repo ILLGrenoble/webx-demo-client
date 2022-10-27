@@ -16,11 +16,12 @@ export class WebXMessageDecoder {
   constructor(private _textureFactory: WebXTextureFactory) {
   }
 
-  decode(messageTypeId: WebXMessageType, buffer: WebXMessageBuffer): Promise<WebXMessage> {
+  decode(buffer: WebXMessageBuffer): Promise<WebXMessage> {
+    const { messageTypeId } = buffer;
 
-    /*if (buffer.messageTypeId === WebXMessageType.CONNECTION) {
-    } else */
-    if (messageTypeId === WebXMessageType.SCREEN) {
+    if (messageTypeId === WebXMessageType.CONNECTION) {
+
+    } else if (messageTypeId === WebXMessageType.SCREEN) {
       return this._createScreenMessage(buffer);
 
     } else if (messageTypeId === WebXMessageType.WINDOWS) {
@@ -41,6 +42,8 @@ export class WebXMessageDecoder {
     } else if (messageTypeId === WebXMessageType.POLL) {
       return this._createPollMessage(buffer);
     }
+
+    console.error(`Failed to decode message with typeId ${messageTypeId}`);
   }
 
   private _determineMimeType(imageType: string): string {

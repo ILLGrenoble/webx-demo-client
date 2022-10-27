@@ -1,16 +1,20 @@
 export class WebXMessageBuffer {
 
-  private _messageTypeId: number;
-  private _messageId: number;
-  private _bufferLength: number;
+  private readonly _messageTypeId: number;
+  private readonly _messageQueueLength: number;
+  private readonly _messageId: number;
+  private readonly _bufferLength: number;
 
   private _readOffset: number = 16;
-  private _writeOffset: number = 16;
 
   private _encoder: TextDecoder = new TextDecoder('utf-8');
 
   public get messageTypeId(): number {
     return this._messageTypeId;
+  }
+
+  get messageQueueLength(): number {
+    return this._messageQueueLength;
   }
 
   public get messageId(): number {
@@ -23,7 +27,8 @@ export class WebXMessageBuffer {
 
   constructor(private _buffer: ArrayBuffer) {
     this._readOffset = 16;
-    this._messageTypeId = this.getUint32();
+    let unused;
+    [this._messageTypeId, unused, this._messageQueueLength, unused] = this.getUint8Array(4);
     this._messageId = this.getUint32();
     this._bufferLength = this.getUint32();
     this._readOffset = 32;

@@ -1,6 +1,6 @@
 import './styles.scss';
 
-import { Application } from './demo';
+import { Application } from './src';
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Application();

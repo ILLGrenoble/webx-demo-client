@@ -6,4 +6,3 @@ export * from './tracer';
 export * from './tunnel';
 export * from './utils';
 export * from './WebXClient';
-export * from './WebXConfiguration';

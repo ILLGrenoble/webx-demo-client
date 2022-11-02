@@ -7,7 +7,7 @@ import {
   WebXMessageHandler,
   WebXMessageType,
   WebXSubImagesMessage
-} from '../../core';
+} from 'webx-web/src';
 import * as THREE from 'three';
 import { Object3D, Scene } from 'three';
 import * as TWEEN from '@tweenjs/tween.js';

@@ -18,7 +18,6 @@ import {
 } from './message';
 import { WebXDisplay, WebXCursorFactory, WebXTextureFactory } from './display';
 import { WebXKeyboard, WebXMouse, WebXMouseState } from './input';
-import { WebXConfiguration } from './WebXConfiguration';
 import { WebXHandler, WebXInstructionHandler, WebXMessageHandler, WebXStatsHandler } from './tracer';
 import { WebXBinarySerializer } from './transport';
 
@@ -50,7 +49,7 @@ export class WebXClient {
     return this._keyboard;
   }
 
-  constructor(private _tunnel: WebXTunnel, private _config: WebXConfiguration) {
+  constructor(private _tunnel: WebXTunnel) {
     this._textureFactory = new WebXTextureFactory(this._tunnel);
     this._cursorFactory = new WebXCursorFactory(this._tunnel);
   }

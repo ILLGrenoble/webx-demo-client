@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-    context: resolve(__dirname, 'src'),
+    context: resolve(__dirname, 'demo'),
     devtool: 'eval-cheap-module-source-map',
     entry: {
         app: ['./index.ts']

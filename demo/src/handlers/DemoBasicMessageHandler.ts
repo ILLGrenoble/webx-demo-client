@@ -9,7 +9,7 @@ import {
   WebXScreenMessage,
   WebXSubImagesMessage,
   WebXWindowsMessage
-} from '../../core';
+} from 'webx-web/src';
 
 export class DemoBasicMessageHandler extends WebXMessageHandler implements WebXHandler {
 

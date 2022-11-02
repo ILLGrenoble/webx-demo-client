@@ -1,7 +1,7 @@
 import { Login } from './Login';
-import { WebXClient, WebXDisplay, WebXWebSocketTunnel } from '../core';
 import { WebXDemoDevTools } from './WebXDemoDevTools';
 import { WebxRelayProvider } from './WebxRelayProvider';
+import { WebXClient, WebXDisplay, WebXWebSocketTunnel } from 'webx-web/src';
 
 export class Application {
 
@@ -82,7 +82,7 @@ export class Application {
           keyboard: config.keyboard
         } : {};
 
-        this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions), {});
+        this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions));
 
         const loaderElement = document.getElementById('loader');
         loaderElement.classList.add('show');

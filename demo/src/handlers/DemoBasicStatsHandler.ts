@@ -1,4 +1,4 @@
-import { WebXFileSize, WebXHandler, WebXStatsHandler } from '../../core';
+import { WebXFileSize, WebXHandler, WebXStatsHandler } from 'webx-web/src';
 
 export class DemoBasicStatsHandler extends WebXStatsHandler implements WebXHandler {
 

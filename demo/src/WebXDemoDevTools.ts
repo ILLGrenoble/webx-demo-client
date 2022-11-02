@@ -4,7 +4,7 @@ import {
   DemoBasicStatsHandler,
   DemoVisualMessageHandler
 } from './handlers';
-import { WebXClient, WebXDisplay } from '../core';
+import { WebXClient, WebXDisplay } from 'webx-web/src';
 
 export class WebXDemoDevTools {
 

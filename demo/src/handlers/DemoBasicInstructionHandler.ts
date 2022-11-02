@@ -5,7 +5,7 @@ import {
   WebXInstructionType,
   WebXKeyboardInstruction,
   WebXMouseInstruction
-} from '../../core';
+} from 'webx-web/src';
 
 export class DemoBasicInstructionHandler extends WebXInstructionHandler implements WebXHandler {
 

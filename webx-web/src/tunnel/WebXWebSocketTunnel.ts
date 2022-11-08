@@ -4,11 +4,16 @@ import { WebXBinarySerializer } from '../transport';
 export class WebXWebSocketTunnel extends WebXTunnel {
   private readonly _url: string;
   private _socket: WebSocket;
+  private _connectionOptions: any;
 
   constructor(url: string, options: any = {}) {
     super();
-    const parameters = new URLSearchParams(options);
-    this._url = `${url}?${parameters}`;
+    this._connectionOptions = options;
+    this._url = url;
+  }
+
+  getSocket(): WebSocket {
+    return this._socket;
   }
 
   send(data: ArrayBuffer): void {
@@ -16,10 +21,14 @@ export class WebXWebSocketTunnel extends WebXTunnel {
     this.handleSentBytes(data);
   }
 
-  connect(serializer: WebXBinarySerializer): Promise<Event> {
+  connect(data: any, serializer: WebXBinarySerializer): Promise<Event> {
+    const options = {...this._connectionOptions, ...data};
+    const parameters = new URLSearchParams(options);
+    const url = `${this._url}?${parameters}`;
+
     this._serializer = serializer;
     return new Promise((resolve, reject) => {
-      this._socket = new WebSocket(this._url);
+      this._socket = new WebSocket(url);
       this._socket.binaryType = 'arraybuffer';
       this._socket.onopen = (event: Event) => {
         resolve(null);

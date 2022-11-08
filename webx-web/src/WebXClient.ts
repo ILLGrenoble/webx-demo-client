@@ -33,6 +33,10 @@ export class WebXClient {
   private _mouse: WebXMouse;
   private _keyboard: WebXKeyboard;
 
+  get tunnel(): WebXTunnel {
+    return this._tunnel;
+  }
+
   get tracers(): Map<string, WebXHandler> {
     return this._tracers;
   }
@@ -54,9 +58,9 @@ export class WebXClient {
     this._cursorFactory = new WebXCursorFactory(this._tunnel);
   }
 
-  async connect(onCloseCallback: () => void): Promise<void> {
+  async connect(onCloseCallback: () => void, data: any): Promise<void> {
     this._onCloseCallback = onCloseCallback;
-    await this._tunnel.connect(new WebXBinarySerializer(this._textureFactory));
+    await this._tunnel.connect(data, new WebXBinarySerializer(this._textureFactory));
 
     this._tunnel.handleMessage = this._handleMessage.bind(this);
     this._tunnel.handleReceivedBytes = this._handleReceivedBytes.bind(this);
@@ -139,7 +143,7 @@ export class WebXClient {
    * Sends a mouse event having the properties provided by the given mouse state
    * @param mouseState the state of the mouse to send in the mouse event
    */
-  private sendMouse(mouseState: WebXMouseState): void {
+  public sendMouse(mouseState: WebXMouseState): void {
     this._sendInstruction(new WebXMouseInstruction(mouseState.x, mouseState.y, mouseState.getButtonMask()));
   }
 
@@ -148,7 +152,7 @@ export class WebXClient {
    * @param pressed {Boolean} Whether the key is pressed (true) or released (false)
    * @param key {number} the key to send
    */
-  private sendKeyEvent(key: number, pressed: boolean): void {
+  public sendKeyEvent(key: number, pressed: boolean): void {
     this._sendInstruction(new WebXKeyboardInstruction(key, pressed));
   }
 
@@ -156,7 +160,7 @@ export class WebXClient {
    * Sends a key down event
    * @param key {number} the key to send
    */
-  private sendKeyDown(key: number): void {
+  public sendKeyDown(key: number): void {
     this.sendKeyEvent(key, true);
   }
 
@@ -164,7 +168,7 @@ export class WebXClient {
    * Sends a key up event
    * @param key {number} the key to send
    */
-  private sendKeyUp(key: number): void {
+  public sendKeyUp(key: number): void {
     this.sendKeyEvent(key, false);
   }
 
@@ -226,7 +230,7 @@ export class WebXClient {
     let retry = 0;
     while (retry < 3) {
       try {
-        return await this._sendRequest(new WebXScreenInstruction(), 2000) as WebXScreenMessage;
+        return await this._sendRequest(new WebXScreenInstruction(), 5000) as WebXScreenMessage;
 
       } catch (error) {
         retry++;

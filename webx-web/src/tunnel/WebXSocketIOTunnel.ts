@@ -1,19 +1,25 @@
 import { WebXTunnel } from './WebXTunnel';
 import { WebXBinarySerializer } from '../transport';
-import { io, Socket } from 'socket.io-client'
+import * as SocketIOClient from 'socket.io-client'
+import Socket = SocketIOClient.Socket;
 
 export class WebXSocketIOTunnel extends WebXTunnel {
   private readonly _url: string;
   private readonly _eventChannel: string;
+  private readonly _connectionOptions: any;
 
   private _socket: Socket;
 
   constructor(url: string, options: any = {}, eventChannel: string) {
     super();
-    const parameters = new URLSearchParams(options);
-    this._url = `${url}?${parameters}`;
+    this._connectionOptions = options;
+    this._url = url;
     this._eventChannel = eventChannel;
     this._serializer = null;
+  }
+
+  getSocket(): Socket {
+    return this._socket;
   }
 
   send(data: ArrayBuffer): void {
@@ -21,15 +27,19 @@ export class WebXSocketIOTunnel extends WebXTunnel {
     this.handleSentBytes(data);
   }
 
-  connect(serializer: WebXBinarySerializer): Promise<Event> {
+  connect(data: any, serializer: WebXBinarySerializer): Promise<Event> {
+    const options = {...this._connectionOptions};
+    const parameters = new URLSearchParams(data);
+    options.query = parameters.toString();
+
     this._serializer = serializer;
     return new Promise((resolve, reject) => {
-      this._socket = io(this._url);
+      this._socket = io(this._url, options);
 
       this._socket.on('connect', () => resolve(null));
       this._socket.on('disconnect', this.handleClose.bind(this));
-      this._socket.on('connect_error', (event) => reject(event));
-      this._socket.on(this._eventChannel, (message: any) => this.onMessage(message.data));
+      this._socket.on('connect_error', (event: any) => reject(event));
+      this._socket.on(this._eventChannel, (message: any) => this.onMessage(message));
     });
   }
 

@@ -14,7 +14,7 @@ export abstract class WebXTunnel {
     this._serializer = null;
   }
 
-  abstract connect(serializer: WebXBinarySerializer): Promise<Event>;
+  abstract connect(data: any, serializer: WebXBinarySerializer): Promise<Event>;
 
   abstract disconnect(): void;
 

@@ -87,7 +87,7 @@ export class Application {
         const loaderElement = document.getElementById('loader');
         loaderElement.classList.add('show');
 
-        this._client.connect(this._disconnectedHandler)
+        this._client.connect(this._disconnectedHandler, {})
           .then(this._connectHandler)
           .catch(error => {
             console.error(error.message);

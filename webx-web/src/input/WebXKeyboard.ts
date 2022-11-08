@@ -47,7 +47,7 @@ export class WebXKeyboard {
   /**
    * The element to use to provide keyboard events
    */
-  private readonly _element: HTMLElement;
+  private readonly _element: HTMLElement | Document;
 
   /**
    * The state of every key, indexed by keysym. If a particular key is
@@ -105,7 +105,7 @@ export class WebXKeyboard {
    * Create a new keyboard instance
    * @param element the element to bind the keyboard to
    */
-  constructor(element: HTMLElement) {
+  constructor(element: HTMLElement | Document) {
     this._element = element;
     this._keyboardId = WebXKeyboard._NEXT_ID++;
     this._eventMarker = '_WEBX_KEYBOARD_HANDLED_BY_' + this._keyboardId;

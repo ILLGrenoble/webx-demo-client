@@ -17,6 +17,7 @@
   "keywords": [],
   "author": "",
   "devDependencies": {
+    "@types/socket.io-client": "^1.4.36",
     "@types/three": "^0.133.0",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
@@ -45,6 +46,7 @@
     "axios": "^0.25.0",
     "query-string": "^7.0.1",
     "three": "^0.133.1",
+    "socket.io-client": "^2.5.0",
     "webx-web": "file:webx-web"
   }
 }

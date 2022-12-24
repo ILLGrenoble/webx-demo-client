@@ -1,21 +1,22 @@
 {
-  "name": "webx-web-demo",
-  "version": "1.0.0",
-  "private": true,
+  "name": "webx-demo-client",
+  "description": "Client WebX remote desktop demo application",
+  "version": "0.1.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "build": "webpack --config webpack.prod.js",
-    "build-lib": "webpack --config webpack-webxlib.js",
     "start": "webpack serve --config ./webpack.dev.js --mode development"
   },
+  "keywords": [
+    "webx"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://code.ill.fr/panosc/data-analysis-services/webx-web.git"
+    "url": "https://github.com/ILLGrenoble/webx-demo-client.git"
   },
-  "keywords": [],
-  "author": "",
+  "license": "GPL-3.0",
+  "author": "Stuart Caunt <caunt@ill.fr>",
   "devDependencies": {
     "@types/socket.io-client": "^1.4.36",
     "@types/three": "^0.133.0",
@@ -42,11 +43,8 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@tweenjs/tween.js": "^18.6.4",
+    "@illgrenoble/webx-client": "^0.1.1",
     "axios": "^0.25.0",
-    "query-string": "^7.0.1",
-    "three": "^0.133.1",
-    "socket.io-client": "^2.5.0",
-    "webx-web": "file:webx-web"
+    "query-string": "^7.0.1"
   }
 }

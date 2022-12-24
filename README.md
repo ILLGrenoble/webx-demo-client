@@ -1,3 +1,5 @@
+# WebX Demo Client
+
 ## Installation
 ```
 npm install

@@ -1,5 +1,7 @@
 # WebX Demo Client
 
+A demo client using the webx-client npm library.
+
 ## Installation
 ```
 npm install

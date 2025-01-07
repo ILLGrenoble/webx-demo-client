@@ -1,7 +1,7 @@
 {
   "name": "webx-demo-client",
   "description": "Client WebX remote desktop demo application",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "scripts": {
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",

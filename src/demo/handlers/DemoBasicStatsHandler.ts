@@ -1,4 +1,5 @@
-import { WebXFileSize, WebXHandler, WebXStatsHandler } from '@illgrenoble/webx-client';
+import { WebXHandler, WebXStatsHandler } from '@illgrenoble/webx-client';
+import {FileSize} from "../utils/FileSize";
 
 export class DemoBasicStatsHandler extends WebXStatsHandler implements WebXHandler {
 
@@ -69,10 +70,10 @@ export class DemoBasicStatsHandler extends WebXStatsHandler implements WebXHandl
     const el = document.createElement('tr');
     const totalReceivedBytesPerSecond = this._calculateReceivedBytesPerSecond();
     const totalSentBytesPerSecond = this._calculateSentBytesPerSecond();
-    const humanTotalReceivedBytes = WebXFileSize.humanFileSize(this._totalReceivedBytes);
-    const humanTotalSentBytes = WebXFileSize.humanFileSize(this._totalSentBytes);
-    const humanTotalReceivedBytesPerSecond = WebXFileSize.humanFileSize(totalReceivedBytesPerSecond);
-    const humanTotalSentBytesPerSecond = WebXFileSize.humanFileSize(totalSentBytesPerSecond);
+    const humanTotalReceivedBytes = FileSize.humanFileSize(this._totalReceivedBytes);
+    const humanTotalSentBytes = FileSize.humanFileSize(this._totalSentBytes);
+    const humanTotalReceivedBytesPerSecond = FileSize.humanFileSize(totalReceivedBytesPerSecond);
+    const humanTotalSentBytesPerSecond = FileSize.humanFileSize(totalSentBytesPerSecond);
     el.innerHTML = `
       <td>${humanTotalReceivedBytes} (${humanTotalReceivedBytesPerSecond}/s)</td>
       <td>${humanTotalSentBytes} (${humanTotalSentBytesPerSecond}/s)</td>

@@ -1,5 +1,4 @@
 import {
-  WebXColourGenerator,
   WebXDisplay,
   WebXHandler,
   WebXImageMessage,
@@ -11,6 +10,7 @@ import {
 import * as THREE from 'three';
 import { Object3D, Scene } from 'three';
 import * as TWEEN from '@tweenjs/tween.js';
+import {ColorGenerator} from "../utils";
 
 export class DemoVisualMessageHandler extends WebXMessageHandler implements WebXHandler {
 
@@ -52,14 +52,14 @@ export class DemoVisualMessageHandler extends WebXMessageHandler implements WebX
       const window = this._display.getWindow(imageMessage.windowId);
       const { width, height } = imageMessage.colorMap.image;
 
-      this._createMesh(window.x, window.y, width, height, WebXColourGenerator.indexedColour(window.colorIndex));
+      this._createMesh(window.x, window.y, width, height, ColorGenerator.indexedColour(window.colorIndex));
 
     } else if (message.type === WebXMessageType.SUBIMAGES) {
       const subImageMessage = message as WebXSubImagesMessage;
       const window = this._display.getWindow(subImageMessage.windowId);
 
       subImageMessage.subImages.forEach(subImage => {
-        this._createMesh(window.x + subImage.x, window.y + subImage.y, subImage.width, subImage.height, WebXColourGenerator.indexedColour(window.colorIndex));
+        this._createMesh(window.x + subImage.x, window.y + subImage.y, subImage.width, subImage.height, ColorGenerator.indexedColour(window.colorIndex));
       });
     }
   }

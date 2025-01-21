@@ -1,5 +1,4 @@
 import {
-  WebXFileSize,
   WebXHandler,
   WebXImageMessage,
   WebXMessage,
@@ -10,6 +9,7 @@ import {
   WebXSubImagesMessage,
   WebXWindowsMessage
 } from '@illgrenoble/webx-client';
+import {FileSize} from "../utils/FileSize";
 
 export class DemoBasicMessageHandler extends WebXMessageHandler implements WebXHandler {
 
@@ -36,13 +36,13 @@ export class DemoBasicMessageHandler extends WebXMessageHandler implements WebXH
   private _createMessageText(message: WebXMessage): string {
     if (message.type === WebXMessageType.IMAGE) {
       const imageMessage = message as WebXImageMessage;
-      const size = WebXFileSize.humanFileSize(imageMessage.size);
+      const size = FileSize.humanFileSize(imageMessage.size);
       const { width, height } = imageMessage.colorMap.image;
       return `${width} x ${height} (${size})`;
 
     } else if (message.type === WebXMessageType.SUBIMAGES) {
       const subImagesMessage = message as WebXSubImagesMessage;
-      const size = WebXFileSize.humanFileSize(subImagesMessage.size);
+      const size = FileSize.humanFileSize(subImagesMessage.size);
       return `count = ${subImagesMessage.subImages.length} (${size})`;
 
     } else if (message.type === WebXMessageType.MOUSE) {

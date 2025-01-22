@@ -2,6 +2,7 @@ import { Login } from './Login';
 import { WebXDemoDevTools } from './WebXDemoDevTools';
 import { WebxRelayProvider } from './WebxRelayProvider';
 import { WebXClient, WebXDisplay, WebXWebSocketTunnel } from '@illgrenoble/webx-client';
+import * as TWEEN from '@tweenjs/tween.js';
 
 export class Application {
 
@@ -47,6 +48,9 @@ export class Application {
       })
 
     this._login.onLogin(this._onLogin.bind(this));
+
+    // start animation control
+    this._animate();
   }
 
   private async getConfiguration(): Promise<{standaloneHost: string, standalonePort: number}> {
@@ -58,6 +62,13 @@ export class Application {
       return { standaloneHost, standalonePort }
     }
 
+  }
+
+  private _animate(): void {
+    requestAnimationFrame((time) => {
+      TWEEN.update(time);
+      this._animate();
+    });
   }
 
   private async _onLogin(config?: {host: string, port: number,  username: string, password: string, width: number, height: number, keyboard: string}): Promise<void> {

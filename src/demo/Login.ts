@@ -297,12 +297,12 @@ export class Login {
         (elements[i] as HTMLElement).style.display = 'none';
       }
       const sessionIdConnect = document.getElementById('session_id_connect');
-      sessionIdConnect.style.display = 'inline-block';
+      sessionIdConnect.style.display = '';
 
     } else {
       const elements = document.getElementsByClassName('create_session');
       for (let i = 0; i < elements.length; i++) {
-        (elements[i] as HTMLElement).style.display = 'inline-block';
+        (elements[i] as HTMLElement).style.display = '';
       }
       const sessionIdConnect = document.getElementById('session_id_connect');
       sessionIdConnect.style.display = 'none';

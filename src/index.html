@@ -52,20 +52,28 @@
             <span class='login__content__element port'>
               <input type='number' id='login-remote-port' name='remote-port' placeholder='port'>
             </span>
-            <div class='login__content__element not_standalone'>
+            <div class='login__content__session-id-checkbox not_standalone'>
+              <input type="checkbox" id="login-session-id-check" name="has-session-id" />
+              <label for="login-session-id-check">Connect using session Id</label>
+            </div>
+            <div class='login__content__element not_standalone' id="session_id_connect">
+              <label for='login-session-id'>Session Id</label>
+              <input type='text' id='login-session-id' name='session-id'>
+            </div>
+            <div class='login__content__element not_standalone create_session'>
               <label for='login-username'>Username</label>
               <input type='text' id='login-username' name='username'>
             </div>
-            <div class='login__content__element not_standalone'>
+            <div class='login__content__element not_standalone create_session'>
               <label for='login-password'>Password</label>
               <input type='password' id='login-password' name='password' autocomplete='off'>
             </div>
-            <div class='login__content__element not_standalone'>
+            <div class='login__content__element not_standalone create_session'>
               <label for='login-resolution'>Resolution</label>
               <select id='login-resolution' name='login-resolution'>
               </select>
             </div>
-            <div class='login__content__element not_standalone'>
+            <div class='login__content__element not_standalone create_session'>
               <label for='login-keyboard'>Keyboard</label>
               <select id='login-keyboard' name='login-keyboard'>
               </select>

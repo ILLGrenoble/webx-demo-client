@@ -1,3 +1,21 @@
+
+
+export type AuthLoginConfig = {
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  width: number;
+  height: number;
+  keyboard: string;
+}
+
+export type SessionConnectConfig = {
+  host: string;
+  port: number;
+  sessionId: string;
+}
+
 export class Login {
 
   private static DEFAULT_PORT = 5555;
@@ -5,13 +23,15 @@ export class Login {
   private _configuration: {standaloneHost: string, standalonePort: number};
 
   private _isStandalone = false;
+  private _connectWithSessionId = false;
   private _host: string;
   private _port: number = 5555;
   private _username: string;
   private _password: string = '';
+  private _sessionId: string = '';
   private _resolution: {width: number, height: number} = null;
   private _keyboardLayout: string = null;
-  private _callback: (config?: {host: string, port: number, username: string, password: string, width: number, height: number, keyboard: string}) => void;
+  private _callback: (config?: AuthLoginConfig | {host: string, port: number, sessionId: string}) => void;
 
   private _loginHandler = this._handleLogin.bind(this);
   private _loginOnEnterKeyHandler = this._handleLoginOnEnterKey.bind(this);
@@ -89,7 +109,7 @@ export class Login {
     this._initialise();
   }
 
-  onLogin(callback: (config?: {host: string, port: number, username: string, password: string, width: number, height: number, keyboard: string}) => void): void {
+  onLogin(callback: (config?: AuthLoginConfig | SessionConnectConfig) => void): void {
     this._callback = callback;
   }
 
@@ -115,9 +135,11 @@ export class Login {
     this._element('login-remote-host').addEventListener('change', (e: any) => this._handleHostChange(e.target.value));
     this._element('login-remote-port').addEventListener('change', (e: any) => this._handlePortChange(e.target.value));
     this._element('login-username').addEventListener('change', (e: any) => this._handleUsernameChange(e.target.value));
+    this._element('login-session-id').addEventListener('change', (e: any) => this._handleSessionIdChange(e.target.value));
     this._element('login-password').addEventListener('change', (e: any) => this._handlePasswordChange(e.target.value));
     this._element('login-resolution').addEventListener('change', (e: any) => this._handleResolutionChange(e.target.value));
     this._element('login-keyboard').addEventListener('change', (e: any) => this._handleKeyboardChange(e.target.value));
+    this._element('login-session-id-check').addEventListener('change', (e: any) => this._handleSessionIdCheck(e.target.checked));
   }
 
   private _bindInputEvents(): void {
@@ -148,6 +170,9 @@ export class Login {
     } else {
       const element = this._element('login-standalone-text') as HTMLInputElement;
       element.style.display = 'none';
+
+      const sessionIdConnect = document.getElementById('session_id_connect');
+      sessionIdConnect.style.display = 'none'
     }
   }
 
@@ -237,6 +262,10 @@ export class Login {
     }
   }
 
+  private _handleSessionIdChange(value: string): void {
+    this._sessionId = value;
+  }
+
   private _handleUsernameChange(value: string): void {
     this._username = value;
     localStorage.setItem('login.username', value);
@@ -259,6 +288,27 @@ export class Login {
     localStorage.setItem('login.keyboard', value);
   }
 
+  private _handleSessionIdCheck(value: boolean): void {
+    this._connectWithSessionId = value;
+
+    if (this._connectWithSessionId) {
+      const elements = document.getElementsByClassName('create_session');
+      for (let i = 0; i < elements.length; i++) {
+        (elements[i] as HTMLElement).style.display = 'none';
+      }
+      const sessionIdConnect = document.getElementById('session_id_connect');
+      sessionIdConnect.style.display = 'inline-block';
+
+    } else {
+      const elements = document.getElementsByClassName('create_session');
+      for (let i = 0; i < elements.length; i++) {
+        (elements[i] as HTMLElement).style.display = 'inline-block';
+      }
+      const sessionIdConnect = document.getElementById('session_id_connect');
+      sessionIdConnect.style.display = 'none';
+    }
+  }
+
   private _handleLogin(): void {
     if (this._callback) {
       this._closePanel();
@@ -276,9 +326,17 @@ export class Login {
     }
   }
 
-  private _getLoginConfig(): {host: string, port: number, username: string, password: string, width: number, height: number, keyboard: string} {
+  private _getLoginConfig(): AuthLoginConfig | SessionConnectConfig {
     if (this._isStandalone) {
       return null;
+
+    } else if (this._connectWithSessionId) {
+
+      return {
+        host: this._host,
+        port: this._port != null ? this._port : 5555,
+        sessionId: this._sessionId,
+      }
 
     } else {
       return {

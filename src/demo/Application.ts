@@ -1,4 +1,4 @@
-import { Login } from './Login';
+import { Login, AuthLoginConfig, SessionConnectConfig } from './Login';
 import { WebXDemoDevTools } from './WebXDemoDevTools';
 import { WebxRelayProvider } from './WebxRelayProvider';
 import { WebXClient, WebXDisplay, WebXWebSocketTunnel } from '@illgrenoble/webx-client';
@@ -71,40 +71,53 @@ export class Application {
     });
   }
 
-  private async _onLogin(config?: {host: string, port: number,  username: string, password: string, width: number, height: number, keyboard: string}): Promise<void> {
+  private async _onLogin(config?: AuthLoginConfig | SessionConnectConfig ): Promise<void> {
     if (!this._client) {
+      let tunnelOptions: any = {};
+      if (config == null) {
+        tunnelOptions = {};
 
-      // Get authentication token
-      const { token, error } = config
-        ? await this._relayProvider.getAuthenticationToken(config.username, config.password)
-        : {token: null, error: null};
-
-      if (error) {
-        console.error(error);
-        this._login.show();
-
-      } else {
-        const tunnelOptions = config ? {
+      } else if ('sessionId' in config) {
+        tunnelOptions = {
           webxhost: config.host,
           webxport: config.port,
-          token: token,
-          width: config.width,
-          height: config.height,
-          keyboard: config.keyboard
-        } : {};
+          sessionid: config.sessionId,
+        }
 
-        this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions));
+      } else {
+        // Get authentication token
+        const { token, error } = await this._relayProvider.getAuthenticationToken(config.username, config.password);
 
-        const loaderElement = document.getElementById('loader');
-        loaderElement.classList.add('show');
+        if (error) {
+          console.error(error);
+          this._login.show();
+          return;
 
-        this._client.connect(this._disconnectedHandler, {})
-          .then(this._connectHandler)
-          .catch(error => {
-            console.error(error.message);
-            this._onDisconnected();
-          })
+        } else {
+          tunnelOptions = {
+            webxhost: config.host,
+            webxport: config.port,
+            token: token,
+            width: config.width,
+            height: config.height,
+            keyboard: config.keyboard
+          };
+        }
       }
+
+      this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions));
+
+      const loaderElement = document.getElementById('loader');
+      loaderElement.classList.add('show');
+
+      this._client.connect(this._disconnectedHandler, {})
+        .then(this._connectHandler)
+        .catch(error => {
+          console.error(error.message);
+          this._onDisconnected();
+        })
+
+
     }
   }
 

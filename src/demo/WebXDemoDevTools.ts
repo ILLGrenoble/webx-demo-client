@@ -18,8 +18,6 @@ export class WebXDemoDevTools {
   private readonly _visualDebuggerHandler = ((e:any) => { this._handleVisualDebugger(e.target.checked) }).bind(this);
   private readonly _statsDebuggerHandler = ((e:any) => { this._handleStatsDebugger(e.target.checked) }).bind(this);
   private readonly _qualitySliderHandler = ((e:any) => { this._handleQualitySlider(e.target.value) }).bind(this);
-  private readonly _autoQualityHandler = ((e:any) => { this._handleAutoQuality(e.target.checked) }).bind(this);
-  private readonly _qosHandlerEventHandler = ((data: any) => { this._onQoSEvent(data)}).bind(this);
 
   constructor(client: WebXClient, display: WebXDisplay) {
     this._display = display;
@@ -53,7 +51,6 @@ export class WebXDemoDevTools {
     this._element('toggle-visual-debugger').addEventListener('change',this._visualDebuggerHandler);
     this._element('toggle-stats-debugger').addEventListener('change', this._statsDebuggerHandler);
     this._element('quality-slider').addEventListener('input', this._qualitySliderHandler);
-    this._element('toggle-auto-qos').addEventListener('change', this._autoQualityHandler);
   }
 
   private _unbind(): void {
@@ -64,7 +61,6 @@ export class WebXDemoDevTools {
     this._element('toggle-visual-debugger').removeEventListener('change',this._visualDebuggerHandler);
     this._element('toggle-stats-debugger').removeEventListener('change', this._statsDebuggerHandler);
     this._element('quality-slider').removeEventListener('input', this._qualitySliderHandler);
-    this._element('toggle-auto-qos').removeEventListener('change', this._autoQualityHandler);
   }
 
   private _initialiseMessageDebugger(): void {
@@ -97,11 +93,8 @@ export class WebXDemoDevTools {
 
   private _initialiseQuality(): void {
     const qualityString = localStorage.getItem('devtools.quality');
-    const autoQualityEnabled = localStorage.getItem('devtools.quality.auto') !== 'false';
 
     const qualityElement = this._element('quality-slider') as HTMLInputElement;
-    const autoQualityElement = this._element('toggle-auto-qos') as HTMLInputElement;
-    autoQualityElement.checked = autoQualityEnabled;
 
     if (qualityString != null) {
       try {
@@ -111,8 +104,6 @@ export class WebXDemoDevTools {
         // Got error
       }
     }
-
-    this._handleAutoQuality(autoQualityEnabled);
   }
 
   private _element(id: string): HTMLElement {
@@ -168,25 +159,6 @@ export class WebXDemoDevTools {
   private _handleQualitySlider(value: string): void {
     localStorage.setItem('devtools.quality', value);
     this._client.setQualityIndex(parseInt(value));
-  }
-
-  private _handleAutoQuality(enabled: boolean): void {
-    localStorage.setItem('devtools.quality.auto', enabled ? 'true' : 'false');
-    const qosHandler = this._client.getQoSHandler();
-    qosHandler.setActive(enabled);
-    if (enabled) {
-      qosHandler.addEventListener('quality', this._qosHandlerEventHandler);
-    } else {
-      // do nothing
-    }
-
-    const qualityElement = this._element('quality-slider') as HTMLInputElement;
-    qualityElement.disabled = enabled;
-  }
-
-  private _onQoSEvent(data: any): void {
-    const qualityElement = this._element('quality-slider') as HTMLInputElement;
-    qualityElement.value = `${data.detail.quality}`;
   }
 
 }

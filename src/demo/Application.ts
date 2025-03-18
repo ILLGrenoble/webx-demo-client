@@ -2,7 +2,6 @@ import { Login, AuthLoginConfig, SessionConnectConfig } from './Login';
 import { WebXDemoDevTools } from './WebXDemoDevTools';
 import { WebxRelayProvider } from './WebxRelayProvider';
 import { WebXClient, WebXDisplay, WebXWebSocketTunnel } from '@illgrenoble/webx-client';
-import * as TWEEN from '@tweenjs/tween.js';
 
 export class Application {
 
@@ -65,8 +64,7 @@ export class Application {
   }
 
   private _animate(): void {
-    requestAnimationFrame((time) => {
-      TWEEN.update(time);
+    requestAnimationFrame(() => {
       this._animate();
     });
   }
@@ -137,7 +135,7 @@ export class Application {
         const loaderElement = document.getElementById('loader');
         loaderElement.classList.remove('show');
 
-        this._devTools = new WebXDemoDevTools(this._client, display);
+        this._devTools = new WebXDemoDevTools(this._client);
       })
       .catch(err => {
         console.error(err.message);

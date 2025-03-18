@@ -9,7 +9,7 @@ import {
   WebXSubImagesMessage,
   WebXWindowsMessage
 } from '@illgrenoble/webx-client';
-import {FileSize} from "../utils/FileSize";
+import {FileSize} from "../utils";
 
 export class DemoBasicMessageHandler extends WebXMessageHandler implements WebXHandler {
 

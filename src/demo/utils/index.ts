@@ -1,2 +1,2 @@
-export * from './ColorGenerator'
+export * from './FileSize'
 

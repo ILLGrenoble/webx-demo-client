@@ -3,14 +3,12 @@ import {
   DemoBasicMessageHandler,
   DemoBasicStatsHandler,
   DemoQualityMessageHandler,
-  DemoVisualMessageHandler
 } from './handlers';
-import { WebXClient, WebXDisplay } from '@illgrenoble/webx-client';
+import { WebXClient } from '@illgrenoble/webx-client';
 
 export class WebXDemoDevTools {
 
   private readonly _client: WebXClient;
-  private readonly _display: WebXDisplay;
 
   private readonly _showPanelHandler = this._handleShowPanel.bind(this);
   private readonly _closePanelHandler = this._handleClosePanel.bind(this);
@@ -20,8 +18,7 @@ export class WebXDemoDevTools {
   private readonly _statsDebuggerHandler = ((e:any) => { this._handleStatsDebugger(e.target.checked) }).bind(this);
   private readonly _qualitySliderHandler = ((e:any) => { this._handleQualitySlider(e.target.value) }).bind(this);
 
-  constructor(client: WebXClient, display: WebXDisplay) {
-    this._display = display;
+  constructor(client: WebXClient) {
     this._client = client;
     this._initialise();
     this._bind();
@@ -151,7 +148,7 @@ export class WebXDemoDevTools {
   private _handleVisualDebugger(enabled: boolean): void {
     localStorage.setItem('devtools.debugger.visual.enabled', enabled ? 'true' : 'false');
     if (enabled) {
-      this._client.registerTracer('visual', new DemoVisualMessageHandler(this._display));
+      this._client.registerTracer('visual', this._client.createDebugImageMessageHandler());
     } else {
       this._client.unregisterTracer('visual');
     }
@@ -160,7 +157,7 @@ export class WebXDemoDevTools {
   private _handleQualitySlider(value: string): void {
     localStorage.setItem('devtools.quality', value);
     this._client.setQualityIndex(parseInt(value));
-    this._client.registerTracer('message', new DemoQualityMessageHandler());
+    this._client.registerTracer('quality', new DemoQualityMessageHandler());
   }
 
 }

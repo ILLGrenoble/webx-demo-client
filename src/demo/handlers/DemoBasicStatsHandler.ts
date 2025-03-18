@@ -1,5 +1,5 @@
 import { WebXHandler, WebXStatsHandler } from '@illgrenoble/webx-client';
-import {FileSize} from "../utils/FileSize";
+import {FileSize} from "../utils";
 
 export class DemoBasicStatsHandler extends WebXStatsHandler implements WebXHandler {
 

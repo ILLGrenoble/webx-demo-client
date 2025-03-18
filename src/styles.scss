@@ -292,9 +292,33 @@ body {
     }
   }
 
+  &__quality_bars {
+    list-style: none;
+    width: 100%;
+
+    li {
+      margin-left: 10px;
+
+      input {
+        margin-top: 2px;
+      }
+
+      label {
+        width: 68px;
+        text-align: right;
+      }
+
+      &.expand {
+        display: flex;
+        flex-direction: row;
+        column-gap: 10px;
+        line-height: 18px;      }
+    }
+  }
+
 
   &__quality {
-    height: 30px;
+    height: 45px;
     background-color: #212526;
     align-items: stretch;
     display: flex;

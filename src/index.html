@@ -122,9 +122,14 @@
           <div class='devtools__events__quality__text'>
             Quality
           </div>
-          <ul class='devtools__events__tools__togglers'>
+          <ul class='devtools__events__quality_bars'>
             <li class="expand">
-              <input type="range" min="1" max="10" value="10" class="devtools__events__quality__slider" id="quality-slider">
+              <label for='max-quality-slider'>Max</label>
+              <input type="range" min="1" max="10" value="10" class="devtools__events__quality__slider" id="max-quality-slider">
+            </li>
+            <li class="expand">
+              <label for='quality-slider'>Current</label>
+              <input disabled="true" type="range" min="1" max="10" value="10" class="devtools__events__quality__slider" id="quality-slider">
             </li>
           </ul>
         </div>

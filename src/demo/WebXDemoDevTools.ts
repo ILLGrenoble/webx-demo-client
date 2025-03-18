@@ -2,6 +2,7 @@ import {
   DemoBasicInstructionHandler,
   DemoBasicMessageHandler,
   DemoBasicStatsHandler,
+  DemoQualityMessageHandler,
   DemoVisualMessageHandler
 } from './handlers';
 import { WebXClient, WebXDisplay } from '@illgrenoble/webx-client';
@@ -50,7 +51,7 @@ export class WebXDemoDevTools {
     this._element('toggle-instructions-debugger').addEventListener('change', this._instructionsDebuggerHandler);
     this._element('toggle-visual-debugger').addEventListener('change',this._visualDebuggerHandler);
     this._element('toggle-stats-debugger').addEventListener('change', this._statsDebuggerHandler);
-    this._element('quality-slider').addEventListener('input', this._qualitySliderHandler);
+    this._element('max-quality-slider').addEventListener('input', this._qualitySliderHandler);
   }
 
   private _unbind(): void {
@@ -60,7 +61,7 @@ export class WebXDemoDevTools {
     this._element('toggle-instructions-debugger').removeEventListener('change', this._instructionsDebuggerHandler);
     this._element('toggle-visual-debugger').removeEventListener('change',this._visualDebuggerHandler);
     this._element('toggle-stats-debugger').removeEventListener('change', this._statsDebuggerHandler);
-    this._element('quality-slider').removeEventListener('input', this._qualitySliderHandler);
+    this._element('max-quality-slider').removeEventListener('input', this._qualitySliderHandler);
   }
 
   private _initialiseMessageDebugger(): void {
@@ -94,7 +95,7 @@ export class WebXDemoDevTools {
   private _initialiseQuality(): void {
     const qualityString = localStorage.getItem('devtools.quality');
 
-    const qualityElement = this._element('quality-slider') as HTMLInputElement;
+    const qualityElement = this._element('max-quality-slider') as HTMLInputElement;
 
     if (qualityString != null) {
       try {
@@ -159,6 +160,7 @@ export class WebXDemoDevTools {
   private _handleQualitySlider(value: string): void {
     localStorage.setItem('devtools.quality', value);
     this._client.setQualityIndex(parseInt(value));
+    this._client.registerTracer('message', new DemoQualityMessageHandler());
   }
 
 }

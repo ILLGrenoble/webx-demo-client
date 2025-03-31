@@ -1,3 +1,13 @@
+1.2.0 31/03/2025
+================
+ * Update to WebX Client 1.0.0
+ * Update dependencies
+ * Move DemoVisualMessageHandler to WebX Client so that it can be reused in other applications.
+ * Remove dependency for three.js and tween.js.
+ * Use 2 quality sliders: one to control the max quality and another to show the current quality.
+ * Listen to quality events from the engine to update the show current quality.
+ * Allow connections to multi-user environment using a session Id
+
 1.1.0 20/02/2025
 ================
  * Update webx-client library

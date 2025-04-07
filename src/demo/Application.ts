@@ -14,7 +14,6 @@ export class Application {
   private readonly _visibilityChangeHandler = this._handleVisibilityChange.bind(this);
   private readonly _fullscreenHandler = this._handleFullscreen.bind(this);
 
-  private readonly _connectHandler = this._onConnected.bind(this);
   private readonly _disconnectHandler = this._handleDisconnect.bind(this);
   private readonly _disconnectedHandler = this._onDisconnected.bind(this);
 
@@ -22,6 +21,8 @@ export class Application {
 
   private _relayProvider = new WebxRelayProvider();
 
+  private _canUseClipboard = true;
+  private _currentClipboardContent: string = null;
 
   constructor() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -109,7 +110,7 @@ export class Application {
       loaderElement.classList.add('show');
 
       this._client.connect(this._disconnectedHandler, {})
-        .then(this._connectHandler)
+        .then(() => this._onConnected())
         .catch(error => {
           console.error(error.message);
           this._onDisconnected();
@@ -124,6 +125,8 @@ export class Application {
 
     this._client.initialise(container)
       .then((display: WebXDisplay) => {
+        this._initialiseClipboardHandler();
+
         // Start animating the display once everything has been initialised
         display.animate();
 
@@ -178,6 +181,50 @@ export class Application {
 
     document.getElementById('btn-fullscreen').removeEventListener('click', this._fullscreenHandler);
     document.getElementById('btn-disconnect').removeEventListener('click', this._disconnectHandler);
+  }
+
+  private _initialiseClipboardHandler(): void {
+    this._canUseClipboard = true;
+    this._client.clipboardHandler = (clipboardContent: string) => this._setNavigatorClipboardHandler(clipboardContent);
+    this._startClipboardReadTimer();
+  }
+
+  private _startClipboardReadTimer(): void {
+    if (this._canUseClipboard) {
+      setTimeout(() => this._readClipboard(), 1000);
+    }
+  }
+
+  private _readClipboard(): void {
+    if (document.hasFocus()) {
+      navigator.clipboard.readText()
+        .then(clipboardContent => {
+          if (this._client) {
+            if (this._currentClipboardContent != clipboardContent) {
+              this._currentClipboardContent = clipboardContent;
+              this._client.sendClipboardContent(clipboardContent);
+            }
+
+            this._startClipboardReadTimer();
+          }
+
+        })
+        .catch((error) => {
+          console.error(error.message);
+          // Failed to read local clipboard
+          this._canUseClipboard = false;
+        });
+
+    } else {
+      this._startClipboardReadTimer();
+    }
+  }
+
+  private _setNavigatorClipboardHandler(clipboardContent: string): void {
+    if (this._canUseClipboard) {
+      navigator.clipboard.writeText(clipboardContent);
+      this._currentClipboardContent = clipboardContent;
+    }
   }
 
   private _handleFullscreen(): void {

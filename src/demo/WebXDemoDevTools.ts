@@ -10,6 +10,8 @@ export class WebXDemoDevTools {
 
   private readonly _client: WebXClient;
 
+  private readonly _maxQualityIndex: number;
+
   private readonly _showPanelHandler = this._handleShowPanel.bind(this);
   private readonly _closePanelHandler = this._handleClosePanel.bind(this);
   private readonly _messagesDebuggerHandler = ((e:any) => { this._handleMessagesDebugger(e.target.checked) }).bind(this);
@@ -20,6 +22,8 @@ export class WebXDemoDevTools {
 
   constructor(client: WebXClient) {
     this._client = client;
+    this._maxQualityIndex = client.maxQualityIndex;
+
     this._initialise();
     this._bind();
   }
@@ -92,12 +96,20 @@ export class WebXDemoDevTools {
   private _initialiseQuality(): void {
     const qualityString = localStorage.getItem('devtools.quality');
 
-    const qualityElement = this._element('max-quality-slider') as HTMLInputElement;
+    const qualityElement = this._element('quality-slider') as HTMLInputElement;
+    const maxQualityElement =  this._element('max-quality-slider') as HTMLInputElement;
+
+    qualityElement.max = `${this._maxQualityIndex}`
+    maxQualityElement.max = `${this._maxQualityIndex}`
 
     if (qualityString != null) {
       try {
-        qualityElement.value = qualityString;
-        this._handleQualitySlider(qualityString);
+        let quality = parseInt(qualityString);
+        if (quality > this._maxQualityIndex) {
+          quality = this._maxQualityIndex;
+        }
+        qualityElement.value = `${quality}`;
+        this._handleQualitySlider(`${quality}`);
       } catch (_) {
         // Got error
       }

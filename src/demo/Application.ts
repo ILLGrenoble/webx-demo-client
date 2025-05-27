@@ -196,7 +196,7 @@ export class Application {
   }
 
   private _readClipboard(): void {
-    if (document.hasFocus()) {
+    if (document.hasFocus() && navigator.clipboard) {
       navigator.clipboard.readText()
         .then(clipboardContent => {
           if (this._client) {

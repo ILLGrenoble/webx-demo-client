@@ -40,7 +40,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "@illgrenoble/webx-client": "^1.9.4",
+    "@illgrenoble/webx-client": "^1.9.5",
     "axios": "^1.8.4",
     "query-string": "^9.1.1"
   }

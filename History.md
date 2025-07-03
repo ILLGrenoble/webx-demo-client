@@ -1,3 +1,10 @@
+1.3.0 03/07/2025
+================
+ * Update to WebX Client 1.9.6
+ * update the readme to remove references to session-manager
+ * Read max quality level from WebXClient and adjust quality slider accordingly.
+ * handle clipboard synchronisation
+
 1.2.0 31/03/2025
 ================
  * Update to WebX Client 1.0.0

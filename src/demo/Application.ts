@@ -1,7 +1,7 @@
 import { Login, AuthLoginConfig, SessionConnectConfig } from './Login';
 import { WebXDemoDevTools } from './WebXDemoDevTools';
 import { WebxRelayProvider } from './WebxRelayProvider';
-import { WebXClient, WebXDisplay, WebXWebSocketTunnel } from '@illgrenoble/webx-client';
+import {WebXClient, WebXConnectionStatus, WebXDisplay, WebXWebSocketTunnel} from '@illgrenoble/webx-client';
 
 export class Application {
 
@@ -123,7 +123,10 @@ export class Application {
   private _onConnected(): void {
     const container = document.getElementById('display-container');
 
-    this._client.initialise(container)
+    const statusText = document.getElementById('status-text');
+    statusText.innerHTML = 'Connecting...';
+
+    this._client.initialise(container, {connectionStatusCallback: this._onConnectionStatusUpdate})
       .then((display: WebXDisplay) => {
         this._initialiseClipboardHandler();
 
@@ -144,6 +147,17 @@ export class Application {
         console.error(err.message);
         this._onDisconnected();
       });
+  }
+
+  private _onConnectionStatusUpdate(status: WebXConnectionStatus): void {
+    if (status == WebXConnectionStatus.STARTING) {
+      const statusText = document.getElementById('status-text');
+      statusText.innerHTML = 'Session starting...';
+    } else {
+      const statusText = document.getElementById('status-text');
+      statusText.innerHTML = 'Connected';
+    }
+
   }
 
   private _onDisconnected(): void {

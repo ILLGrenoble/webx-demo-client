@@ -2,6 +2,7 @@ import { Login, AuthLoginConfig, SessionConnectConfig } from './Login';
 import { WebXDemoDevTools } from './WebXDemoDevTools';
 import { WebxRelayProvider } from './WebxRelayProvider';
 import {WebXClient, WebXConnectionStatus, WebXDisplay, WebXWebSocketTunnel} from '@illgrenoble/webx-client';
+import * as FileSaver from 'file-saver';
 
 export class Application {
 
@@ -13,6 +14,7 @@ export class Application {
   private readonly _blurHandler = this._handleBlur.bind(this);
   private readonly _visibilityChangeHandler = this._handleVisibilityChange.bind(this);
   private readonly _fullscreenHandler = this._handleFullscreen.bind(this);
+  private readonly _screenshotHandler = this._handleScreenshot.bind(this);
 
   private readonly _disconnectHandler = this._handleDisconnect.bind(this);
   private readonly _disconnectedHandler = this._onDisconnected.bind(this);
@@ -185,6 +187,7 @@ export class Application {
     document.addEventListener('visibilitychange', this._visibilityChangeHandler);
 
     document.getElementById('btn-fullscreen').addEventListener('click', this._fullscreenHandler);
+    document.getElementById('btn-screenshot').addEventListener('click', this._screenshotHandler);
     document.getElementById('btn-disconnect').addEventListener('click', this._disconnectHandler);
   }
 
@@ -252,6 +255,15 @@ export class Application {
       display.resize();
     });
 
+  }
+
+  private _handleScreenshot(): void {
+    const display = this._client.display;
+    display.createScreenshot('image/jpeg', 0.9).then((blob) => {
+      if (blob) {
+        FileSaver.saveAs(blob, `screenshot.jpg`);
+      }
+    });
   }
 
   private _handleResize(): void {

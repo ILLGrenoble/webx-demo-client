@@ -4,7 +4,7 @@ const webpack = require('webpack');
 
 module.exports = {
     context: resolve(__dirname, 'src'),
-    devtool: 'eval-cheap-module-source-map',
+    devtool: 'source-map',
     entry: {
         app: ['./index.ts']
     },
@@ -14,12 +14,20 @@ module.exports = {
         path: resolve(__dirname, 'dist')
     },
     watch: false,
+    performance: {
+      hints: false
+    },
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
+            },
+            {
+              test: /\.js$/,
+              enforce: "pre",
+              use: ["source-map-loader"],
             },
             {
               test: /\.s[ac]ss$/i,
@@ -34,6 +42,7 @@ module.exports = {
             }
         ]
     },
+    ignoreWarnings: [/Failed to parse source map/],
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
         fallback: {

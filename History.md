@@ -1,3 +1,10 @@
+1.4.0 10/10/2025
+================
+ * Update to WebX Client 1.12.1
+ * Update tsconfig to more recent target. Ensure that source maps are produced (ie for webx-client) in dev.
+ * Add screenshot button menu bar.
+ * handle asynchronous connections and show a status message during the creation process.
+  
 1.3.0 03/07/2025
 ================
  * Update to WebX Client 1.9.6

@@ -106,6 +106,7 @@ export class Application {
         }
       }
 
+      // this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions), {display: {filter: {name: 'crt', params: {backgroundColor: '#000000', curvature: 8.0 }}}});
       this._client = new WebXClient(new WebXWebSocketTunnel(this._url, tunnelOptions));
 
       const loaderElement = document.getElementById('loader');

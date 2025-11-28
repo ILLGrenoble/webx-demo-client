@@ -1,7 +1,7 @@
 import { Login, AuthLoginConfig, SessionConnectConfig } from './Login';
 import { WebXDemoDevTools } from './WebXDemoDevTools';
 import { WebxRelayProvider } from './WebxRelayProvider';
-import {WebXClient, WebXConnectionStatus, WebXDisplay, WebXWebSocketTunnel} from '@illgrenoble/webx-client';
+import { WebXClient, WebXConnectionStatus, WebXDisplay, WebXKeyboardCombinationHandler, WebXWebSocketTunnel} from '@illgrenoble/webx-client';
 import * as FileSaver from 'file-saver';
 
 export class Application {
@@ -144,6 +144,15 @@ export class Application {
         const loaderElement = document.getElementById('loader');
         loaderElement.classList.remove('show');
 
+        this._client.registerTracer('filter-toggle', new WebXKeyboardCombinationHandler([65362, 65362, 65362, 65364, 65364, 65364, 65361, 65363, 65361, 65363, 65293], () => {
+          const display = this._client.display;
+          if (display.filter) {
+            display.filter = null;
+          } else {
+            display.filter = 'crt';
+          }
+        }));
+
         this._devTools = new WebXDemoDevTools(this._client);
       })
       .catch(err => {
@@ -168,6 +177,8 @@ export class Application {
 
     const headerElement = document.getElementById('header');
     headerElement.classList.remove('show');
+
+    this._client.unregisterTracer('filter-toggle');
 
     if (this._devTools) {
       this._devTools.dispose();

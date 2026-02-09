@@ -26,12 +26,20 @@ const createResizeListenerFunction = (callback: () => void, delay: number = 200)
       }
       enabled = true;
       window.addEventListener('resize', onResize);
+
+      const resizeButton = document.getElementById('btn-auto-resize');
+      resizeButton.innerHTML = 'Stop resizing';
+      resizeButton.classList.add('warning');
     },
 
     stop() {
       if (!enabled) return;
       enabled = false;
       window.removeEventListener('resize', onResize);
+
+      const resizeButton = document.getElementById('btn-auto-resize');
+      resizeButton.innerHTML = 'Resize automatically';
+      resizeButton.classList.remove('warning');
 
       if (timeoutId !== null) {
         clearTimeout(timeoutId);
@@ -324,17 +332,12 @@ export class Application {
   }
 
   private _handleAutomaticResize(): void {
-    const resizeButton = document.getElementById('btn-auto-resize')
     if (this._resizeListenerFunction.enabled()) {
       this._resizeListenerFunction.stop();
-      resizeButton.innerHTML = 'Resize automatically';
-      resizeButton.classList.remove('warning');
 
     } else {
       this._resizeScreen();
       this._resizeListenerFunction.start();
-      resizeButton.innerHTML = 'Stop resizing';
-      resizeButton.classList.add('warning');
     }
   }
 
@@ -371,6 +374,9 @@ export class Application {
   private _handleDisconnect(): void {
     if (this._client) {
       this._client.disconnect();
+      if (this._resizeListenerFunction.enabled()) {
+        this._resizeListenerFunction.stop();
+      }
     }
   }
 

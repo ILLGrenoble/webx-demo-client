@@ -4,6 +4,47 @@ import { WebxRelayProvider } from './WebxRelayProvider';
 import { WebXClient, WebXConnectionStatus, WebXDisplay, WebXKeyboardCombinationHandler, WebXWebSocketTunnel} from '@illgrenoble/webx-client';
 import * as FileSaver from 'file-saver';
 
+const createResizeListenerFunction = (callback: () => void, delay: number = 200): { start: () => void, stop: () => void, enabled: () => boolean } => {
+  let timeoutId: any = null;
+  let enabled: boolean = false;
+
+  function onResize() {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(() => {
+      timeoutId = null;
+      callback();
+    }, delay);
+  }
+
+  return {
+    start() {
+      if (enabled) {
+        return;
+      }
+      enabled = true;
+      window.addEventListener('resize', onResize);
+    },
+
+    stop() {
+      if (!enabled) return;
+      enabled = false;
+      window.removeEventListener('resize', onResize);
+
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    },
+
+    enabled() {
+      return enabled;
+    }
+  };
+}
+
 export class Application {
 
   private readonly _url: string;
@@ -14,6 +55,7 @@ export class Application {
   private readonly _blurHandler = this._handleBlur.bind(this);
   private readonly _visibilityChangeHandler = this._handleVisibilityChange.bind(this);
   private readonly _fullscreenHandler = this._handleFullscreen.bind(this);
+  private readonly _autoResizeHandler = this._handleAutomaticResize.bind(this);
   private readonly _screenshotHandler = this._handleScreenshot.bind(this);
 
   private readonly _disconnectHandler = this._handleDisconnect.bind(this);
@@ -25,6 +67,9 @@ export class Application {
 
   private _canUseClipboard = true;
   private _currentClipboardContent: string = null;
+ private _resizeListenerFunction = createResizeListenerFunction(() => {
+   this._resizeScreen();
+ }, 400)
 
   constructor() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -144,6 +189,13 @@ export class Application {
         const loaderElement = document.getElementById('loader');
         loaderElement.classList.remove('show');
 
+        const resizeButton = document.getElementById('btn-auto-resize')
+        if (this._client.canResizeScreen()) {
+          resizeButton.style.display = 'block';
+        } else {
+          resizeButton.style.display = 'none';
+        }
+
         this._client.registerTracer('filter-toggle', new WebXKeyboardCombinationHandler([65362, 65362, 65362, 65364, 65364, 65364, 65361, 65363, 65361, 65363, 65293], () => {
           const display = this._client.display;
           if (display.filter) {
@@ -178,7 +230,6 @@ export class Application {
     const headerElement = document.getElementById('header');
     headerElement.classList.remove('show');
 
-    this._client.unregisterTracer('filter-toggle');
 
     if (this._devTools) {
       this._devTools.dispose();
@@ -186,6 +237,7 @@ export class Application {
     }
 
     if (this._client) {
+      this._client.unregisterTracer('filter-toggle');
       this._client.disconnect();
       this._client = null;
     }
@@ -199,6 +251,7 @@ export class Application {
     document.addEventListener('visibilitychange', this._visibilityChangeHandler);
 
     document.getElementById('btn-fullscreen').addEventListener('click', this._fullscreenHandler);
+    document.getElementById('btn-auto-resize').addEventListener('click', this._autoResizeHandler);
     document.getElementById('btn-screenshot').addEventListener('click', this._screenshotHandler);
     document.getElementById('btn-disconnect').addEventListener('click', this._disconnectHandler);
   }
@@ -209,6 +262,7 @@ export class Application {
     document.removeEventListener('visibilitychange', this._visibilityChangeHandler);
 
     document.getElementById('btn-fullscreen').removeEventListener('click', this._fullscreenHandler);
+    document.getElementById('btn-auto-resize').removeEventListener('click', this._autoResizeHandler);
     document.getElementById('btn-disconnect').removeEventListener('click', this._disconnectHandler);
   }
 
@@ -267,6 +321,30 @@ export class Application {
       display.resize();
     });
 
+  }
+
+  private _handleAutomaticResize(): void {
+    const resizeButton = document.getElementById('btn-auto-resize')
+    if (this._resizeListenerFunction.enabled()) {
+      this._resizeListenerFunction.stop();
+      resizeButton.innerHTML = 'Resize automatically';
+      resizeButton.classList.remove('warning');
+
+    } else {
+      this._resizeScreen();
+      this._resizeListenerFunction.start();
+      resizeButton.innerHTML = 'Stop resizing';
+      resizeButton.classList.add('warning');
+    }
+  }
+
+  private _resizeScreen(): void {
+    if (this._client.canResizeScreen()) {
+      const displayElement = document.getElementById('display');
+      const width = displayElement.clientWidth;
+      const height = displayElement.clientHeight;
+      this._client.resizeScreen(width, height);
+    }
   }
 
   private _handleScreenshot(): void {

@@ -65,6 +65,7 @@ export class Application {
   private readonly _fullscreenHandler = this._handleFullscreen.bind(this);
   private readonly _autoResizeHandler = this._handleAutomaticResize.bind(this);
   private readonly _screenshotHandler = this._handleScreenshot.bind(this);
+  private readonly _keyboardSelectHandler = this._handleKeyboardSelect.bind(this);
 
   private readonly _disconnectHandler = this._handleDisconnect.bind(this);
   private readonly _disconnectedHandler = this._onDisconnected.bind(this);
@@ -204,6 +205,9 @@ export class Application {
           resizeButton.style.display = 'none';
         }
 
+        const keyboardSelect = document.getElementById('select-keyboard') as HTMLSelectElement;
+        keyboardSelect.value = this._client.keyboardLayoutName;
+
         this._client.registerTracer('filter-toggle', new WebXKeyboardCombinationHandler([65362, 65362, 65362, 65364, 65364, 65364, 65361, 65363, 65361, 65363, 65293], () => {
           const display = this._client.display;
           if (display.filter) {
@@ -265,6 +269,7 @@ export class Application {
     document.getElementById('btn-fullscreen').addEventListener('click', this._fullscreenHandler);
     document.getElementById('btn-auto-resize').addEventListener('click', this._autoResizeHandler);
     document.getElementById('btn-screenshot').addEventListener('click', this._screenshotHandler);
+    document.getElementById('select-keyboard').addEventListener('change', this._keyboardSelectHandler);
     document.getElementById('btn-disconnect').addEventListener('click', this._disconnectHandler);
   }
 
@@ -275,6 +280,8 @@ export class Application {
 
     document.getElementById('btn-fullscreen').removeEventListener('click', this._fullscreenHandler);
     document.getElementById('btn-auto-resize').removeEventListener('click', this._autoResizeHandler);
+    document.getElementById('btn-screenshot').removeEventListener('click', this._screenshotHandler);
+    document.getElementById('select-keyboard').removeEventListener('change', this._keyboardSelectHandler);
     document.getElementById('btn-disconnect').removeEventListener('click', this._disconnectHandler);
   }
 
@@ -355,8 +362,7 @@ export class Application {
   }
 
   private _handleScreenshot(): void {
-    const display = this._client.display;
-    display.createScreenshot('image/jpeg', 0.9).then((blob) => {
+    this._client.createScreenshot('image/jpeg', 0.9).then((blob) => {
       if (blob) {
         FileSaver.saveAs(blob, `screenshot.jpg`);
       }
@@ -367,6 +373,13 @@ export class Application {
     if (this._client) {
       this._client.resizeDisplay();
     }
+  }
+
+  private _handleKeyboardSelect(data: any): void {
+   const value = data.target.value;
+   if (value) {
+     this._client.setKeyboardLayout(value);
+   }
   }
 
   private _handleBlur(): void {

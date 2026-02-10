@@ -526,6 +526,17 @@ body {
       border: 1px solid #db9c43;
     }
   }
+  .label-standard-toolbar {
+    font-weight: 600;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    color: #ffffff;
+    padding: 3px 10px;
+    font-size: 12px;
+    line-height: 16px;
+    outline: none;
+  }
 }
 
 

@@ -207,6 +207,9 @@ export class Application {
 
         const keyboardSelect = document.getElementById('select-keyboard') as HTMLSelectElement;
         keyboardSelect.value = this._client.keyboardLayoutName;
+        this._client.keyboardLayoutHandler = (keyboardLayoutName) => {
+          keyboardSelect.value = keyboardLayoutName;
+        }
 
         this._client.registerTracer('filter-toggle', new WebXKeyboardCombinationHandler([65362, 65362, 65362, 65364, 65364, 65364, 65361, 65363, 65361, 65363, 65293], () => {
           const display = this._client.display;

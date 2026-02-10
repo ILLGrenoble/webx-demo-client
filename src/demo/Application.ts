@@ -250,6 +250,10 @@ export class Application {
       this._client = null;
     }
 
+    if (this._resizeListenerFunction.enabled()) {
+      this._resizeListenerFunction.stop();
+    }
+
     this._login.show();
   }
 
@@ -374,9 +378,6 @@ export class Application {
   private _handleDisconnect(): void {
     if (this._client) {
       this._client.disconnect();
-      if (this._resizeListenerFunction.enabled()) {
-        this._resizeListenerFunction.stop();
-      }
     }
   }
 

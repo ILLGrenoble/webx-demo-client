@@ -76,9 +76,9 @@ export class Application {
 
   private _canUseClipboard = true;
   private _currentClipboardContent: string = null;
- private _resizeListenerFunction = createResizeListenerFunction(() => {
-   this._resizeScreen();
- }, 400)
+  private _resizeListenerFunction = createResizeListenerFunction(() => {
+    this._resizeScreen();
+  }, 400)
 
   constructor() {
     const urlParams = new URLSearchParams(window.location.search);

@@ -1,3 +1,9 @@
+1.5.0 20/02/2026
+================
+ * Update to WebX Client 1.14.1
+ * Add button to auto-resize the remote desktop to the viewport size
+ * Add select to dynamically change the keyboard layout
+
 1.4.0 10/10/2025
 ================
  * Update to WebX Client 1.12.1
